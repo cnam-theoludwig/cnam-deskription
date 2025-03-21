@@ -1,0 +1,24 @@
+name: "ci"
+
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
+
+jobs:
+  lint-editorconfig-checker:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v4.2.2"
+      - uses: "editorconfig-checker/action-editorconfig-checker@main"
+      - run: "editorconfig-checker"
+
+  lint-commit:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v4.2.2"
+        with:
+          fetch-depth: 0
+
+      - uses: "wagoid/commitlint-github-action@v6.2.1"

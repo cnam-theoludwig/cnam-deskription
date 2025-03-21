@@ -1,0 +1,7 @@
+# misc
+.DS_Store
+
+# local env files
+.env
+.env.production
+.env*.local
