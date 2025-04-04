@@ -14,7 +14,7 @@ Développement d'une application de visualisation et de traçage des mobiliers d
 
 ## Membres du groupe
 
-- [Danaé ALBRECHT-MARTIN](https://github.com/dalbrechtmartin)
+- [Danaé ALBRECHT--MARTIN](https://github.com/dalbrechtmartin)
 - [Gwénolé ALLAL](https://github.com/gwenaf)
 - [Quentin BRENNER](https://github.com/OneLiberty)
 - [Axel FISCHBACH](https://github.com/SolxR)
