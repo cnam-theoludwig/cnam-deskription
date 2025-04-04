@@ -24,8 +24,8 @@ cd cnam-deskription
 
 #### Services démarrés par défaut (avec le `.env.example` par défaut)
 
-- [`apps/api`](../apps/api): <http://localhost:7500>
-- [`apps/website`](../apps/website): <http://localhost:7000> (application principale)
+<!-- - [`apps/api`](../apps/api): <http://localhost:7500>
+- [`apps/website`](../apps/website): <http://localhost:7000> (application principale) -->
 
 ## Principaux Outils Informatiques Utilisés
 

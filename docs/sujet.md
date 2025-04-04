@@ -21,7 +21,7 @@ L'Europe introduit le DPP (Digital Product Passport) qui permet de faire une tra
   - Date de mise en service et historique des opérations de maintenance
   - Localisation courante et historique des localisations
   - Lien vers une photo du modèle
-  - Niveau fonctionnel (bon état, état moyen…)
+  - Niveau fonctionnel (bon état, état moyen...)
   - etc.
 
 - Visualisation sur un carte d'un bâtiment des différents mobiliers à partir de la lecture du dataset
