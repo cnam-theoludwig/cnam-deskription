@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "mikestead.dotenv",
+    "ms-azuretools.vscode-docker",
+    "antfu.pnpm-catalog-lens"
+  ]
+}

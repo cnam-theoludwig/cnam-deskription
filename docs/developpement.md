@@ -4,7 +4,9 @@
 
 ### Prérequis
 
-TODO
+- [Node.js](https://nodejs.org/) >= v22.12.0 [(`nvm install 22`)](https://nvm.sh)
+- [pnpm](https://pnpm.io/) v9.15.9 [(`corepack enable`)](https://nodejs.org/docs/latest-v22.x/api/corepack.html)
+- [Docker](https://www.docker.com/)
 
 ### Installation
 
@@ -14,6 +16,9 @@ git clone git@github.com:cnam-theoludwig/cnam-deskription.git
 
 # Se déplacer dans le dossier du projet
 cd cnam-deskription
+
+# Installer les dépendances
+pnpm install --frozen-lockfile
 ```
 
 ### Démarrer l'application

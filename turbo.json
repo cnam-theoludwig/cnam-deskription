@@ -1,0 +1,51 @@
+{
+  "$schema": "./node_modules/turbo/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "build": {
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "env": ["IS_STANDALONE"],
+      "dependsOn": ["^build"],
+      "outputs": [
+        "build/**",
+        "storybook-static/**",
+        ".next/**",
+        "!.next/cache/**"
+      ]
+    },
+    "test": {
+      "dependsOn": ["^test"],
+      "outputs": []
+    },
+    "lint:eslint-transit-node": {
+      "dependsOn": ["^lint:eslint-transit-node"]
+    },
+    "lint:eslint": {
+      "dependsOn": ["lint:eslint-transit-node"]
+    },
+    "lint:typescript-transit-node": {
+      "dependsOn": ["^lint:typescript-transit-node"]
+    },
+    "lint:typescript": {
+      "dependsOn": ["lint:typescript-transit-node"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "start": {
+      "dependsOn": ["build"],
+      "persistent": true
+    },
+    "database:migrate:make": {
+      "cache": false
+    },
+    "database:migrate": {
+      "cache": false
+    },
+    "database:codegen": {
+      "dependsOn": ["database:migrate"],
+      "cache": false
+    }
+  }
+}
