@@ -17,6 +17,7 @@
     "database:migrate": "turbo run database:migrate",
     "database:migrate:make": "turbo run database:migrate:make --",
     "database:codegen": "turbo run database:codegen",
+    "lint:editorconfig": "editorconfig-checker",
     "lint:typescript": "turbo run lint:typescript",
     "lint:eslint": "turbo run lint:eslint",
     "lint:prettier": "prettier . --check"
