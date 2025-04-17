@@ -1,4 +1,4 @@
-import type { Primitive } from "./types.ts"
+import type { Primitive } from "./types"
 
 /**
  * Calculate the ratio of a value to a total.

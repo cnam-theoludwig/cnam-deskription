@@ -6,9 +6,9 @@ import type { FastifyTRPCPluginOptions } from "@trpc/server/adapters/fastify"
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify"
 import fastify from "fastify"
 
-import { createContext } from "#context.ts"
-import type { AppRouter } from "#routes/router.ts"
-import { appRouter } from "#routes/router.ts"
+import { createContext } from "./context"
+import type { AppRouter } from "./routes/router"
+import { appRouter } from "./routes/router"
 import { TRPC_PREFIX } from "@repo/utils/constants"
 import { getHTTPStatusCodeFromError } from "@trpc/server/http"
 

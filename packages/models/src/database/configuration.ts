@@ -1,5 +1,6 @@
-import { IS_PRODUCTION } from "@repo/utils/constants"
 import path from "node:path"
+
+const IS_PRODUCTION = process.env["NODE_ENV"] === "production"
 
 if (!IS_PRODUCTION) {
   const envRootPath = path.join(process.cwd(), "..", "..", ".env")

@@ -17,6 +17,10 @@ git clone git@github.com:cnam-theoludwig/cnam-deskription.git
 # Se déplacer dans le dossier du projet
 cd cnam-deskription
 
+# Configurer les variables d'environnement
+cp .env.example .env
+cp apps/api/.env.example apps/api/.env
+
 # Installer les dépendances
 pnpm install --frozen-lockfile
 ```
@@ -24,13 +28,17 @@ pnpm install --frozen-lockfile
 ### Démarrer l'application
 
 ```sh
-# TODO
+#  Démarrer les serveurs de développement
+node --run dev
+
+# Démarrer les services Docker de développement (exemple: base de données)
+docker compose --file compose.dev.yaml up
 ```
 
 #### Services démarrés par défaut (avec le `.env.example` par défaut)
 
-<!-- - [`apps/api`](../apps/api): <http://localhost:7500>
-- [`apps/website`](../apps/website): <http://localhost:7000> (application principale) -->
+- [`apps/api`](../apps/api): <http://localhost:8500>
+- [`apps/website`](../apps/website): <http://localhost:4200> (application principale)
 
 ## Principaux Outils Informatiques Utilisés
 

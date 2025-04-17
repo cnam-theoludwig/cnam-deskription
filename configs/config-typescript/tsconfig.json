@@ -16,7 +16,7 @@
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "allowImportingTsExtensions": true,
+    "allowImportingTsExtensions": false,
     "skipLibCheck": true,
     "jsx": "preserve",
     "incremental": true,

@@ -11,14 +11,15 @@
     "./configuration": "./src/configuration.ts"
   },
   "scripts": {
-    "start": "node --experimental-strip-types --env-file=.env ./src/server.ts",
-    "dev": "node --experimental-strip-types --env-file=.env --watch --watch-preserve-output ./src/server.ts",
+    "start": "node --import=tsx --env-file=.env ./src/server.ts",
+    "dev": "node --import=tsx --env-file=.env --watch --watch-preserve-output ./src/server.ts",
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:typescript": "tsc --noEmit"
   },
   "dependencies": {
     "@repo/utils": "workspace:*",
     "@repo/models": "workspace:*",
+    "tsx": "catalog:",
     "@trpc/server": "catalog:",
     "zod": "catalog:",
     "fastify": "catalog:",

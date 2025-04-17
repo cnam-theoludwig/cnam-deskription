@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import { describe, it } from "node:test"
-import { calculateAverage, calculateRatio, calculateSum } from "../maths.ts"
+import { calculateAverage, calculateRatio, calculateSum } from "../maths"
 
 describe("maths", () => {
   describe("calculateRatio", () => {

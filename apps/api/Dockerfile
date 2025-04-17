@@ -34,4 +34,4 @@ RUN chown --recursive applicationrunner:nodejs /usr/src/app/apps/api/uploads
 USER applicationrunner
 COPY --from=installer --chown=applicationrunner:nodejs /usr/src/app ./
 WORKDIR /usr/src/app/apps/api
-CMD ["node", "--experimental-strip-types", "./src/server.ts"]
+CMD ["node", "--import=tsx", "./src/server.ts"]

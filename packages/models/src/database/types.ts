@@ -1,6 +1,4 @@
-import type {
-  DB
-} from "./codegen.ts"
+import type { DB } from "./codegen"
 
 export type Database = DB
 

@@ -1,7 +1,7 @@
 const beforeTimeMs = performance.now()
 
-import { application } from "#application.ts"
-import { HOST, PORT } from "#configuration.ts"
+import { application } from "./application"
+import { HOST, PORT } from "./configuration"
 import { database } from "@repo/models/database"
 import { VERSION } from "@repo/utils/constants"
 import util from "node:util"

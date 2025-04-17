@@ -9,8 +9,8 @@ import {
   DATABASE_PASSWORD,
   DATABASE_PORT,
   DATABASE_USER,
-} from "./configuration.ts"
-import type { Database } from "./types.ts"
+} from "./configuration"
+import type { Database } from "./types"
 
 const dialect = new PostgresJSDialect({
   postgres: postgres({
@@ -38,7 +38,7 @@ const dialect = new PostgresJSDialect({
   }),
 })
 
-export * from "./utils.ts"
+export * from "./utils"
 
 export const database = new Kysely<Database>({
   dialect,

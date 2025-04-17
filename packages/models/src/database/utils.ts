@@ -8,7 +8,7 @@ import type {
   StringReference,
 } from "kysely"
 import { expressionBuilder } from "kysely"
-import type { Database, DatabaseTable } from "./types.ts"
+import type { Database, DatabaseTable } from "./types"
 
 interface SearchStringExpressionInput<Table extends keyof Database> {
   column: ReferenceExpression<Database, Table>

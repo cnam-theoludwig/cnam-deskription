@@ -6,7 +6,7 @@ import {
   fromFrenchDateToISO,
   getISODate,
   timeConverter,
-} from "../dates.ts"
+} from "../dates"
 
 describe("dates", () => {
   describe("getISODate", () => {

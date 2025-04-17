@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import { describe, it } from "node:test"
-import { capitalize } from "../strings.ts"
+import { capitalize } from "../strings"
 
 describe("strings", () => {
   describe("capitalize", () => {

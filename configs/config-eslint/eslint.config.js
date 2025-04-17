@@ -4,10 +4,7 @@ import importX from "eslint-plugin-import-x"
 
 export default typescriptESLint.config(
   {
-    ignores: [
-      "**/eslint.config.js",
-      "**/kysely.config.ts",
-    ],
+    ignores: ["**/eslint.config.js", "**/kysely.config.ts"],
   },
   ...configConventions,
   {
@@ -16,16 +13,16 @@ export default typescriptESLint.config(
       "import-x": importX,
     },
     rules: {
-      "import-x/extensions": [
-        "error",
-        "ignorePackages",
-        {
-          ts: "always",
-          tsx: "always",
-          js: "never",
-          jsx: "never",
-        },
-      ],
+      // "import-x/extensions": [
+      //   "error",
+      //   "ignorePackages",
+      //   {
+      //     ts: "always",
+      //     tsx: "always",
+      //     js: "never",
+      //     jsx: "never",
+      //   },
+      // ],
     },
   },
 )
