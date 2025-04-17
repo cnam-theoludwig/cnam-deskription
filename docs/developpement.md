@@ -39,12 +39,20 @@ docker compose --file compose.dev.yaml up
 
 - [`apps/api`](../apps/api): <http://localhost:8500>
 - [`apps/website`](../apps/website): <http://localhost:4200> (application principale)
+- [PostgreSQL](https://www.postgresql.org/), port: `5432`
+- [Adminer](https://adminerneo.org/): <http://localhost:8080>
 
 ## Principaux Outils Informatiques Utilisés
 
+- [TypeScript](https://www.typescriptlang.org/): Langage de programmation.
+- [Angular](https://angular.dev/): Interface utilisateur (UI) et principal frontend de l'application.
+- [Fastify](https://fastify.dev/)/[tRPC](https://trpc.io/) : API et principal backend de l'application.
+  - [kysely](https://kysely.dev/): Générateur de requêtes SQL avec vérification de type.
+  - [zod](https://zod.dev): Validation des données basée sur un schéma.
+
 ## Conventions développement informatique
 
-## GitFlow
+### GitFlow
 
 Le projet suit la convention [GitFlow](https://nvie.com/posts/a-successful-git-branching-model/) reposant sur 3 branches principales:
 
@@ -54,7 +62,7 @@ Le projet suit la convention [GitFlow](https://nvie.com/posts/a-successful-git-b
 
 Idéalement, chaque nouvelle fonctionnalité ou correctif de bug est développé dans une branche dédiée à partir de `develop`, nommée `feat/<nom-de-la-fonctionnalité>` ou `fix/<nom-du-bug>`. Une fois le développement terminé, une pull request est créée pour demander une revue de code, et une fois validée, la branche est fusionnée dans `develop`, puis supprimée.
 
-## Convention des commits
+### Convention des commits
 
 Les commits respectent la convention [Conventional Commits](https://www.conventionalcommits.org/) et [Semantic Versioning](https://semver.org/) pour la gestion des versions et des releases en fonction des commits.
 
