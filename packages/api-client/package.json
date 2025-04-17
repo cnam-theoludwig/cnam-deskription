@@ -1,0 +1,29 @@
+{
+  "name": "@repo/api-client",
+  "version": "0.0.0-develop",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/api.ts"
+  },
+  "scripts": {
+    "lint:eslint": "eslint src --max-warnings 0",
+    "lint:typescript": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@repo/models": "workspace:",
+    "@repo/utils": "workspace:",
+    "@trpc/client": "catalog:",
+    "superjson": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/config-eslint": "workspace:*",
+    "@repo/config-typescript": "workspace:*",
+    "@repo/api": "workspace:",
+    "@types/node": "catalog:",
+    "@total-typescript/ts-reset": "catalog:",
+    "eslint": "catalog:",
+    "typescript-eslint": "catalog:",
+    "typescript": "catalog:"
+  }
+}

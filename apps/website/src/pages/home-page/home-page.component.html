@@ -1,0 +1,7 @@
+<p>Hello, world!</p>
+
+@if (greeting$ | async; as greetingData) {
+  <p>{{ greetingData.hello }}</p>
+} @else {
+  <p>Chargement</p>
+}

@@ -1,0 +1,31 @@
+{
+  "name": "repo",
+  "version": "0.0.0-develop",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.9+sha512.68046141893c66fad01c079231128e9afb89ef87e2691d69e4d40eee228988295fd4682181bae55b58418c3a253bde65a505ec7c5f9403ece5cc3cd37dcf2531",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "start": "turbo run start --parallel",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "database:seed": "turbo run database:seed",
+    "database:seed:make": "turbo run database:seed:make --",
+    "database:migrate": "turbo run database:migrate",
+    "database:migrate:make": "turbo run database:migrate:make --",
+    "database:codegen": "turbo run database:codegen",
+    "lint:editorconfig": "editorconfig-checker",
+    "lint:typescript": "turbo run lint:typescript",
+    "lint:eslint": "turbo run lint:eslint",
+    "lint:prettier": "prettier . --check"
+  },
+  "devDependencies": {
+    "editorconfig-checker": "catalog:",
+    "prettier": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:"
+  }
+}

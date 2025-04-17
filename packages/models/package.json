@@ -1,0 +1,40 @@
+{
+  "name": "@repo/models",
+  "version": "0.0.0-develop",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./Entity": "./src/Entity.ts",
+    "./database/types": "./src/database/types.ts",
+    "./database": "./src/database/database.ts"
+  },
+  "scripts": {
+    "lint:eslint": "eslint src --max-warnings 0",
+    "lint:typescript": "tsc --noEmit",
+    "kysely": "kysely --no-outdated-check --cwd=src/database",
+    "database:migrate:make": "node --run kysely -- migrate make",
+    "database:migrate": "node --run kysely -- migrate latest",
+    "database:migrate:down": "node --run kysely -- migrate down",
+    "database:codegen": "kysely-codegen --env-file=../../.env --out-file=src/database/codegen.ts && prettier --write src/database/codegen.ts && eslint --fix src/database/codegen.ts"
+  },
+  "dependencies": {
+    "@repo/utils": "workspace:*",
+    "zod": "catalog:",
+    "postgres": "catalog:",
+    "kysely-postgres-js": "catalog:",
+    "kysely": "catalog:",
+    "kysely-ctl": "catalog:",
+    "pretty-ms": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/config-eslint": "workspace:*",
+    "@repo/config-typescript": "workspace:*",
+    "@types/node": "catalog:",
+    "@total-typescript/ts-reset": "catalog:",
+    "pg": "catalog:",
+    "kysely-codegen": "catalog:",
+    "eslint": "catalog:",
+    "typescript-eslint": "catalog:",
+    "typescript": "catalog:"
+  }
+}

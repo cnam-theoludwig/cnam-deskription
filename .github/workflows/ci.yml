@@ -7,12 +7,33 @@ on:
     branches: [develop]
 
 jobs:
-  lint-editorconfig-checker:
+  ci:
+    timeout-minutes: 30
     runs-on: "ubuntu-latest"
+    env:
+      DO_NOT_TRACK: "1"
+      TURBO_TELEMETRY_DISABLED: "1"
+      NEXT_TELEMETRY_DISABLED: "1"
     steps:
       - uses: "actions/checkout@v4.2.2"
-      - uses: "editorconfig-checker/action-editorconfig-checker@main"
-      - run: "editorconfig-checker"
+
+      - uses: "pnpm/action-setup@v4.1.0"
+
+      - name: "Setup Node.js"
+        uses: "actions/setup-node@v4.4.0"
+        with:
+          node-version: "22.x"
+          cache: "pnpm"
+
+      - name: "Install dependencies"
+        run: "pnpm install --frozen-lockfile"
+
+      - run: "node --run lint:editorconfig"
+      - run: "node --run lint:typescript"
+      - run: "node --run lint:eslint"
+      - run: "node --run lint:prettier"
+      - run: "node --run test"
+      - run: "node --run build"
 
   lint-commit:
     runs-on: "ubuntu-latest"

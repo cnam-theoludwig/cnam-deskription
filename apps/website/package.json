@@ -1,0 +1,41 @@
+{
+  "name": "@repo/website",
+  "version": "0.0.0-develop",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "ng": "ng",
+    "dev": "ng serve",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "lint:typescript": "tsc --noEmit",
+    "lint:eslint": "ng lint"
+  },
+  "dependencies": {
+    "@repo/utils": "workspace:*",
+    "@repo/models": "workspace:*",
+    "@repo/api-client": "workspace:*",
+    "@angular/animations": "catalog:",
+    "@angular/common": "catalog:",
+    "@angular/compiler": "catalog:",
+    "@angular/core": "catalog:",
+    "@angular/forms": "catalog:",
+    "@angular/platform-browser": "catalog:",
+    "@angular/platform-browser-dynamic": "catalog:",
+    "@angular/router": "catalog:",
+    "rxjs": "catalog:",
+    "tslib": "catalog:",
+    "zone.js": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/config-eslint": "workspace:*",
+    "@repo/config-typescript": "workspace:*",
+    "@angular-devkit/build-angular": "catalog:",
+    "@angular/cli": "catalog:",
+    "@angular/compiler-cli": "catalog:",
+    "@total-typescript/ts-reset": "catalog:",
+    "angular-eslint": "catalog:",
+    "typescript": "catalog:"
+  }
+}
