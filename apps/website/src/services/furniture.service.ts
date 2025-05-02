@@ -7,7 +7,7 @@ import { environment } from "../environments/environment"
 import type { FurnitureCreate } from "@repo/models/Furniture"
 
 export type Furnitures = Awaited<
-  ReturnType<ReturnType<typeof getTRPCClient>["getFurnitures"]["query"]>
+  ReturnType<ReturnType<typeof getTRPCClient>["furnitures"]["get"]["query"]>
 >
 
 @Injectable({
@@ -22,7 +22,7 @@ export class FurnitureService {
   }
 
   public get() {
-    const observable = fromPromise(this.client.getFurnitures.query())
+    const observable = fromPromise(this.client.furnitures.get.query())
     observable.subscribe({
       next: (furnitures) => {
         this._furnitures.set(furnitures)
@@ -32,7 +32,7 @@ export class FurnitureService {
   }
 
   public create(input: FurnitureCreate) {
-    const observable = fromPromise(this.client.addFurniture.mutate(input))
+    const observable = fromPromise(this.client.furnitures.create.mutate(input))
     observable.subscribe({
       next: (newFurniture) => {
         this._furnitures.update((old) => {
