@@ -4,9 +4,13 @@
 
 <app-furniture-add-form />
 
-<p>Nombre de meubles : {{ furnitures.length }}</p>
-<ul>
-  @for (furniture of furnitures; track furniture.id) {
-    <li>{{ furniture.description }}</li>
-  }
-</ul>
+@if (furnituresStatus === "pending") {
+  <p>Chargement...</p>
+} @else {
+  <p>Nombre de meubles : {{ furnitures.length }}</p>
+  <ul>
+    @for (furniture of furnitures; track furniture.id) {
+      <li>{{ furniture.description }}</li>
+    }
+  </ul>
+}
