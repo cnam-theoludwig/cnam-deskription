@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 
 FROM node-pnpm AS builder
 COPY ./ ./
-RUN pnpm install --global turbo@2.5.0
+RUN pnpm install --global turbo@2.5.2
 RUN turbo prune @repo/api --docker
 
 FROM node-pnpm AS installer
