@@ -1,6 +1,6 @@
 # Deskription
 
-![Deskription Logo](./docs/logo.webp)
+![Deskription Logo](./apps/website/public/logo.webp)
 
 ## À propos
 
@@ -23,3 +23,4 @@ Développement d'une application de visualisation et de traçage des mobiliers d
 - [Théo LUDWIG](https://github.com/theoludwig)
 - [Jeannot NAEGELY](https://github.com/Skullkrash)
 - [Mathys PIERREZ](https://github.com/mpierrez)
+  s
