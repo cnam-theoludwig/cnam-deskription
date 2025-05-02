@@ -36,6 +36,8 @@
     "@angular/compiler-cli": "catalog:",
     "@total-typescript/ts-reset": "catalog:",
     "angular-eslint": "catalog:",
+    "mime": "catalog:",
+    "@types/node": "catalog:",
     "typescript": "catalog:"
   }
 }

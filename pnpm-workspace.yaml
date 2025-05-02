@@ -10,6 +10,7 @@ catalog:
   # Utils
   "zod": "3.24.3"
   "pretty-ms": "9.2.0"
+  "mime": "4.0.7"
 
   # TypeScript
   "typescript": "5.8.3"
