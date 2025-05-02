@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./Entity": "./src/Entity.ts",
+    "./Furniture": "./src/Furniture.ts",
     "./database/types": "./src/database/types.ts",
     "./database": "./src/database/database.ts"
   },

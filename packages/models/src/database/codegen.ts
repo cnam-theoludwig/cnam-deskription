@@ -10,10 +10,16 @@ export type Generated<T> =
     ? ColumnType<S, I | undefined, U>
     : ColumnType<T, T | undefined, T>
 
+export interface Furniture {
+  description: string
+  id: Generated<string>
+}
+
 export interface TODO {
   id: Generated<string>
 }
 
 export interface DB {
+  Furniture: Furniture
   TODO: TODO
 }

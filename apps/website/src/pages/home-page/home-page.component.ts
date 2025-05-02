@@ -1,18 +1,20 @@
-import { AsyncPipe } from "@angular/common"
 import { Component } from "@angular/core"
-import { BasicService } from "../../services/basic.service"
+import { FurnitureService } from "../../services/furniture.service"
+import { FurnitureAddFormComponent } from "../../components/furnitures/furniture-add-form/furniture-add-form.component"
 
 @Component({
   selector: "app-home-page",
   standalone: true,
-  imports: [AsyncPipe],
+  imports: [FurnitureAddFormComponent],
   templateUrl: "./home-page.component.html",
   styleUrl: "./home-page.component.css",
 })
 export class HomePageComponent {
-  public greeting$!: ReturnType<BasicService["getTodos"]>
+  public constructor(private readonly furnitureService: FurnitureService) {
+    this.furnitureService.get()
+  }
 
-  public constructor(private readonly basicService: BasicService) {
-    this.greeting$ = this.basicService.getTodos()
+  public get furnitures(): FurnitureService["furnitures"] {
+    return this.furnitureService.furnitures
   }
 }

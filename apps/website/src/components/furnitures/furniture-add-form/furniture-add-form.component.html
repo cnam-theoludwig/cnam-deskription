@@ -1,0 +1,20 @@
+<form [formGroup]="furnitureForm" (ngSubmit)="onSubmit()">
+  <label for="description" class="form-label">Furniture description</label>
+
+  <input
+    type="text"
+    id="description"
+    class="form-control"
+    formControlName="description"
+    placeholder="Enter furniture description"
+    required
+  />
+
+  <button
+    type="submit"
+    class="btn btn-primary"
+    [disabled]="furnitureForm.invalid"
+  >
+    Submit
+  </button>
+</form>

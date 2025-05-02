@@ -1,7 +1,10 @@
 <p>Hello, world!</p>
 
-@if (greeting$ | async; as greetingData) {
-  <p>{{ greetingData.hello }}</p>
-} @else {
-  <p>Chargement</p>
-}
+<app-furniture-add-form />
+
+<p>Nombre de meubles : {{ furnitures.length }}</p>
+<ul>
+  @for (furniture of furnitures; track furniture.id) {
+    <li>{{ furniture.description }}</li>
+  }
+</ul>
