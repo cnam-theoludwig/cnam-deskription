@@ -10,6 +10,23 @@ services:
         VERSION: ${VERSION-0.0.0-develop}
     environment:
       PORT: ${WEBSITE_PORT-8000}
+    ports:
+      - "${WEBSITE_PORT-8000}:8000"
+
+  deskription-api:
+    container_name: "deskription-api"
+    image: "deskription-api"
+    restart: "unless-stopped"
+    build:
+      context: "./"
+      dockerfile: "./apps/api/Dockerfile"
+      args:
+        VERSION: ${VERSION-0.0.0-develop}
+    environment:
+      PORT: ${API_PORT-8500}
+    ports:
+      - "${API_PORT-8500}:8500"
+    env_file: "./apps/api/.env"
 
   deskription-database:
     container_name: "deskription-database"
@@ -23,18 +40,17 @@ services:
     volumes:
       - "deskription-postgres-data:/var/lib/postgresql/data"
 
-  deskription-api:
-    container_name: "deskription-api"
-    image: "deskription-api"
+  deskription-adminer:
+    container_name: "deskription-adminer"
+    image: "rktype/adminer:4.17.2"
     restart: "unless-stopped"
-    build:
-      context: "./"
-      dockerfile: "./apps/api/Dockerfile"
-      args:
-        VERSION: ${VERSION-0.0.0-develop}
+    env_file: ".env"
     environment:
-      PORT: ${API_PORT-8500}
-    env_file: "./apps/api/.env"
+      ADMINER_ENV: "prod"
+      ADMINER_DEFAULT_SERVER: "deskription-database"
+      ADMINER_DEFAULT_DRIVER: "pgsql"
+    ports:
+      - "${ADMINER_PORT-8080}:8080"
 
 volumes:
   deskription-postgres-data:
