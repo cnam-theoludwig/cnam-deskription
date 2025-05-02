@@ -14,7 +14,6 @@ export const up = async (database: Kysely<any>): Promise<void> => {
       return column.notNull()
     })
     .execute()
-
 }
 
 export const down = async (database: Kysely<any>): Promise<void> => {
