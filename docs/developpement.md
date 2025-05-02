@@ -42,6 +42,15 @@ docker compose --file compose.dev.yaml up
 - [PostgreSQL](https://www.postgresql.org/), port: `5432`
 - [Adminer](https://adminerneo.org/): <http://localhost:8080>
 
+### Base de données
+
+```sh
+# Créer une migration
+node --run database:migrate:make -- migration_name
+# Modifier le fichier de migration, et ensuite exécutez:
+node --run database:codegen
+```
+
 ## Principaux Outils Informatiques Utilisés
 
 - [TypeScript](https://www.typescriptlang.org/): Langage de programmation.
