@@ -17,4 +17,8 @@ export class HomePageComponent {
   public get furnitures(): FurnitureService["furnitures"] {
     return this.furnitureService.furnitures
   }
+
+  public get furnituresStatus(): FurnitureService["furnituresStatus"] {
+    return this.furnitureService.furnituresStatus
+  }
 }

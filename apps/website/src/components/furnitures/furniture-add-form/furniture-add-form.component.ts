@@ -17,15 +17,10 @@ export class FurnitureAddFormComponent {
   public constructor(private readonly furnitureService: FurnitureService) {}
 
   public onSubmit() {
-    console.log(this.furnitureForm.value)
     const data = this.furnitureForm.value as FurnitureCreate
     this.furnitureService.create(data).subscribe({
-      next: (response) => {
-        console.log("Furniture added successfully:", response)
+      next: () => {
         this.furnitureForm.reset()
-      },
-      error: (error) => {
-        console.error("Error adding furniture:", error)
       },
     })
   }

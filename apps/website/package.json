@@ -40,6 +40,8 @@
     "autoprefixer": "catalog:",
     "postcss": "catalog:",
     "tailwindcss": "catalog:",
+    "mime": "catalog:",
+    "@types/node": "catalog:",
     "typescript": "catalog:"
   }
 }

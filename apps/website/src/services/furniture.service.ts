@@ -5,6 +5,7 @@ import { getTRPCClient } from "@repo/api-client"
 import { TRPC_PREFIX } from "@repo/utils/constants"
 import { environment } from "../environments/environment"
 import type { FurnitureCreate } from "@repo/models/Furniture"
+import type { Status } from "@repo/utils/types"
 
 export type Furnitures = Awaited<
   ReturnType<ReturnType<typeof getTRPCClient>["furnitures"]["get"]["query"]>
@@ -16,15 +17,22 @@ export type Furnitures = Awaited<
 export class FurnitureService {
   private readonly client = getTRPCClient(environment.apiBaseURL + TRPC_PREFIX)
   private readonly _furnitures = signal<Furnitures>([])
+  private readonly _furnituresStatus = signal<Status>("pending")
 
   public get furnitures() {
     return this._furnitures()
   }
 
+  public get furnituresStatus() {
+    return this._furnituresStatus()
+  }
+
   public get() {
+    this._furnituresStatus.set("pending")
     const observable = fromPromise(this.client.furnitures.get.query())
     observable.subscribe({
       next: (furnitures) => {
+        this._furnituresStatus.set("idle")
         this._furnitures.set(furnitures)
       },
     })
