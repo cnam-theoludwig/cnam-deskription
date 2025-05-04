@@ -65,3 +65,9 @@ catalog:
   "kysely": "0.27.6"
   "kysely-ctl": "0.12.2"
   "kysely-codegen": "0.18.3"
+
+  # Tailwind
+  "autoprefixer": "10.4.21"
+  "postcss": "8.5.3"
+  "tailwindcss": "4.1.5"
+  "@tailwindcss/postcss": "4.1.5"
