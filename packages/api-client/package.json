@@ -11,10 +11,10 @@
     "lint:typescript": "tsc --noEmit"
   },
   "dependencies": {
-    "@repo/models": "workspace:",
     "@repo/utils": "workspace:",
-    "@trpc/client": "catalog:",
-    "superjson": "catalog:"
+    "@orpc/client": "catalog:",
+    "@orpc/openapi-client": "catalog:",
+    "@orpc/contract": "catalog:"
   },
   "devDependencies": {
     "@repo/config-eslint": "workspace:*",
@@ -22,6 +22,7 @@
     "@repo/api": "workspace:",
     "@types/node": "catalog:",
     "@total-typescript/ts-reset": "catalog:",
+    "@orpc/server": "catalog:",
     "eslint": "catalog:",
     "typescript-eslint": "catalog:",
     "typescript": "catalog:"

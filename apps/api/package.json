@@ -3,9 +3,6 @@
   "version": "0.0.0-develop",
   "private": true,
   "type": "module",
-  "imports": {
-    "#*": "./src/*"
-  },
   "exports": {
     ".": "./src/routes/router.ts",
     "./configuration": "./src/configuration.ts"
@@ -13,21 +10,17 @@
   "scripts": {
     "start": "node --import=tsx --env-file=.env ./src/server.ts",
     "dev": "node --import=tsx --env-file=.env --watch --watch-preserve-output ./src/server.ts",
-    "lint:eslint": "eslint . --max-warnings 0",
+    "lint:eslint": "eslint src --max-warnings 0",
     "lint:typescript": "tsc --noEmit"
   },
   "dependencies": {
     "@repo/utils": "workspace:*",
     "@repo/models": "workspace:*",
+    "@orpc/server": "catalog:",
+    "@orpc/openapi": "catalog:",
+    "@orpc/zod": "catalog:",
     "tsx": "catalog:",
-    "@trpc/server": "catalog:",
     "zod": "catalog:",
-    "fastify": "catalog:",
-    "@fastify/cors": "catalog:",
-    "@fastify/helmet": "catalog:",
-    "@fastify/rate-limit": "catalog:",
-    "@fastify/sensible": "catalog:",
-    "superjson": "catalog:",
     "kysely": "catalog:",
     "pretty-ms": "catalog:"
   },

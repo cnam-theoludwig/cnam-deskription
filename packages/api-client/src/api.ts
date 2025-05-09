@@ -1,21 +1,21 @@
-import type { AppRouter } from "@repo/api"
-import { TRPC_PREFIX } from "@repo/utils/constants"
-import { createTRPCClient, httpLink } from "@trpc/client"
-import superjson from "superjson"
+import { createORPCClient } from "@orpc/client"
+import { RPCLink } from "@orpc/client/fetch"
+import type { RouterClient } from "@orpc/server"
+import type { router } from "@repo/api"
+import { RPC_PREFIX } from "@repo/utils/constants"
 
 export const API_URL = "http://localhost:8500"
 
-export const API_TRPC_URL = `${API_URL}${TRPC_PREFIX}`
-
-export const getTRPCClient = (
-  url?: string,
-): ReturnType<typeof createTRPCClient<AppRouter>> => {
-  return createTRPCClient<AppRouter>({
-    links: [
-      httpLink({
-        url: url ?? API_TRPC_URL,
-        transformer: superjson,
-      }),
-    ],
+export const getRPCClient = (url?: string): RouterClient<typeof router> => {
+  const rpcLink = new RPCLink({
+    url: (url ?? API_URL) + RPC_PREFIX,
   })
+  return createORPCClient(rpcLink)
 }
+
+// const openAPILink = new OpenAPILink(router, {
+//   url: API_URL + OPENAPI_PREFIX,
+// })
+// export const openAPIClient: JsonifiedClient<
+//   ContractRouterClient<typeof router>
+// > = createORPCClient(openAPILink)

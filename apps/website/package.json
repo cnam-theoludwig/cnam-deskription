@@ -37,6 +37,7 @@
     "@total-typescript/ts-reset": "catalog:",
     "@tailwindcss/postcss": "catalog:",
     "angular-eslint": "catalog:",
+    "typescript-eslint": "catalog:",
     "autoprefixer": "catalog:",
     "postcss": "catalog:",
     "tailwindcss": "catalog:",

@@ -5,7 +5,7 @@
 ### Prérequis
 
 - [Node.js](https://nodejs.org/) >= v22.12.0 [(`nvm install 22`)](https://nvm.sh)
-- [pnpm](https://pnpm.io/) v9.15.9 [(`corepack enable`)](https://nodejs.org/docs/latest-v22.x/api/corepack.html)
+- [pnpm](https://pnpm.io/) v10.10.0 [(`corepack enable`)](https://nodejs.org/docs/latest-v22.x/api/corepack.html)
 - [Docker](https://www.docker.com/)
 
 ### Installation
@@ -37,7 +37,7 @@ docker compose --file compose.dev.yaml up
 
 #### Services démarrés par défaut (avec le `.env.example` par défaut)
 
-- [`apps/api`](../apps/api): <http://localhost:8500>
+- [`apps/api`](../apps/api): <http://localhost:8500> (documentation [OpenAPI avec Scalar](https://scalar.com) disponble)
 - [`apps/website`](../apps/website): <http://localhost:4200> (application principale)
 - [PostgreSQL](https://www.postgresql.org/), port: `5432`
 - [Adminer](https://adminerneo.org/): <http://localhost:8080>
@@ -55,18 +55,17 @@ node --run database:codegen
 
 - [TypeScript](https://www.typescriptlang.org/): Langage de programmation.
 - [Angular](https://angular.dev/): Interface utilisateur (UI) et principal frontend de l'application.
-- [Fastify](https://fastify.dev/)/[tRPC](https://trpc.io/) : API et principal backend de l'application.
-  - [kysely](https://kysely.dev/): Générateur de requêtes SQL avec vérification de type.
-  - [zod](https://zod.dev): Validation des données basée sur un schéma.
+- [oRPC](https://orpc.unnoq.com/) : API et principal backend de l'application.
+    - [kysely](https://kysely.dev/): Générateur de requêtes SQL avec vérification de type.
+    - [zod](https://zod.dev): Validation des données basée sur un schéma.
 
 ## Conventions développement informatique
 
 ### GitFlow
 
-Le projet suit la convention [GitFlow](https://nvie.com/posts/a-successful-git-branching-model/) reposant sur 3 branches principales:
+Le projet suit la convention [GitFlow](https://nvie.com/posts/a-successful-git-branching-model/) reposant sur 2 branches principales:
 
 - `main`: Contient le code de la dernière version stable et déployé en production.
-- `staging`: Contient le code en cours de test avant déploiement en production, Quality Assurance (QA).
 - `develop`: Contient le code en cours de développement. Les nouvelles fonctionnalités et les correctifs de bugs sont fusionnés ici régulièrement.
 
 Idéalement, chaque nouvelle fonctionnalité ou correctif de bug est développé dans une branche dédiée à partir de `develop`, nommée `feat/<nom-de-la-fonctionnalité>` ou `fix/<nom-du-bug>`. Une fois le développement terminé, une pull request est créée pour demander une revue de code, et une fois validée, la branche est fusionnée dans `develop`, puis supprimée.

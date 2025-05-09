@@ -35,8 +35,8 @@ cd cnam-deskription
 git fetch --prune
 git checkout <version>
 
-# Remplacez <version> par la version souhaitée, par exemple: v1.0.0-staging.1
-git checkout v1.0.0-staging.1
+# Remplacez <version> par la version souhaitée, par exemple: v1.0.0
+git checkout v1.0.0
 
 VERSION=$(git describe --tags) docker compose up --build --detach
 ```

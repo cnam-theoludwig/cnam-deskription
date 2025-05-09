@@ -1,32 +1,35 @@
+import { os } from "@orpc/server"
 import { database } from "@repo/models/database"
-import { publicProcedure, router } from "./trpc"
-import { FurnitureCreateZodObject } from "@repo/models/Furniture"
+import {
+  FurnitureCreateZodObject,
+  FurnitureZodObject,
+} from "@repo/models/Furniture"
+import { z } from "zod"
 
-export const appRouter = router({
-  furnitures: router({
-    get: publicProcedure.query(async () => {
-      const furnitures = await database
-        .selectFrom("Furniture")
-        .selectAll()
-        .execute()
+export const router = {
+  furnitures: {
+    get: os
+      .route({ method: "GET", path: "/furnitures" })
+      .output(z.array(FurnitureZodObject))
+      .handler(async () => {
+        const furnitures = await database
+          .selectFrom("Furniture")
+          .selectAll()
+          .execute()
+        return furnitures
+      }),
 
-      return furnitures
-    }),
-
-    create: publicProcedure
+    create: os
+      .route({ method: "POST", path: "/furnitures" })
       .input(FurnitureCreateZodObject)
-      .mutation(async ({ input }) => {
-        const { description } = input
-
+      .output(FurnitureZodObject)
+      .handler(async ({ input }) => {
         const furniture = await database
           .insertInto("Furniture")
-          .values({ description })
+          .values(input)
           .returningAll()
           .executeTakeFirstOrThrow()
-
         return furniture
       }),
-  }),
-})
-
-export type AppRouter = typeof appRouter
+  },
+}
