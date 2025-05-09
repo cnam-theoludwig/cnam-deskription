@@ -1,6 +1,6 @@
 # Deskription
 
-![Deskription Logo](./docs/logo.webp)
+![Deskription Logo](./apps/website/public/logo.webp)
 
 ## À propos
 
@@ -8,9 +8,10 @@ Développement d'une application de visualisation et de traçage des mobiliers d
 
 ## Documentation
 
-- [Environnement de développement + conventions](./docs/developpement.md)
 - [Sujet](./docs/sujet.md)
 - [User Stories](./docs/user-stories.md)
+- [Environnement de Développement + Conventions](./docs/developpement.md)
+- [Environnement de Production et Serveur](./docs/production.md)
 
 ## Membres du groupe
 

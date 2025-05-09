@@ -1,6 +1,6 @@
 import { database } from "@repo/models/database"
 import { publicProcedure, router } from "./trpc"
-import { FurnitureZodCreate } from "@repo/models/Furniture"
+import { FurnitureCreateZodObject } from "@repo/models/Furniture"
 
 export const appRouter = router({
   furnitures: router({
@@ -14,7 +14,7 @@ export const appRouter = router({
     }),
 
     create: publicProcedure
-      .input(FurnitureZodCreate)
+      .input(FurnitureCreateZodObject)
       .mutation(async ({ input }) => {
         const { description } = input
 
