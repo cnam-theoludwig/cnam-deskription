@@ -26,6 +26,13 @@ import {
   LocationZodObject,
 } from "@repo/models/Location"
 
+import { TypeZod, TypeCreateZodObject, TypeZodObject } from "@repo/models/Type"
+import {
+  StateZod,
+  StateCreateZodObject,
+  StateZodObject,
+} from "@repo/models/State"
+
 import { z } from "zod"
 
 export const router = {
@@ -119,6 +126,19 @@ export const router = {
         return storeys
       }),
 
+    getByBuildingId: os
+      .route({ method: "POST", path: "/storeys/:buildingId" })
+      .input(z.string())
+      .output(z.array(StoreyZodObject))
+      .handler(async ({ input }) => {
+        const storeys = await database
+          .selectFrom("Storey")
+          .selectAll()
+          .where("building_id", "=", input)
+          .execute()
+        return storeys
+      }),
+
     create: os
       .route({ method: "POST", path: "/storeys" })
       .input(StoreyCreateZodObject)
@@ -152,6 +172,19 @@ export const router = {
       .output(z.array(RoomZodObject))
       .handler(async () => {
         const rooms = await database.selectFrom("Room").selectAll().execute()
+        return rooms
+      }),
+
+    getByStoreyId: os
+      .route({ method: "POST", path: "/rooms/:storeyId" })
+      .input(z.string())
+      .output(z.array(RoomZodObject))
+      .handler(async ({ input }) => {
+        const rooms = await database
+          .selectFrom("Room")
+          .selectAll()
+          .where("storey_id", "=", input)
+          .execute()
         return rooms
       }),
 
@@ -193,6 +226,27 @@ export const router = {
           .execute()
         return locations
       }),
+
+    exists: os
+      .route({ method: "POST", path: "/locations/check" })
+      .input(LocationCreateZodObject)
+      .output(LocationZodObject.or(z.null()))
+      .handler(async ({ input }) => {
+        const location = await database
+          .selectFrom("Location")
+          .selectAll()
+          .where("building_id", "=", input.building_id)
+          .where("storey_id", "=", input.storey_id)
+          .where("room_id", "=", input.room_id)
+          .executeTakeFirst()
+
+        if (location === null || location === undefined) {
+          return null
+        }
+
+        return location
+      }),
+
     create: os
       .route({ method: "POST", path: "/locations" })
       .input(LocationCreateZodObject)
@@ -216,6 +270,78 @@ export const router = {
           .returningAll()
           .executeTakeFirstOrThrow()
         return location
+      }),
+  },
+
+  types: {
+    get: os
+      .route({ method: "GET", path: "/types" })
+      .output(z.array(TypeZodObject))
+      .handler(async () => {
+        const types = await database.selectFrom("Type").selectAll().execute()
+        return types
+      }),
+
+    create: os
+      .route({ method: "POST", path: "/types" })
+      .input(TypeCreateZodObject)
+      .output(TypeZodObject)
+      .handler(async ({ input }) => {
+        const type = await database
+          .insertInto("Type")
+          .values(input)
+          .returningAll()
+          .executeTakeFirstOrThrow()
+        return type
+      }),
+
+    delete: os
+      .route({ method: "DELETE", path: "/types" })
+      .input(TypeZod.id)
+      .output(TypeZodObject)
+      .handler(async ({ input }) => {
+        const type = await database
+          .deleteFrom("Type")
+          .where("id", "=", input)
+          .returningAll()
+          .executeTakeFirstOrThrow()
+        return type
+      }),
+  },
+
+  states: {
+    get: os
+      .route({ method: "GET", path: "/states" })
+      .output(z.array(StateZodObject))
+      .handler(async () => {
+        const states = await database.selectFrom("State").selectAll().execute()
+        return states
+      }),
+
+    create: os
+      .route({ method: "POST", path: "/states" })
+      .input(StateCreateZodObject)
+      .output(StateZodObject)
+      .handler(async ({ input }) => {
+        const state = await database
+          .insertInto("State")
+          .values(input)
+          .returningAll()
+          .executeTakeFirstOrThrow()
+        return state
+      }),
+
+    delete: os
+      .route({ method: "DELETE", path: "/states" })
+      .input(StateZod.id)
+      .output(StateZodObject)
+      .handler(async ({ input }) => {
+        const state = await database
+          .deleteFrom("State")
+          .where("id", "=", input)
+          .returningAll()
+          .executeTakeFirstOrThrow()
+        return state
       }),
   },
 }

@@ -157,6 +157,10 @@ catalogs:
 importers:
 
   .:
+    dependencies:
+      zod:
+        specifier: 'catalog:'
+        version: 3.24.4
     devDependencies:
       editorconfig-checker:
         specifier: 'catalog:'

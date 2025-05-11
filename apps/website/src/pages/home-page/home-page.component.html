@@ -1,8 +1,13 @@
-<p class="text-3xl font-bold underline">Hello, world!</p>
+<header class="store-header">
+  <div class="header-left">
+    <a routerLink="/home"><img src="/logo.webp" alt="Logo" class="logo" /></a>
+  </div>
+  <nav class="header-nav">
+    <a routerLink="/furnitures" class="nav-link">Voir les meubles</a>
+  </nav>
+</header>
 
-<img src="/logo.webp" alt="Logo" />
-
-<app-furniture-add-form />
+<!-- <app-furniture-add-form />
 
 @if (furnituresStatus === "pending") {
   <p>Chargement...</p>
@@ -13,4 +18,4 @@
       <li>{{ furniture.description }}</li>
     }
   </ul>
-}
+} -->

@@ -11,7 +11,7 @@ export const up = async (database: Kysely<any>): Promise<void> => {
         .notNull()
     })
 
-    .addColumn("description", "text", (column) => {
+    .addColumn("name", "text", (column) => {
       return column.notNull()
     })
 

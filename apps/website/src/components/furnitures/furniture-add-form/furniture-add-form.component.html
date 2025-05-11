@@ -1,20 +1,154 @@
-<form [formGroup]="furnitureForm" (ngSubmit)="onSubmit()">
-  <label for="description" class="form-label">Furniture description</label>
+<dialog id="addFurnitureModal">
+  <div class="modal-content">
+    <h2>Ajouter un meuble</h2>
 
-  <input
-    type="text"
-    id="description"
-    class="form-control"
-    formControlName="description"
-    placeholder="Enter furniture description"
-    required
-  />
+    <form [formGroup]="furnitureForm" (submit)="onSubmit()">
+      <div class="mb-3">
+        <label for="name" class="form-label">Nom <app-required /></label>
+        <input
+          class="form-control"
+          formControlName="name"
+          type="text"
+          id="name"
+          name="name"
+          placeholder="Entrez le nom du meuble"
+          required
+        />
+      </div>
 
-  <button
-    type="submit"
-    class="btn btn-primary"
-    [disabled]="furnitureForm.invalid"
-  >
-    Submit
-  </button>
-</form>
+      <div class="mb-3">
+        <label for="type" class="form-label">Bâtiment <app-required /></label>
+        @if (buildingService.status === "pending") {
+          <p>Chargement...</p>
+        } @else {
+          <select
+            class="form-select"
+            formControlName="building"
+            id="building"
+            name="building"
+            (change)="onBuildingChange()"
+            required
+          >
+            <option value="" disabled selected>
+              Choisissez le bâtiment dans lequel se trouve le meuble
+            </option>
+            @for (building of buildingService.buildings; track building.id) {
+              <option [value]="building.id">
+                {{ building.name }}
+              </option>
+            }
+          </select>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label for="type" class="form-label">Etage <app-required /></label>
+        @if (storeyService.status === "pending") {
+          <p>Chargement...</p>
+        } @else {
+          <select
+            class="form-select"
+            formControlName="storey"
+            id="storey"
+            name="storey"
+            (change)="onStoreyChange()"
+            required
+          >
+            <option value="" disabled selected>
+              Choisissez l'étage du bâtiment dans lequel se trouve le meuble
+            </option>
+            @for (storey of storeyService.storeys; track storey.id) {
+              <option [value]="storey.id">
+                {{ storey.name }}
+              </option>
+            }
+          </select>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label for="type" class="form-label">Pièce <app-required /></label>
+        @if (storeyService.status === "pending") {
+          <p>Chargement...</p>
+        } @else {
+          <select
+            class="form-select"
+            formControlName="room"
+            id="room"
+            name="room"
+            required
+          >
+            <option value="" disabled selected>
+              Choisissez la pièce du bâtiment dans laquelle se trouve le meuble
+            </option>
+            @for (room of roomService.rooms; track room.id) {
+              <option [value]="room.id">
+                {{ room.name }}
+              </option>
+            }
+          </select>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label for="type" class="form-label"
+          >Type du meuble <app-required
+        /></label>
+        @if (typeService.status === "pending") {
+          <p>Chargement...</p>
+        } @else {
+          <select
+            class="form-select"
+            formControlName="type"
+            id="type"
+            name="type"
+            required
+          >
+            <option value="" disabled selected>
+              Choisissez le type du meuble
+            </option>
+            @for (type of typeService.types; track type.id) {
+              <option [value]="type.id">
+                {{ type.name }}
+              </option>
+            }
+          </select>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label for="type" class="form-label"
+          >Etat du meuble <app-required
+        /></label>
+
+        @if (stateService.status === "pending") {
+          <p>Chargement...</p>
+        } @else {
+          <select
+            class="form-select"
+            formControlName="state"
+            id="state"
+            name="state"
+            required
+          >
+            <option value="" disabled selected>
+              Choisissez l'état du meuble
+            </option>
+            @for (state of stateService.states; track state.id) {
+              <option [value]="state.id">
+                {{ state.name }}
+              </option>
+            }
+          </select>
+        }
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeModal()">
+          Annuler
+        </button>
+        <button type="submit" class="btn btn-primary">Valider</button>
+      </div>
+    </form>
+  </div>
+</dialog>

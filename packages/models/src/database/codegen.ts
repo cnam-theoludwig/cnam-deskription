@@ -16,9 +16,9 @@ export interface Building {
 }
 
 export interface Furniture {
-  description: string
   id: Generated<string>
   location_id: string
+  name: string
   state_id: string
   type_id: string
 }
