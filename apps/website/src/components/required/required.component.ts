@@ -1,11 +1,9 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core"
 
 @Component({
-  selector: 'app-required',
+  selector: "app-required",
   imports: [],
-  templateUrl: './required.component.html',
-  styleUrl: './required.component.css'
+  templateUrl: "./required.component.html",
+  styleUrl: "./required.component.css",
 })
-export class RequiredComponent {
-
-}
+export class RequiredComponent {}
