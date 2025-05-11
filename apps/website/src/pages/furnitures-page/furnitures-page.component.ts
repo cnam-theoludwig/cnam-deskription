@@ -29,21 +29,17 @@ export class FurnituresPageComponent {
     this.furnitureService.get()
   }
 
-  openModal() {
+  public openModal() {
     const modal = document.getElementById(
       "addFurnitureModal",
     ) as HTMLDialogElement
-    if (modal) {
-      modal.showModal()
-    }
+    modal.showModal()
   }
 
-  closeModal() {
+  public closeModal() {
     const modal = document.getElementById(
       "addFurnitureModal",
     ) as HTMLDialogElement
-    if (modal) {
-      modal.close()
-    }
+    modal.close()
   }
 }

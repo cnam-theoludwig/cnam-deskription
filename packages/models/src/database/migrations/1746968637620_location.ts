@@ -10,13 +10,13 @@ export const up = async (database: Kysely<any>): Promise<void> => {
         .defaultTo(sql`gen_random_uuid()`)
         .notNull()
     })
-    .addColumn("building_id", "uuid", (column) => {
+    .addColumn("buildingId", "uuid", (column) => {
       return column.notNull().references("Building.id").onDelete("set null")
     })
-    .addColumn("storey_id", "uuid", (column) => {
+    .addColumn("storeyId", "uuid", (column) => {
       return column.notNull().references("Storey.id").onDelete("set null")
     })
-    .addColumn("room_id", "uuid", (column) => {
+    .addColumn("roomId", "uuid", (column) => {
       return column.notNull().references("Room.id").onDelete("set null")
     })
     .execute()

@@ -4,8 +4,14 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./Building": "./src/Building.ts",
     "./Entity": "./src/Entity.ts",
     "./Furniture": "./src/Furniture.ts",
+    "./Location": "./src/Location.ts",
+    "./Room": "./src/Room.ts",
+    "./State": "./src/State.ts",
+    "./Storey": "./src/Storey.ts",
+    "./Type": "./src/Type.ts",
     "./database/types": "./src/database/types.ts",
     "./database": "./src/database/database.ts"
   },

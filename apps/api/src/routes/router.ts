@@ -134,7 +134,7 @@ export const router = {
         const storeys = await database
           .selectFrom("Storey")
           .selectAll()
-          .where("building_id", "=", input)
+          .where("buildingId", "=", input)
           .execute()
         return storeys
       }),
@@ -183,7 +183,7 @@ export const router = {
         const rooms = await database
           .selectFrom("Room")
           .selectAll()
-          .where("storey_id", "=", input)
+          .where("storeyId", "=", input)
           .execute()
         return rooms
       }),
@@ -235,15 +235,13 @@ export const router = {
         const location = await database
           .selectFrom("Location")
           .selectAll()
-          .where("building_id", "=", input.building_id)
-          .where("storey_id", "=", input.storey_id)
-          .where("room_id", "=", input.room_id)
+          .where("buildingId", "=", input.buildingId)
+          .where("storeyId", "=", input.storeyId)
+          .where("roomId", "=", input.roomId)
           .executeTakeFirst()
-
-        if (location === null || location === undefined) {
+        if (location == null) {
           return null
         }
-
         return location
       }),
 

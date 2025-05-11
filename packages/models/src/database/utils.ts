@@ -7,18 +7,21 @@ import type {
   SqlBool,
   StringReference,
 } from "kysely"
-import { expressionBuilder } from "kysely"
-import type { Database, DatabaseTable } from "./types"
+import { expressionBuilder, sql } from "kysely"
+import type { Database, DatabaseTable } from "./types.ts"
 
-interface SearchStringExpressionInput<Table extends keyof Database> {
+interface SearchStringExpressionInput<Table extends DatabaseTable> {
   column: ReferenceExpression<Database, Table>
   query: string
+
+  /**
+   * @see https://www.postgresql.org/docs/current/pgtrgm.html
+   */
+  withFullTextSearch?: boolean
 }
 
 /**
- * Create an expression that matches a column against a search query. This
- * expression uses the `ilike` operator and the `unaccent` function to perform
- * a case-insensitive search that ignores accents.
+ * Create an expression that matches a column against a search query.
  *
  * @see https://www.postgresql.org/docs/current/unaccent.html
  * @param input
@@ -27,8 +30,13 @@ interface SearchStringExpressionInput<Table extends keyof Database> {
 export const searchStringExpression = <Table extends DatabaseTable>(
   input: SearchStringExpressionInput<Table>,
 ): ExpressionWrapper<Database, Table, SqlBool> => {
-  const { column, query } = input
+  const { column, query, withFullTextSearch = false } = input
   const expression = expressionBuilder<Database, Table>()
+
+  if (withFullTextSearch) {
+    return expression(column, sql`%`, query)
+  }
+
   return expression(
     expression.fn("unaccent", [column]),
     "ilike",
@@ -37,7 +45,7 @@ export const searchStringExpression = <Table extends DatabaseTable>(
 }
 
 export const doUpdateSetEverything = <Table extends DatabaseTable>(
-  values: any,
+  values: Array<any>,
 ) => {
   return (
     expression: ExpressionBuilder<

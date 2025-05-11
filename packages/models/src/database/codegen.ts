@@ -17,23 +17,23 @@ export interface Building {
 
 export interface Furniture {
   id: Generated<string>
-  location_id: string
+  locationId: string
   name: string
-  state_id: string
-  type_id: string
+  stateId: string
+  typeId: string
 }
 
 export interface Location {
-  building_id: string
+  buildingId: string
   id: Generated<string>
-  room_id: string
-  storey_id: string
+  roomId: string
+  storeyId: string
 }
 
 export interface Room {
   id: Generated<string>
   name: string
-  storey_id: string
+  storeyId: string
 }
 
 export interface State {
@@ -43,7 +43,7 @@ export interface State {
 }
 
 export interface Storey {
-  building_id: string
+  buildingId: string
   id: Generated<string>
   name: string
 }

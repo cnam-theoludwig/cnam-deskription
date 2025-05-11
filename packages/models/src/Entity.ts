@@ -2,7 +2,7 @@ import type { PickStrict, Primitive } from "@repo/utils/types"
 import { z } from "zod"
 
 export const EntityZod = {
-  id: z.string(),
+  id: z.string().uuid(),
 }
 export const EntityZodObject = z.object(EntityZod)
 export type Entity = z.infer<typeof EntityZodObject>

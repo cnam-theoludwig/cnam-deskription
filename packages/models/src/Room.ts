@@ -4,14 +4,14 @@ import { EntityZod } from "./Entity"
 export const RoomZod = {
   id: EntityZod.id,
   name: z.string().trim().min(2).max(100),
-  storey_id: z.string().uuid(),
+  storeyId: z.string().uuid(),
 }
 export const RoomZodObject = z.object(RoomZod)
 export type Room = z.infer<typeof RoomZodObject>
 
 export const RoomCreateZodObject = z.object({
   name: RoomZod.name,
-  storey_id: RoomZod.storey_id,
+  storeyId: RoomZod.storeyId,
 })
 export type RoomCreate = z.infer<typeof RoomCreateZodObject>
 

@@ -5,7 +5,7 @@
   <p>Nombre de meubles : {{ furnitureService.furnitures.length }}</p>
 
   <button type="button" (click)="openModal()">Ajouter un meuble</button>
-  <app-furniture-add-form (close)="closeModal()" />
+  <app-furniture-add-form (handleClose)="closeModal()" />
 
   <div class="furniture-list">
     @if (furnitureService.status === "pending") {
@@ -15,9 +15,9 @@
         @for (furniture of furnitureService.furnitures; track furniture.id) {
           <ul>
             <strong>Nom : {{ furniture.name }}<br /></strong>
-            <p>Id location : {{ furniture.location_id }}</p>
-            <p>Id type : {{ furniture.type_id }}</p>
-            <p>Id état : {{ furniture.state_id }}</p>
+            <p>Id location : {{ furniture.locationId }}</p>
+            <p>Id type : {{ furniture.typeId }}</p>
+            <p>Id état : {{ furniture.stateId }}</p>
           </ul>
         }
       </ul>

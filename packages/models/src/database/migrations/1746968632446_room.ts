@@ -13,7 +13,7 @@ export const up = async (database: Kysely<any>): Promise<void> => {
     .addColumn("name", "text", (column) => {
       return column.notNull()
     })
-    .addColumn("storey_id", "uuid", (column) => {
+    .addColumn("storeyId", "uuid", (column) => {
       return column.notNull().references("Storey.id").onDelete("cascade")
     })
     .execute()
