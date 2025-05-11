@@ -6,7 +6,8 @@
   "scripts": {
     "ng": "ng",
     "dev": "ng serve",
-    "start": "ng serve",
+    "start": "node ./http-server.ts --path=./dist/deskription/browser",
+    "start-angular": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "lint:typescript": "tsc --noEmit",

@@ -43,8 +43,22 @@ const server = http.createServer(async (request, response) => {
         response.writeHead(200, { "Content-Type": "text/html" })
         response.end(fileContent)
       } catch {
-        response.writeHead(403, { "Content-Type": "text/plain" })
-        response.end("Error: Directory listing not allowed.")
+        const fallbackIndexFile = path.join(
+          process.cwd(),
+          basePath,
+          "index.html",
+        )
+        try {
+          const fallbackFileContent =
+            await fs.promises.readFile(fallbackIndexFile)
+          response.writeHead(200, { "Content-Type": "text/html" })
+          response.end(fallbackFileContent)
+        } catch {
+          response.writeHead(403, { "Content-Type": "text/plain" })
+          response.end(
+            "Error: Directory listing not allowed and index.html not found.",
+          )
+        }
       }
     } else {
       const mimeType = mime.getType(filePath) ?? MIMETYPE_DEFAULT
@@ -54,8 +68,15 @@ const server = http.createServer(async (request, response) => {
     }
   } catch (error) {
     if (error instanceof Error && "code" in error && error.code === "ENOENT") {
-      response.writeHead(404, { "Content-Type": "text/plain" })
-      response.end("Error: File not found.")
+      const indexFile = path.join(process.cwd(), basePath, "index.html")
+      try {
+        const fileContent = await fs.promises.readFile(indexFile)
+        response.writeHead(200, { "Content-Type": "text/html" })
+        response.end(fileContent)
+      } catch {
+        response.writeHead(404, { "Content-Type": "text/plain" })
+        response.end("Error: File not found.")
+      }
     } else {
       response.writeHead(500, { "Content-Type": "text/plain" })
       response.end("Error: Internal Server Error.")
@@ -63,7 +84,7 @@ const server = http.createServer(async (request, response) => {
   }
 })
 
-const gracefulShutdown = (): void => {
+const gracefulShutdown = () => {
   server.close()
   process.exit(0)
 }
