@@ -3,23 +3,23 @@ import { fromPromise } from "rxjs/internal/observable/innerFrom"
 
 import { getRPCClient } from "@repo/api-client"
 import { environment } from "../environments/environment"
-import type { FurnitureCreate } from "@repo/models/Furniture"
+import type { StateCreate } from "@repo/models/State"
 import type { Status } from "@repo/utils/types"
 
-export type Furnitures = Awaited<
-  ReturnType<ReturnType<typeof getRPCClient>["furnitures"]["get"]>
+export type States = Awaited<
+  ReturnType<ReturnType<typeof getRPCClient>["states"]["get"]>
 >
 
 @Injectable({
   providedIn: "root",
 })
-export class FurnitureService {
+export class StateService {
   private readonly rpcClient = getRPCClient(environment.apiBaseURL)
-  private readonly _furnitures = signal<Furnitures>([])
+  private readonly _states = signal<States>([])
   private readonly _status = signal<Status>("pending")
 
-  public get furnitures() {
-    return this._furnitures()
+  public get states() {
+    return this._states()
   }
 
   public get status() {
@@ -28,22 +28,22 @@ export class FurnitureService {
 
   public get() {
     this._status.set("pending")
-    const observable = fromPromise(this.rpcClient.furnitures.get())
+    const observable = fromPromise(this.rpcClient.states.get())
     observable.subscribe({
-      next: (furnitures) => {
+      next: (states) => {
         this._status.set("idle")
-        this._furnitures.set(furnitures)
+        this._states.set(states)
       },
     })
     return observable
   }
 
-  public create(input: FurnitureCreate) {
-    const observable = fromPromise(this.rpcClient.furnitures.create(input))
+  public create(input: StateCreate) {
+    const observable = fromPromise(this.rpcClient.states.create(input))
     observable.subscribe({
-      next: (newFurniture) => {
-        this._furnitures.update((old) => {
-          return [...old, newFurniture]
+      next: (newState) => {
+        this._states.update((old) => {
+          return [...old, newState]
         })
       },
     })

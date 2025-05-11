@@ -78,3 +78,7 @@ onlyBuiltDependencies:
   - "lmdb"
   - "msgpackr-extract"
   - "unrs-resolver"
+
+publicHoistPattern:
+  - "*eslint*"
+  - "*prettier*"

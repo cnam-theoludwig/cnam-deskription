@@ -3,13 +3,19 @@ import { EntityZod } from "./Entity"
 
 export const FurnitureZod = {
   id: EntityZod.id,
-  description: z.string().trim().min(2).max(100),
+  name: z.string().trim().min(2).max(100),
+  locationId: z.string().uuid(),
+  typeId: z.string().uuid(),
+  stateId: z.string().uuid(),
 }
 export const FurnitureZodObject = z.object(FurnitureZod)
 export type Furniture = z.infer<typeof FurnitureZodObject>
 
 export const FurnitureCreateZodObject = z.object({
-  description: FurnitureZod.description,
+  name: FurnitureZod.name,
+  locationId: FurnitureZod.locationId,
+  typeId: FurnitureZod.typeId,
+  stateId: FurnitureZod.stateId,
 })
 export type FurnitureCreate = z.infer<typeof FurnitureCreateZodObject>
 

@@ -1,12 +1,9 @@
-import { sql } from "kysely"
 import type { Kysely } from "kysely"
+import { sql } from "kysely"
 
 export const up = async (database: Kysely<any>): Promise<void> => {
-  await sql`CREATE EXTENSION IF NOT EXISTS "unaccent"`.execute(database)
-  await sql`CREATE EXTENSION IF NOT EXISTS "pg_trgm"`.execute(database)
-
   await database.schema
-    .createTable("Furniture")
+    .createTable("Building")
     .addColumn("id", "uuid", (column) => {
       return column
         .primaryKey()
@@ -20,5 +17,5 @@ export const up = async (database: Kysely<any>): Promise<void> => {
 }
 
 export const down = async (database: Kysely<any>): Promise<void> => {
-  await database.schema.dropTable("Furniture").ifExists().execute()
+  await database.schema.dropTable("Building").ifExists().execute()
 }

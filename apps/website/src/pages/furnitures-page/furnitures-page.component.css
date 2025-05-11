@@ -1,0 +1,62 @@
+.furniture-list-container {
+  margin-top: 100px;
+}
+
+button {
+  font-size: 1rem;
+  font-family: inherit;
+  border: 1px solid;
+  border-radius: 8px;
+  border-color: rgb(72, 72, 72);
+  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.2);
+  margin: 0;
+  padding: 0.2rem 1rem;
+  cursor: pointer;
+  font-weight: 500;
+  background-color: rgb(72, 72, 72);
+  color: rgba(255, 255, 255, 0.87);
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.card-text {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.card-footer .btn {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.card-footer .btn:hover {
+  background-color: #0056b3;
+}
+
+h2 {
+  display: flex;
+  margin-top: 40px;
+  height: 50px;
+  justify-content: center;
+  align-items: center;
+}
+
+img {
+  margin-left: 8px;
+  height: 45px;
+  width: auto;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
