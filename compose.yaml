@@ -30,7 +30,7 @@ services:
 
   deskription-database:
     container_name: "deskription-database"
-    image: "postgres:17.4"
+    image: "postgres:17.5"
     restart: "unless-stopped"
     env_file: ".env"
     environment:
