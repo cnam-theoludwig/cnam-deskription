@@ -3,6 +3,10 @@
   "compilerOptions": {
     "lib": ["ESNext"],
     "types": ["@total-typescript/ts-reset", "@types/node"],
-    "erasableSyntaxOnly": false
+    "erasableSyntaxOnly": false,
+    "baseUrl": ".",
+    "paths": {
+      "@repo/models/*": ["../../packages/models/src/*"]
+    }
   }
 }

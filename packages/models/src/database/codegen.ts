@@ -10,16 +10,55 @@ export type Generated<T> =
     ? ColumnType<S, I | undefined, U>
     : ColumnType<T, T | undefined, T>
 
+export interface Building {
+  id: Generated<string>
+  name: string
+}
+
 export interface Furniture {
   description: string
   id: Generated<string>
+  location_id: string
+  state_id: string
+  type_id: string
 }
 
-export interface TODO {
+export interface Location {
+  building_id: string
   id: Generated<string>
+  room_id: string
+  storey_id: string
+}
+
+export interface Room {
+  id: Generated<string>
+  name: string
+  storey_id: string
+}
+
+export interface State {
+  comment: string | null
+  id: Generated<string>
+  name: string
+}
+
+export interface Storey {
+  building_id: string
+  id: Generated<string>
+  name: string
+}
+
+export interface Type {
+  id: Generated<string>
+  name: string
 }
 
 export interface DB {
+  Building: Building
   Furniture: Furniture
-  TODO: TODO
+  Location: Location
+  Room: Room
+  State: State
+  Storey: Storey
+  Type: Type
 }
