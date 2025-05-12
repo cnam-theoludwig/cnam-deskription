@@ -1,5 +1,6 @@
 const beforeTimeMs = performance.now()
 
+import { database } from "@repo/models/database"
 import {
   NAME,
   OPENAPI_PREFIX,
@@ -84,7 +85,8 @@ const server = createServer(async (request, response) => {
   response.end(html)
 })
 
-const gracefulShutdown = (): void => {
+const gracefulShutdown = async (): Promise<void> => {
+  await database.destroy()
   server.close((error) => {
     if (error != null) {
       console.error("Error during server shutdown:", error)
