@@ -49,6 +49,8 @@ VERSION=$(git describe --tags) docker compose up --build --detach
 ```sh
 # Pour exécuter des commandes dans un service (e.g: `deskription-api`)
 docker compose exec deskription-api bash
+cd ../../packages/models
+node --run database:datagen
 
 # Pour consulter les logs d'un service (e.g: `deskription-api`)
 docker compose logs --follow deskription-api

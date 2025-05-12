@@ -49,6 +49,9 @@ docker compose --file compose.dev.yaml up
 node --run database:migrate:make -- migration_name
 # Modifier le fichier de migration, et ensuite exécutez:
 node --run database:codegen
+
+# Génération de données
+node --run database:codegen
 ```
 
 ## Principaux Outils Informatiques Utilisés

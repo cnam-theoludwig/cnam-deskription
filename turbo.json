@@ -47,6 +47,10 @@
     "database:codegen": {
       "dependsOn": ["database:migrate"],
       "cache": false
+    },
+    "database:datagen": {
+      "dependsOn": ["database:codegen"],
+      "cache": false
     }
   }
 }
