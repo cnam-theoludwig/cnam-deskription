@@ -51,7 +51,7 @@ node --run database:migrate:make -- migration_name
 node --run database:codegen
 
 # Génération de données
-node --run database:codegen
+node --run database:datagen
 ```
 
 ## Principaux Outils Informatiques Utilisés
