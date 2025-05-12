@@ -18,6 +18,7 @@
     "database:migrate:down": "turbo run database:migrate:down",
     "database:migrate:make": "turbo run database:migrate:make --",
     "database:codegen": "turbo run database:codegen",
+    "database:datagen": "turbo run database:datagen",
     "lint:editorconfig": "editorconfig-checker",
     "lint:typescript": "turbo run lint:typescript",
     "lint:eslint": "turbo run lint:eslint",
