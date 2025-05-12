@@ -15,9 +15,12 @@
         @for (furniture of furnitureService.furnitures; track furniture.id) {
           <ul>
             <strong>Nom : {{ furniture.name }}<br /></strong>
-            <p>Id location : {{ furniture.locationId }}</p>
-            <p>Id type : {{ furniture.typeId }}</p>
-            <p>Id état : {{ furniture.stateId }}</p>
+            <p>
+              Emplacement : {{ furniture.building }}, {{ furniture.storey }},
+              {{ furniture.room }}
+            </p>
+            <p>Type : {{ furniture.type }}</p>
+            <p>État : {{ furniture.state }}</p>
           </ul>
         }
       </ul>

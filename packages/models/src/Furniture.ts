@@ -1,5 +1,10 @@
 import { z } from "zod"
+import { BuildingZod } from "./Building"
 import { EntityZod } from "./Entity"
+import { RoomZod } from "./Room"
+import { StateZod } from "./State"
+import { StoreyZod } from "./Storey"
+import { TypeZod } from "./Type"
 
 export const FurnitureZod = {
   id: EntityZod.id,
@@ -23,3 +28,11 @@ export const FurnitureDeleteZodObject = z.object({
   id: FurnitureZod.id,
 })
 export type FurnitureDelete = z.infer<typeof FurnitureDeleteZodObject>
+
+export const FurnitureWithRelations = FurnitureZodObject.extend({
+  state: StateZod.name,
+  type: TypeZod.name,
+  building: BuildingZod.name,
+  storey: StoreyZod.name,
+  room: RoomZod.name,
+})
