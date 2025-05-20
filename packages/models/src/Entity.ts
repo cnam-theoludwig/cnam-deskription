@@ -1,4 +1,4 @@
-import type { PickStrict, Primitive } from "@repo/utils/types"
+import type { Primitive } from "@repo/utils/types"
 import { z } from "zod"
 
 export const EntityZod = {
@@ -56,7 +56,7 @@ export const calculatePaginationOffset = (input: PaginationInput): number => {
   return (input.page - 1) * input.perPage
 }
 export const calculateRowNumberFromIndex = (
-  input: PickStrict<PaginationInformation, "page" | "itemsPerPage"> & {
+  input: Pick<PaginationInformation, "page" | "itemsPerPage"> & {
     index: number
   },
 ): number => {

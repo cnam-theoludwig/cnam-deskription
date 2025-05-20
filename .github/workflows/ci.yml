@@ -11,6 +11,8 @@ jobs:
     timeout-minutes: 30
     runs-on: "ubuntu-latest"
     env:
+      CI: "1"
+      TZ: "Europe/Paris"
       DO_NOT_TRACK: "1"
       TURBO_TELEMETRY_DISABLED: "1"
       NEXT_TELEMETRY_DISABLED: "1"

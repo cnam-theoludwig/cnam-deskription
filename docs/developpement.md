@@ -5,7 +5,7 @@
 ### Prérequis
 
 - [Node.js](https://nodejs.org/) >= v22.12.0 [(`nvm install 22`)](https://nvm.sh)
-- [pnpm](https://pnpm.io/) v10.10.0 [(`corepack enable`)](https://nodejs.org/docs/latest-v22.x/api/corepack.html)
+- [pnpm](https://pnpm.io/) v10.11.0 [(`corepack enable`)](https://nodejs.org/docs/latest-v22.x/api/corepack.html)
 - [Docker](https://www.docker.com/)
 
 ### Installation
@@ -50,7 +50,7 @@ node --run database:migrate:make -- migration_name
 # Modifier le fichier de migration, et ensuite exécutez:
 node --run database:codegen
 
-# Génération de données
+# Génération des données
 node --run database:datagen
 ```
 

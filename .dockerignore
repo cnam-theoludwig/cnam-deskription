@@ -7,6 +7,7 @@
 **/storybook-static
 **/coverage
 **/node_modules
+**/docs
 
 # envs
 .env
@@ -29,6 +30,7 @@ secrets
 *.pem
 Dockerfile
 README.md
+dump_*
 
 # vercel
 .vercel
