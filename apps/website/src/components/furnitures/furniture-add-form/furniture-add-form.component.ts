@@ -47,8 +47,12 @@ export class FurnitureAddFormComponent implements OnInit {
   }
 
   public ngOnInit() {
-    this.furnitureForm = this.fb.group({
-      name: new FormControl("", Validators.required),
+    this.furnitureForm = this.createForm()
+  }
+
+  private createForm(): FormGroup {
+    return this.fb.group({
+      name: new FormControl("", [Validators.minLength(3), Validators.required]),
       building: new FormControl("", Validators.required),
       storey: new FormControl(
         { value: "", disabled: true },
@@ -99,6 +103,7 @@ export class FurnitureAddFormComponent implements OnInit {
   }
 
   protected closeModal() {
+    this.furnitureForm = this.createForm()
     this.handleClose.emit()
   }
 
