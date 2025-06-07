@@ -14,28 +14,4 @@ export type OverrideStrict<
   },
 > = Omit<Type, keyof NewType> & NewType
 
-export type PartialDeep<T> = T extends object
-  ? {
-      [P in keyof T]?: PartialDeep<T[P]>
-    }
-  : T
-
 export type Status = "error" | "idle" | "pending" | "success"
-
-/**
- * Allows creating a union type by combining primitive types and literal types without sacrificing auto-completion in IDEs for the literal type part of the union.
- *
- * @see https://github.com/Microsoft/TypeScript/issues/29729
- *
- * @example
-  ```
-  // Before
-  type Pet = 'dog' | 'cat' | string;
-
-  // After
-  type Pet2 = LiteralUnion<'dog' | 'cat', string>;
-  ```
- */
-export type LiteralUnion<LiteralType, BaseType extends Primitive> =
-  | LiteralType
-  | (BaseType & Record<never, never>)

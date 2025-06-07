@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from "@angular/core"
+import { Component, Output, EventEmitter, inject } from "@angular/core"
 import type { OnInit } from "@angular/core"
 import {
   FormBuilder,
@@ -26,21 +26,21 @@ import { firstValueFrom } from "rxjs"
   styleUrl: "./furniture-add-form.component.css",
 })
 export class FurnitureAddFormComponent implements OnInit {
+  private readonly fb = inject(FormBuilder)
+  private readonly furnitureService = inject(FurnitureService)
+  private readonly locationService = inject(LocationService)
+  protected readonly buildingService = inject(BuildingService)
+  protected readonly storeyService = inject(StoreyService)
+  protected readonly roomService = inject(RoomService)
+  protected readonly stateService = inject(StateService)
+  protected readonly typeService = inject(TypeService)
+
   @Output()
   public handleClose = new EventEmitter<void>()
 
   protected furnitureForm!: FormGroup
 
-  public constructor(
-    private readonly fb: FormBuilder,
-    private readonly furnitureService: FurnitureService,
-    private readonly locationService: LocationService,
-    protected readonly buildingService: BuildingService,
-    protected readonly storeyService: StoreyService,
-    protected readonly roomService: RoomService,
-    protected readonly stateService: StateService,
-    protected readonly typeService: TypeService,
-  ) {
+  public constructor() {
     this.stateService.get()
     this.typeService.get()
     this.buildingService.get()

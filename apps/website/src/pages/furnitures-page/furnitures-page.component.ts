@@ -1,4 +1,4 @@
-import { Component } from "@angular/core"
+import { Component, inject } from "@angular/core"
 import { HeaderComponent } from "../../components/header/header.component"
 import { CommonModule } from "@angular/common"
 import { FurnitureService } from "../../services/furniture.service"
@@ -17,15 +17,15 @@ import { TypeService } from "../../services/type.service"
   styleUrl: "./furnitures-page.component.css",
 })
 export class FurnituresPageComponent {
-  public constructor(
-    protected readonly furnitureService: FurnitureService,
-    protected readonly locationService: LocationService,
-    protected readonly buildingService: BuildingService,
-    protected readonly storeyService: StoreyService,
-    protected readonly roomService: RoomService,
-    protected readonly stateService: StateService,
-    protected readonly typeService: TypeService,
-  ) {
+  protected readonly furnitureService = inject(FurnitureService)
+  protected readonly locationService = inject(LocationService)
+  protected readonly buildingService = inject(BuildingService)
+  protected readonly storeyService = inject(StoreyService)
+  protected readonly roomService = inject(RoomService)
+  protected readonly stateService = inject(StateService)
+  protected readonly typeService = inject(TypeService)
+
+  public constructor() {
     this.furnitureService.get()
   }
 

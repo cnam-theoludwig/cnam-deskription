@@ -1,6 +1,6 @@
 import { database } from "@repo/models/database"
 import { TypeCreateZodObject, TypeZod, TypeZodObject } from "@repo/models/Type"
-import { z } from "zod"
+import { z } from "zod/v4"
 import { publicProcedure } from "../oRPC"
 
 export const types = {

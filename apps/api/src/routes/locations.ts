@@ -4,7 +4,7 @@ import {
   LocationZod,
   LocationZodObject,
 } from "@repo/models/Location"
-import { z } from "zod"
+import { z } from "zod/v4"
 import { publicProcedure } from "../oRPC"
 
 export const locations = {

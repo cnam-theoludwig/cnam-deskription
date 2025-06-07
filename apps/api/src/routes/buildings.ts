@@ -4,7 +4,7 @@ import {
   BuildingZodObject,
 } from "@repo/models/Building"
 import { database } from "@repo/models/database"
-import { z } from "zod"
+import { z } from "zod/v4"
 import { publicProcedure } from "../oRPC"
 
 export const buildings = {
