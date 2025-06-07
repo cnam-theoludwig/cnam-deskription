@@ -1,29 +1,33 @@
 <app-header />
 
 <div class="furniture-list-container">
-  <h2>Liste des meubles</h2>
-  <p>Nombre de meubles : {{ furnitureService.furnitures.length }}</p>
+  <div class="furniture-list-header">
+    <h2>
+      Vous avez enregistré {{ furnitureService.furnitures.length }} meuble(s)
+      jusqu'à présent
+    </h2>
 
-  <button type="button" (click)="openModal()">Ajouter un meuble</button>
+    <button type="button" (click)="openModal()">Ajouter un meuble</button>
+  </div>
   <app-furniture-add-form (handleClose)="closeModal()" />
 
   <div class="furniture-list">
     @if (furnitureService.status === "pending") {
       <p>Chargement...</p>
     } @else {
-      <ul>
-        @for (furniture of furnitureService.furnitures; track furniture.id) {
-          <ul>
-            <strong>Nom : {{ furniture.name }}<br /></strong>
+      @for (furniture of furnitureService.furnitures; track furniture.id) {
+        <div class="furniture-card">
+          <h2 class="furniture-name">{{ furniture.name }}</h2>
+          <div class="furniture-info">
             <p>
-              Emplacement : {{ furniture.building }}, {{ furniture.storey }},
-              {{ furniture.room }}
+              <strong>Emplacement :</strong> {{ furniture.building }},
+              {{ furniture.storey }}, {{ furniture.room }}
             </p>
-            <p>Type : {{ furniture.type }}</p>
-            <p>État : {{ furniture.state }}</p>
-          </ul>
-        }
-      </ul>
+            <p><strong>Type :</strong> {{ furniture.type }}</p>
+            <p><strong>État :</strong> {{ furniture.state }}</p>
+          </div>
+        </div>
+      }
     }
   </div>
 </div>

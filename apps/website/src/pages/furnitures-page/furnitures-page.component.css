@@ -1,5 +1,48 @@
+.furniture-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 20px;
+}
+
 .furniture-list-container {
   margin-top: 100px;
+}
+
+.furniture-list-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.furniture-card {
+  flex: 0 1 calc(100% / 6);
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  max-width: 300px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  margin: 16px;
+  font-family: "Roboto", sans-serif;
+}
+
+.furniture-name {
+  font-size: 1.4em;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.furniture-info p {
+  margin: 6px 0;
+  font-size: 0.95em;
+  color: #555;
+}
+
+.furniture-info strong {
+  color: #222;
 }
 
 button {
@@ -17,43 +60,10 @@ button {
   color: rgba(255, 255, 255, 0.87);
 }
 
-.card-title {
-  font-size: 1.25rem;
-  font-weight: bold;
-}
-
-.card-text {
-  font-size: 0.9rem;
-  color: #555;
-}
-
-.card-footer .btn {
-  background-color: #007bff;
-  color: #fff;
-}
-
-.card-footer .btn:hover {
-  background-color: #0056b3;
-}
-
-h2 {
-  display: flex;
-  margin-top: 40px;
-  height: 50px;
-  justify-content: center;
-  align-items: center;
-}
-
 img {
   margin-left: 8px;
   height: 45px;
   width: auto;
-}
-
-ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
 }
 
 a {

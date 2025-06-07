@@ -29,18 +29,6 @@ dialog::backdrop {
   padding-bottom: 12px;
 }
 
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
-}
-
 dialog:not([open]) {
   display: none;
-}
-
-select:disabled {
-  background-color: #e9ecef;
-  color: #6c757d;
 }

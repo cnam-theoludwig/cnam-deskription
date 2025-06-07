@@ -11,6 +11,13 @@ header {
   color: rgba(255, 255, 255, 0.87);
 }
 
+h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  color: black;
+}
+
 a {
   font-weight: 500;
   color: rgb(58, 144, 224);
@@ -27,7 +34,7 @@ img {
   width: auto;
 }
 
-.store-header {
+.header {
   position: fixed;
   top: 0;
   left: 0;
@@ -45,6 +52,7 @@ img {
 .header-left {
   display: flex;
   align-items: center;
+  gap: 20px;
 }
 
 .logo {
