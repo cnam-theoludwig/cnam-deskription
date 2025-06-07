@@ -9,7 +9,7 @@ import { LocationZod } from "./Location"
 
 export const FurnitureZod = {
   id: EntityZod.id,
-  name: z.string().trim().min(2).max(100),
+  name: z.string().trim().min(3).max(100),
   locationId: LocationZod.id,
   typeId: TypeZod.id,
   stateId: StateZod.id,
