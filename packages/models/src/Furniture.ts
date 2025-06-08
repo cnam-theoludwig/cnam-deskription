@@ -36,3 +36,15 @@ export const FurnitureWithRelations = FurnitureZodObject.extend({
   storey: StoreyZod.name,
   room: RoomZod.name,
 })
+
+export const FurnitureWithRelationsIds = FurnitureZodObject.extend({
+  buildingId: BuildingZod.id,
+  storeyId: StoreyZod.id,
+  roomId: RoomZod.id,
+  stateId: StateZod.id,
+  typeId: TypeZod.id,
+})
+
+export type FurnitureWithRelationsIdsType = z.infer<
+  typeof FurnitureWithRelationsIds
+>

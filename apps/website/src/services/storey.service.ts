@@ -5,6 +5,8 @@ import { getRPCClient } from "@repo/api-client"
 import { environment } from "../environments/environment"
 import type { StoreyCreate } from "@repo/models/Storey"
 import type { Status } from "@repo/utils/types"
+import type { FormGroup } from "@angular/forms"
+import { RoomService } from "./room.service"
 
 export type Storeys = Awaited<
   ReturnType<ReturnType<typeof getRPCClient>["storeys"]["get"]>
@@ -17,6 +19,8 @@ export class StoreyService {
   private readonly rpcClient = getRPCClient(environment.apiBaseURL)
   private readonly _storeys = signal<Storeys>([])
   private readonly _status = signal<Status>("idle")
+
+  constructor(private readonly roomService: RoomService) {}
 
   public get storeys() {
     return this._storeys()
@@ -62,5 +66,19 @@ export class StoreyService {
       },
     })
     return observable
+  }
+
+  public onStoreyChange(
+    formGroup: FormGroup,
+    storeyAttributeName: string = "storeyId",
+    roomAttributeName: string = "roomId",
+  ) {
+    const storeyId = formGroup.get(storeyAttributeName)?.value
+    if (storeyId == null) {
+      return
+    }
+
+    this.roomService.getByStoreyId(storeyId)
+    formGroup.get(roomAttributeName)?.enable()
   }
 }

@@ -9,10 +9,16 @@ import { StoreyService } from "../../services/storey.service"
 import { RoomService } from "../../services/room.service"
 import { StateService } from "../../services/state.service"
 import { TypeService } from "../../services/type.service"
+import { SearchEngineComponent } from "../../components/search-engine/search-engine.component"
 
 @Component({
   selector: "app-furnitures-page",
-  imports: [CommonModule, HeaderComponent, FurnitureAddFormComponent],
+  imports: [
+    CommonModule,
+    HeaderComponent,
+    FurnitureAddFormComponent,
+    SearchEngineComponent,
+  ],
   templateUrl: "./furnitures-page.component.html",
   styleUrl: "./furnitures-page.component.css",
 })

@@ -3,8 +3,17 @@ import { fromPromise } from "rxjs/internal/observable/innerFrom"
 
 import { getRPCClient } from "@repo/api-client"
 import { environment } from "../environments/environment"
-import type { FurnitureCreate } from "@repo/models/Furniture"
+import type {
+  FurnitureCreate,
+  FurnitureWithRelationsIdsType,
+} from "@repo/models/Furniture"
 import type { Status } from "@repo/utils/types"
+import {
+  FormControl,
+  Validators,
+  type FormBuilder,
+  type FormGroup,
+} from "@angular/forms"
 
 export type Furnitures = Awaited<
   ReturnType<ReturnType<typeof getRPCClient>["furnitures"]["get"]>
@@ -45,6 +54,38 @@ export class FurnitureService {
         this._furnitures.update((old) => {
           return [...old, newFurniture]
         })
+      },
+    })
+    return observable
+  }
+
+  public createForm(fb: FormBuilder, required: boolean = true): FormGroup {
+    const requiredValidator = required ? Validators.required : null
+
+    return fb.group({
+      name: new FormControl("", [
+        Validators.minLength(3),
+        ...(required ? [Validators.required] : []),
+      ]),
+      buildingId: new FormControl("", requiredValidator),
+      storeyId: new FormControl(
+        { value: "", disabled: true },
+        requiredValidator,
+      ),
+      roomId: new FormControl({ value: "", disabled: true }, requiredValidator),
+      typeId: new FormControl("", requiredValidator),
+      stateId: new FormControl("", requiredValidator),
+    })
+  }
+
+  public search(input: Partial<FurnitureWithRelationsIdsType>) {
+    this._status.set("pending")
+    console.log("Searching furnitures with input:", input)
+    const observable = fromPromise(this.rpcClient.furnitures.search(input))
+    observable.subscribe({
+      next: (furnitures) => {
+        this._status.set("idle")
+        this._furnitures.set(furnitures)
       },
     })
     return observable

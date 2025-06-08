@@ -10,11 +10,10 @@
       <div class="mb-3 flex items-center gap-4">
         <label for="name" class="form-label w-20">Nom <app-required /></label>
         <input
+          id="name"
           class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
           formControlName="name"
           type="text"
-          id="name"
-          name="name"
           placeholder="Entrez le nom du meuble (minimum 3 caractères)"
           required
         />
@@ -29,11 +28,10 @@
           <p>Chargement...</p>
         } @else {
           <select
-            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
-            formControlName="building"
             id="building"
-            name="building"
-            (change)="onBuildingChange()"
+            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+            formControlName="buildingId"
+            (change)="this.buildingService.onBuildingChange(this.furnitureForm)"
             required
           >
             <option value="" disabled selected>Choisissez un bâtiment</option>
@@ -53,11 +51,10 @@
           <p>Chargement...</p>
         } @else {
           <select
-            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
-            formControlName="storey"
             id="storey"
-            name="storey"
-            (change)="onStoreyChange()"
+            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+            formControlName="storeyId"
+            (change)="this.storeyService.onStoreyChange(this.furnitureForm)"
             required
           >
             <option value="" disabled selected>Choisissez un étage</option>
@@ -75,10 +72,9 @@
           <p>Chargement...</p>
         } @else {
           <select
-            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
-            formControlName="room"
             id="room"
-            name="room"
+            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+            formControlName="roomId"
             required
           >
             <option value="" disabled selected>Choisissez une pièce</option>
@@ -96,10 +92,9 @@
           <p>Chargement...</p>
         } @else {
           <select
-            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
-            formControlName="type"
             id="type"
-            name="type"
+            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+            formControlName="typeId"
             required
           >
             <option value="" disabled selected>Choisissez un type</option>
@@ -117,10 +112,9 @@
           <p>Chargement...</p>
         } @else {
           <select
-            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
-            formControlName="state"
             id="state"
-            name="state"
+            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+            formControlName="stateId"
             required
           >
             <option value="" disabled selected>Choisissez un état</option>
