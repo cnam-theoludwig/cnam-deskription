@@ -1,10 +1,11 @@
-import { z } from "zod"
+import { z } from "zod/v4"
 import { EntityZod } from "./Entity"
+import { StoreyZod } from "./Storey"
 
 export const RoomZod = {
   id: EntityZod.id,
   name: z.string().trim().min(2).max(100),
-  storeyId: z.string().uuid(),
+  storeyId: StoreyZod.id,
 }
 export const RoomZodObject = z.object(RoomZod)
 export type Room = z.infer<typeof RoomZodObject>

@@ -1,7 +1,10 @@
 import { RPCHandler } from "@orpc/server/node"
 import { OpenAPIHandler } from "@orpc/openapi/node"
 import { CORSPlugin } from "@orpc/server/plugins"
-import { ZodSmartCoercionPlugin, ZodToJsonSchemaConverter } from "@orpc/zod"
+import {
+  experimental_ZodToJsonSchemaConverter as ZodToJsonSchemaConverter,
+  experimental_ZodSmartCoercionPlugin as ZodSmartCoercionPlugin,
+} from "@orpc/zod/zod4"
 import { router } from "./routes/router"
 import { OpenAPIGenerator } from "@orpc/openapi"
 

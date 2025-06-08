@@ -128,13 +128,16 @@
       <!-- Actions -->
       <div class="modal-actions flex justify-end gap-3 mt-6">
         <button
-          class="bg-gray-300 text-gray-800 rounded px-4 py-2"
+          class="bg-gray-300 text-gray-800 rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-gray-200"
           type="button"
           (click)="closeModal()"
         >
           Annuler
         </button>
-        <button class="bg-blue-600 text-white rounded px-4 py-2" type="submit">
+        <button
+          class="bg-blue-600 text-white rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-blue-400"
+          type="submit"
+        >
           Valider
         </button>
       </div>

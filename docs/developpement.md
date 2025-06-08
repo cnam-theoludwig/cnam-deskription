@@ -5,7 +5,7 @@
 ### Prérequis
 
 - [Node.js](https://nodejs.org/) >= v22.12.0 [(`nvm install 22`)](https://nvm.sh)
-- [pnpm](https://pnpm.io/) v10.11.0 [(`corepack enable`)](https://nodejs.org/docs/latest-v22.x/api/corepack.html)
+- [pnpm](https://pnpm.io/) v10.11.1 [(`corepack enable`)](https://nodejs.org/docs/latest-v22.x/api/corepack.html)
 - [Docker](https://www.docker.com/)
 
 ### Installation
@@ -40,7 +40,7 @@ docker compose --file compose.dev.yaml up
 - [`apps/api`](../apps/api): <http://localhost:8500> (documentation [OpenAPI avec Scalar](https://scalar.com) disponble)
 - [`apps/website`](../apps/website): <http://localhost:4200> (application principale)
 - [PostgreSQL](https://www.postgresql.org/), port: `5432`
-- [Adminer](https://adminerneo.org/): <http://localhost:8080>
+- [AdminNeo](https://www.adminneo.org/): <http://localhost:8080>
 
 ### Base de données
 

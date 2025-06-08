@@ -13,6 +13,17 @@ export default typescriptESLint.config(
       "import-x": importX,
     },
     rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "zod",
+              message: "Please import from `zod/v4` instead.",
+            },
+          ],
+        },
+      ],
       // "import-x/extensions": [
       //   "error",
       //   "ignorePackages",
