@@ -14,6 +14,7 @@ export default typescriptESLint.config(
       "@typescript-eslint/unbound-method": "off",
       "@typescript-eslint/consistent-type-imports": "off",
       "@typescript-eslint/explicit-function-return-type": "off",
+      "@typescript-eslint/strict-boolean-expressions": "off",
     },
   },
   {

@@ -8,12 +8,8 @@ import type {
   FurnitureWithRelationsIdsType,
 } from "@repo/models/Furniture"
 import type { Status } from "@repo/utils/types"
-import {
-  FormControl,
-  Validators,
-  type FormBuilder,
-  type FormGroup,
-} from "@angular/forms"
+import { FormControl, Validators } from "@angular/forms"
+import type { FormBuilder, FormGroup } from "@angular/forms"
 
 export type Furnitures = Awaited<
   ReturnType<ReturnType<typeof getRPCClient>["furnitures"]["get"]>

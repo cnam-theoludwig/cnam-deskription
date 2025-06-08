@@ -1,4 +1,5 @@
-import { Component, type OnInit } from "@angular/core"
+import { Component  } from "@angular/core"
+import type {OnInit} from "@angular/core";
 import { FurnitureService } from "../../services/furniture.service"
 import type { FurnitureWithRelationsIdsType } from "@repo/models/Furniture"
 import { FormBuilder, FormGroup, ReactiveFormsModule } from "@angular/forms"
@@ -48,12 +49,12 @@ export class SearchEngineComponent implements OnInit {
       this.furnitureSearchForm.value
     console.log("Search parameters:", this.furnitureSearchForm.value)
 
-    if (name?.trim()) furnitureSearchParams.name = name.trim()
-    if (buildingId) furnitureSearchParams.buildingId = buildingId
-    if (storeyId) furnitureSearchParams.storeyId = storeyId
-    if (roomId) furnitureSearchParams.roomId = roomId
-    if (stateId) furnitureSearchParams.stateId = stateId
-    if (typeId) furnitureSearchParams.typeId = typeId
+    if (name?.trim()) {furnitureSearchParams.name = name.trim()}
+    if (buildingId) {furnitureSearchParams.buildingId = buildingId}
+    if (storeyId) {furnitureSearchParams.storeyId = storeyId}
+    if (roomId) {furnitureSearchParams.roomId = roomId}
+    if (stateId) {furnitureSearchParams.stateId = stateId}
+    if (typeId) {furnitureSearchParams.typeId = typeId}
 
     this.furnitureService.search(furnitureSearchParams)
   }

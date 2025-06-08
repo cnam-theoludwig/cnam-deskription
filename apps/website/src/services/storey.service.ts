@@ -20,7 +20,7 @@ export class StoreyService {
   private readonly _storeys = signal<Storeys>([])
   private readonly _status = signal<Status>("idle")
 
-  constructor(private readonly roomService: RoomService) {}
+  private constructor(private readonly roomService: RoomService) {}
 
   public get storeys() {
     return this._storeys()

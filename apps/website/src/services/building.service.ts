@@ -20,7 +20,7 @@ export class BuildingService {
   private readonly _buildings = signal<Buildings>([])
   private readonly _status = signal<Status>("pending")
 
-  constructor(private readonly storeyService: StoreyService) {}
+  private constructor(private readonly storeyService: StoreyService) {}
 
   public get buildings() {
     return this._buildings()

@@ -60,11 +60,10 @@ export class FurnitureAddFormComponent implements OnInit {
       let location = await firstValueFrom(
         this.locationService.exists(locationCreate),
       )
-      if (!location) {
-        location = await firstValueFrom(
-          this.locationService.create(locationCreate),
-        )
-      }
+
+      location ??= await firstValueFrom(
+        this.locationService.create(locationCreate),
+      )
 
       const data: FurnitureCreate = {
         name: this.furnitureForm.get("name")?.value,
