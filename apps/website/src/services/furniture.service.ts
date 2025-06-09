@@ -76,7 +76,6 @@ export class FurnitureService {
 
   public search(input: Partial<FurnitureWithRelationsIdsType>) {
     this._status.set("pending")
-    console.log("Searching furnitures with input:", input)
     const observable = fromPromise(this.rpcClient.furnitures.search(input))
     observable.subscribe({
       next: (furnitures) => {

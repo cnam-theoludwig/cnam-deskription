@@ -44,26 +44,33 @@ export class SearchEngineComponent implements OnInit {
       return
     }
 
-    const { name, buildingId, storeyId, roomId, stateId, typeId } =
-      this.furnitureSearchForm.value
-    console.log("Search parameters:", this.furnitureSearchForm.value)
+    const {
+      name: nameValue,
+      buildingId,
+      storeyId,
+      roomId,
+      stateId,
+      typeId,
+    } = this.furnitureSearchForm.value
 
-    if (name?.trim()) {
-      furnitureSearchParams.name = name.trim()
+    const name = nameValue?.trim()
+
+    if (name != null) {
+      furnitureSearchParams.name = name
     }
-    if (buildingId) {
+    if (buildingId != null) {
       furnitureSearchParams.buildingId = buildingId
     }
-    if (storeyId) {
+    if (storeyId != null) {
       furnitureSearchParams.storeyId = storeyId
     }
-    if (roomId) {
+    if (roomId != null) {
       furnitureSearchParams.roomId = roomId
     }
-    if (stateId) {
+    if (stateId != null) {
       furnitureSearchParams.stateId = stateId
     }
-    if (typeId) {
+    if (typeId != null) {
       furnitureSearchParams.typeId = typeId
     }
 
