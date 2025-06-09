@@ -1,5 +1,5 @@
-import { Component  } from "@angular/core"
-import type {OnInit} from "@angular/core";
+import { Component, inject } from "@angular/core"
+import type { OnInit } from "@angular/core"
 import { FurnitureService } from "../../services/furniture.service"
 import type { FurnitureWithRelationsIdsType } from "@repo/models/Furniture"
 import { FormBuilder, FormGroup, ReactiveFormsModule } from "@angular/forms"
@@ -18,16 +18,15 @@ import { RoomService } from "../../services/room.service"
 })
 export class SearchEngineComponent implements OnInit {
   protected furnitureSearchForm!: FormGroup
+  private readonly fb = inject(FormBuilder)
+  private readonly furnitureService = inject(FurnitureService)
+  protected readonly buildingService = inject(BuildingService)
+  protected readonly storeyService = inject(StoreyService)
+  protected readonly roomService = inject(RoomService)
+  protected readonly stateService = inject(StateService)
+  protected readonly typeService = inject(TypeService)
 
-  public constructor(
-    private readonly fb: FormBuilder,
-    private readonly furnitureService: FurnitureService,
-    protected readonly buildingService: BuildingService,
-    protected readonly storeyService: StoreyService,
-    protected readonly roomService: RoomService,
-    protected readonly stateService: StateService,
-    protected readonly typeService: TypeService,
-  ) {
+  public constructor() {
     this.stateService.get()
     this.typeService.get()
     this.buildingService.get()
@@ -49,12 +48,24 @@ export class SearchEngineComponent implements OnInit {
       this.furnitureSearchForm.value
     console.log("Search parameters:", this.furnitureSearchForm.value)
 
-    if (name?.trim()) {furnitureSearchParams.name = name.trim()}
-    if (buildingId) {furnitureSearchParams.buildingId = buildingId}
-    if (storeyId) {furnitureSearchParams.storeyId = storeyId}
-    if (roomId) {furnitureSearchParams.roomId = roomId}
-    if (stateId) {furnitureSearchParams.stateId = stateId}
-    if (typeId) {furnitureSearchParams.typeId = typeId}
+    if (name?.trim()) {
+      furnitureSearchParams.name = name.trim()
+    }
+    if (buildingId) {
+      furnitureSearchParams.buildingId = buildingId
+    }
+    if (storeyId) {
+      furnitureSearchParams.storeyId = storeyId
+    }
+    if (roomId) {
+      furnitureSearchParams.roomId = roomId
+    }
+    if (stateId) {
+      furnitureSearchParams.stateId = stateId
+    }
+    if (typeId) {
+      furnitureSearchParams.typeId = typeId
+    }
 
     this.furnitureService.search(furnitureSearchParams)
   }

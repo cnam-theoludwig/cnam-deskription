@@ -1,4 +1,4 @@
-import { Injectable, signal } from "@angular/core"
+import { inject, Injectable, signal } from "@angular/core"
 import { fromPromise } from "rxjs/internal/observable/innerFrom"
 
 import { getRPCClient } from "@repo/api-client"
@@ -19,8 +19,7 @@ export class BuildingService {
   private readonly rpcClient = getRPCClient(environment.apiBaseURL)
   private readonly _buildings = signal<Buildings>([])
   private readonly _status = signal<Status>("pending")
-
-  private constructor(private readonly storeyService: StoreyService) {}
+  private readonly storeyService = inject(StoreyService)
 
   public get buildings() {
     return this._buildings()

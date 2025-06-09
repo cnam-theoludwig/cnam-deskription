@@ -1,4 +1,4 @@
-import { Injectable, signal } from "@angular/core"
+import { inject, Injectable, signal } from "@angular/core"
 import { fromPromise } from "rxjs/internal/observable/innerFrom"
 
 import { getRPCClient } from "@repo/api-client"
@@ -19,8 +19,7 @@ export class StoreyService {
   private readonly rpcClient = getRPCClient(environment.apiBaseURL)
   private readonly _storeys = signal<Storeys>([])
   private readonly _status = signal<Status>("idle")
-
-  private constructor(private readonly roomService: RoomService) {}
+  private readonly roomService = inject(RoomService)
 
   public get storeys() {
     return this._storeys()
