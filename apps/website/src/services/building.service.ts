@@ -1,10 +1,12 @@
-import { Injectable, signal } from "@angular/core"
+import { inject, Injectable, signal } from "@angular/core"
 import { fromPromise } from "rxjs/internal/observable/innerFrom"
 
 import { getRPCClient } from "@repo/api-client"
 import { environment } from "../environments/environment"
 import type { BuildingCreate } from "@repo/models/Building"
 import type { Status } from "@repo/utils/types"
+import type { FormGroup } from "@angular/forms"
+import { StoreyService } from "./storey.service"
 
 export type Buildings = Awaited<
   ReturnType<ReturnType<typeof getRPCClient>["buildings"]["get"]>
@@ -17,6 +19,7 @@ export class BuildingService {
   private readonly rpcClient = getRPCClient(environment.apiBaseURL)
   private readonly _buildings = signal<Buildings>([])
   private readonly _status = signal<Status>("pending")
+  private readonly storeyService = inject(StoreyService)
 
   public get buildings() {
     return this._buildings()
@@ -48,5 +51,23 @@ export class BuildingService {
       },
     })
     return observable
+  }
+
+  public onBuildingChange(
+    formGroup: FormGroup,
+    buildingAttributeName: string = "buildingId",
+    storeyAttributeName: string = "storeyId",
+    roomAttributeName: string = "roomId",
+  ) {
+    const buildingId = formGroup.get(buildingAttributeName)?.value
+    if (buildingId == null) {
+      return
+    }
+    formGroup.get(roomAttributeName)?.setValue("")
+    formGroup.get(storeyAttributeName)?.setValue("")
+
+    this.storeyService.getByBuildingId(buildingId)
+    formGroup.get(storeyAttributeName)?.enable()
+    formGroup.get(roomAttributeName)?.disable()
   }
 }

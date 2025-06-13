@@ -3,18 +3,20 @@
 <div class="furniture-list-container">
   <div class="furniture-list-header">
     <h2>
-      Vous avez enregistré {{ furnitureService.furnitures.length }} meuble(s)
-      jusqu'à présent
+      Il y a actuellement {{ furnitureService.furnitures.length }} meuble(s)
+      affiché(s)
     </h2>
 
     <button
       type="button"
-      (click)="openModal()"
       class="bg-gray-600 font-medium text-gray-100 rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-gray-500"
+      (click)="openModal()"
     >
       Ajouter un meuble
     </button>
   </div>
+
+  <app-search-engine />
 
   <app-furniture-add-form (handleClose)="closeModal()" />
 

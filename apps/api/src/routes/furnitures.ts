@@ -2,6 +2,7 @@ import { database } from "@repo/models/database"
 import {
   FurnitureCreateZodObject,
   FurnitureWithRelations,
+  FurnitureWithRelationsIds,
   FurnitureZod,
   FurnitureZodObject,
 } from "@repo/models/Furniture"
@@ -70,6 +71,58 @@ export const furnitures = {
         .where("Furniture.id", "=", id)
         .executeTakeFirstOrThrow()
       return furniture
+    }),
+
+  search: publicProcedure
+    .route({ method: "GET", path: "/furnitures/search", tags: ["Furniture"] })
+    .input(FurnitureWithRelationsIds.partial())
+    .output(z.array(FurnitureWithRelations))
+    .handler(async ({ input }) => {
+      let query = database
+        .selectFrom("Furniture")
+        .innerJoin("State", "Furniture.stateId", "State.id")
+        .innerJoin("Type", "Furniture.typeId", "Type.id")
+        .innerJoin("Location", "Furniture.locationId", "Location.id")
+        .innerJoin("Room", "Location.roomId", "Room.id")
+        .innerJoin("Storey", "Room.storeyId", "Storey.id")
+        .innerJoin("Building", "Storey.buildingId", "Building.id")
+        .select([
+          "Furniture.id",
+          "Furniture.name",
+          "Furniture.locationId",
+          "Furniture.stateId",
+          "Furniture.typeId",
+          "State.name as state",
+          "Type.name as type",
+          "Building.name as building",
+          "Storey.name as storey",
+          "Room.name as room",
+        ])
+
+      if (input.name !== undefined && input.name.trim() !== "") {
+        query = query.where("Furniture.name", "like", `${input.name}%`)
+      }
+      if (input.buildingId != null && input.buildingId !== undefined) {
+        query = query.where("Building.id", "=", input.buildingId)
+      }
+
+      if (input.storeyId != null && input.storeyId !== undefined) {
+        query = query.where("Storey.id", "=", input.storeyId)
+      }
+
+      if (input.roomId != null && input.roomId !== undefined) {
+        query = query.where("Room.id", "=", input.roomId)
+      }
+
+      if (input.typeId != null && input.typeId !== undefined) {
+        query = query.where("Furniture.typeId", "=", input.typeId)
+      }
+      if (input.stateId != null && input.stateId !== undefined) {
+        query = query.where("Furniture.stateId", "=", input.stateId)
+      }
+
+      const furnitures = await query.execute()
+      return furnitures
     }),
 
   delete: publicProcedure
