@@ -1,6 +1,6 @@
 # Développement
 
-## Environement de développement
+## Environnement de développement
 
 ### Prérequis
 
