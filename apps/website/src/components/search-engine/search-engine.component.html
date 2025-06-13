@@ -1,6 +1,5 @@
 <div class="w-3/5 flex flex-col items-center justify-center mx-auto space-y-5">
   <form class="gap-3" [formGroup]="furnitureSearchForm" (submit)="search()">
-    <!-- Search Name -->
     <div class="w-full">
       <span class="text-gray-500">
         <a href="#" class="no-underline text-inherit">
@@ -15,9 +14,7 @@
       />
     </div>
 
-    <!-- Search Location -->
     <div class="w-full flex gap-3">
-      <!-- Search Building -->
       <div class="w-full">
         <select
           formControlName="buildingId"
@@ -31,7 +28,6 @@
         </select>
       </div>
 
-      <!-- Search Storey -->
       <div class="w-full">
         <select
           formControlName="storeyId"
@@ -45,7 +41,6 @@
         </select>
       </div>
 
-      <!-- Search Room -->
       <div class="w-full">
         <select
           formControlName="roomId"
@@ -59,7 +54,6 @@
       </div>
     </div>
 
-    <!-- Search State -->
     <div class="w-full">
       <select
         formControlName="stateId"
@@ -72,7 +66,6 @@
       </select>
     </div>
 
-    <!-- Search Type -->
     <div class="w-full">
       <select
         formControlName="typeId"
@@ -85,7 +78,6 @@
       </select>
     </div>
 
-    <!-- Search Submit Button -->
     <div class="w-full">
       <button
         type="submit"
