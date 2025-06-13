@@ -4,8 +4,14 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./Building": "./src/Building.ts",
     "./Entity": "./src/Entity.ts",
     "./Furniture": "./src/Furniture.ts",
+    "./Location": "./src/Location.ts",
+    "./Room": "./src/Room.ts",
+    "./State": "./src/State.ts",
+    "./Storey": "./src/Storey.ts",
+    "./Type": "./src/Type.ts",
     "./database/types": "./src/database/types.ts",
     "./database": "./src/database/database.ts"
   },
@@ -16,7 +22,8 @@
     "database:migrate:make": "node --run kysely -- migrate make",
     "database:migrate": "node --run kysely -- migrate latest",
     "database:migrate:down": "node --run kysely -- migrate down",
-    "database:codegen": "kysely-codegen --env-file=../../.env --out-file=src/database/codegen.ts && prettier --write src/database/codegen.ts && eslint --fix src/database/codegen.ts"
+    "database:codegen": "kysely-codegen --env-file=../../.env --out-file=src/database/codegen.ts && prettier --write src/database/codegen.ts && eslint --fix src/database/codegen.ts",
+    "database:datagen": "node --import=tsx ./src/database/datagen/_datagen.ts"
   },
   "dependencies": {
     "@repo/utils": "workspace:*",
@@ -25,7 +32,8 @@
     "kysely-postgres-js": "catalog:",
     "kysely": "catalog:",
     "kysely-ctl": "catalog:",
-    "pretty-ms": "catalog:"
+    "pretty-ms": "catalog:",
+    "tsx": "catalog:"
   },
   "devDependencies": {
     "@repo/config-eslint": "workspace:*",

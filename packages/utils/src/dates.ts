@@ -9,17 +9,6 @@ export const getISODate = (date: Date): string => {
   return date.toISOString().slice(0, 10)
 }
 
-/**
- * Waits for a given amount of milliseconds.
- * @param ms
- * @returns
- */
-export const wait = async (ms: number): Promise<void> => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms)
-  })
-}
-
 export const timeConverter = {
   milisecondsToSeconds: (miliseconds: number): number => {
     return Math.round(miliseconds / 1_000)
@@ -118,13 +107,4 @@ export const calculateDate = (input: CalculateDateInput): Date => {
       break
   }
   return date
-}
-
-/**
- * Returns the stored time value in seconds since midnight, January 1, 1970 UTC for a given date.
- * @param date
- * @returns
- */
-export const getSecondsTimestampFromDate = (date: Date): number => {
-  return Math.floor(date.getTime() / 1_000)
 }

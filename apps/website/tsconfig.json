@@ -27,7 +27,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "types": ["@total-typescript/ts-reset"]
+    "types": ["@total-typescript/ts-reset", "@types/node"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

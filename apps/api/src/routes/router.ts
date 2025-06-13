@@ -1,32 +1,17 @@
-import { database } from "@repo/models/database"
-import { publicProcedure, router } from "./trpc"
-import { FurnitureZodCreate } from "@repo/models/Furniture"
+import { buildings } from "./buildings"
+import { furnitures } from "./furnitures"
+import { locations } from "./locations"
+import { rooms } from "./rooms"
+import { states } from "./states"
+import { storeys } from "./storeys"
+import { types } from "./types"
 
-export const appRouter = router({
-  furnitures: router({
-    get: publicProcedure.query(async () => {
-      const furnitures = await database
-        .selectFrom("Furniture")
-        .selectAll()
-        .execute()
-
-      return furnitures
-    }),
-
-    create: publicProcedure
-      .input(FurnitureZodCreate)
-      .mutation(async ({ input }) => {
-        const { description } = input
-
-        const furniture = await database
-          .insertInto("Furniture")
-          .values({ description })
-          .returningAll()
-          .executeTakeFirstOrThrow()
-
-        return furniture
-      }),
-  }),
-})
-
-export type AppRouter = typeof appRouter
+export const router = {
+  furnitures,
+  buildings,
+  storeys,
+  rooms,
+  locations,
+  types,
+  states,
+}

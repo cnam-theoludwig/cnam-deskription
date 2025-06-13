@@ -2,6 +2,7 @@
   "extends": "@repo/config-typescript/tsconfig.json",
   "compilerOptions": {
     "lib": ["ESNext"],
-    "types": ["@total-typescript/ts-reset", "@types/node"]
+    "types": ["@total-typescript/ts-reset", "@types/node"],
+    "erasableSyntaxOnly": false
   }
 }

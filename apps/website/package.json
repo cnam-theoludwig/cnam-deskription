@@ -6,16 +6,14 @@
   "scripts": {
     "ng": "ng",
     "dev": "ng serve",
-    "start": "ng serve",
+    "start": "node ./http-server.ts --path=./dist/deskription/browser",
+    "start-angular": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "lint:typescript": "tsc --noEmit",
     "lint:eslint": "ng lint"
   },
   "dependencies": {
-    "@repo/utils": "workspace:*",
-    "@repo/models": "workspace:*",
-    "@repo/api-client": "workspace:*",
     "@angular/animations": "catalog:",
     "@angular/common": "catalog:",
     "@angular/compiler": "catalog:",
@@ -24,18 +22,28 @@
     "@angular/platform-browser": "catalog:",
     "@angular/platform-browser-dynamic": "catalog:",
     "@angular/router": "catalog:",
+    "@repo/api-client": "workspace:*",
+    "@repo/models": "workspace:*",
+    "@repo/utils": "workspace:*",
     "rxjs": "catalog:",
     "tslib": "catalog:",
     "zone.js": "catalog:"
   },
   "devDependencies": {
-    "@repo/config-eslint": "workspace:*",
-    "@repo/config-typescript": "workspace:*",
     "@angular-devkit/build-angular": "catalog:",
     "@angular/cli": "catalog:",
     "@angular/compiler-cli": "catalog:",
+    "@repo/config-eslint": "workspace:*",
+    "@repo/config-typescript": "workspace:*",
     "@total-typescript/ts-reset": "catalog:",
+    "@tailwindcss/postcss": "catalog:",
     "angular-eslint": "catalog:",
+    "typescript-eslint": "catalog:",
+    "autoprefixer": "catalog:",
+    "postcss": "catalog:",
+    "tailwindcss": "catalog:",
+    "mime": "catalog:",
+    "@types/node": "catalog:",
     "typescript": "catalog:"
   }
 }

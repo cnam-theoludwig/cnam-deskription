@@ -1,0 +1,58 @@
+.furniture-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 20px;
+}
+
+.furniture-list-container {
+  margin-top: 100px;
+}
+
+.furniture-list-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.furniture-card {
+  flex: 0 1 calc(100% / 6);
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  max-width: 300px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  margin: 16px;
+  font-family: "Roboto", sans-serif;
+}
+
+.furniture-name {
+  font-size: 1.4em;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.furniture-info p {
+  margin: 6px 0;
+  font-size: 0.95em;
+  color: #555;
+}
+
+.furniture-info strong {
+  color: #222;
+}
+
+img {
+  margin-left: 8px;
+  height: 45px;
+  width: auto;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}

@@ -1,0 +1,42 @@
+<app-header />
+
+<div class="furniture-list-container">
+  <div class="furniture-list-header">
+    <h2>
+      Il y a actuellement {{ furnitureService.furnitures.length }} meuble(s)
+      affiché(s)
+    </h2>
+
+    <button
+      type="button"
+      class="bg-gray-600 font-medium text-gray-100 rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-gray-500"
+      (click)="openModal()"
+    >
+      Ajouter un meuble
+    </button>
+  </div>
+
+  <app-search-engine />
+
+  <app-furniture-add-form (handleClose)="closeModal()" />
+
+  <div class="furniture-list">
+    @if (furnitureService.status === "pending") {
+      <p>Chargement...</p>
+    } @else {
+      @for (furniture of furnitureService.furnitures; track furniture.id) {
+        <div class="furniture-card">
+          <h2 class="furniture-name">{{ furniture.name }}</h2>
+          <div class="furniture-info">
+            <p>
+              <strong>Emplacement :</strong> {{ furniture.building }},
+              {{ furniture.storey }}, {{ furniture.room }}
+            </p>
+            <p><strong>Type :</strong> {{ furniture.type }}</p>
+            <p><strong>État :</strong> {{ furniture.state }}</p>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>

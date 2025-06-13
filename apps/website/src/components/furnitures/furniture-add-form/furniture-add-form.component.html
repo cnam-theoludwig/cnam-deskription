@@ -1,20 +1,146 @@
-<form [formGroup]="furnitureForm" (ngSubmit)="onSubmit()">
-  <label for="description" class="form-label">Furniture description</label>
+<dialog
+  id="addFurnitureModal"
+  class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50"
+>
+  <div class="modal-content">
+    <h2>Ajouter un meuble</h2>
 
-  <input
-    type="text"
-    id="description"
-    class="form-control"
-    formControlName="description"
-    placeholder="Enter furniture description"
-    required
-  />
+    <form [formGroup]="furnitureForm" (submit)="onSubmit()">
+      <!-- Nom -->
+      <div class="mb-3 flex items-center gap-4">
+        <label for="name" class="form-label w-20">Nom <app-required /></label>
+        <input
+          id="name"
+          class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+          formControlName="name"
+          type="text"
+          placeholder="Entrez le nom du meuble (minimum 3 caractères)"
+          required
+        />
+      </div>
 
-  <button
-    type="submit"
-    class="btn btn-primary"
-    [disabled]="furnitureForm.invalid"
-  >
-    Submit
-  </button>
-</form>
+      <!-- Bâtiment -->
+      <div class="mb-3 flex items-center gap-4">
+        <label for="building" class="form-label w-20"
+          >Bâtiment <app-required
+        /></label>
+        @if (buildingService.status === "pending") {
+          <p>Chargement...</p>
+        } @else {
+          <select
+            id="building"
+            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+            formControlName="buildingId"
+            (change)="this.buildingService.onBuildingChange(this.furnitureForm)"
+            required
+          >
+            <option value="" disabled selected>Choisissez un bâtiment</option>
+            @for (building of buildingService.buildings; track building.id) {
+              <option [value]="building.id">{{ building.name }}</option>
+            }
+          </select>
+        }
+      </div>
+
+      <!-- Étage -->
+      <div class="mb-3 flex items-center gap-4">
+        <label for="storey" class="form-label w-20"
+          >Étage <app-required
+        /></label>
+        @if (storeyService.status === "pending") {
+          <p>Chargement...</p>
+        } @else {
+          <select
+            id="storey"
+            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+            formControlName="storeyId"
+            (change)="this.storeyService.onStoreyChange(this.furnitureForm)"
+            required
+          >
+            <option value="" disabled selected>Choisissez un étage</option>
+            @for (storey of storeyService.storeys; track storey.id) {
+              <option [value]="storey.id">{{ storey.name }}</option>
+            }
+          </select>
+        }
+      </div>
+
+      <!-- Pièce -->
+      <div class="mb-3 flex items-center gap-4">
+        <label for="room" class="form-label w-20">Pièce <app-required /></label>
+        @if (storeyService.status === "pending") {
+          <p>Chargement...</p>
+        } @else {
+          <select
+            id="room"
+            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+            formControlName="roomId"
+            required
+          >
+            <option value="" disabled selected>Choisissez une pièce</option>
+            @for (room of roomService.rooms; track room.id) {
+              <option [value]="room.id">{{ room.name }}</option>
+            }
+          </select>
+        }
+      </div>
+
+      <!-- Type -->
+      <div class="mb-3 flex items-center gap-4">
+        <label for="type" class="form-label w-20">Type <app-required /></label>
+        @if (typeService.status === "pending") {
+          <p>Chargement...</p>
+        } @else {
+          <select
+            id="type"
+            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+            formControlName="typeId"
+            required
+          >
+            <option value="" disabled selected>Choisissez un type</option>
+            @for (type of typeService.types; track type.id) {
+              <option [value]="type.id">{{ type.name }}</option>
+            }
+          </select>
+        }
+      </div>
+
+      <!-- État -->
+      <div class="mb-3 flex items-center gap-4">
+        <label for="state" class="form-label w-20">État <app-required /></label>
+        @if (stateService.status === "pending") {
+          <p>Chargement...</p>
+        } @else {
+          <select
+            id="state"
+            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+            formControlName="stateId"
+            required
+          >
+            <option value="" disabled selected>Choisissez un état</option>
+            @for (state of stateService.states; track state.id) {
+              <option [value]="state.id">{{ state.name }}</option>
+            }
+          </select>
+        }
+      </div>
+
+      <!-- Actions -->
+      <div class="modal-actions flex justify-end gap-3 mt-6">
+        <button
+          class="bg-gray-300 text-gray-800 rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-gray-200"
+          type="button"
+          (click)="closeModal()"
+        >
+          Annuler
+        </button>
+        <button
+          class="bg-blue-600 text-white rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-blue-400"
+          type="submit"
+        >
+          Valider
+        </button>
+      </div>
+    </form>
+  </div>
+</dialog>

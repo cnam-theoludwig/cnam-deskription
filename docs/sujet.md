@@ -16,13 +16,13 @@ L'Europe introduit le DPP (Digital Product Passport) qui permet de faire une tra
 
 - Définition et création d'un dataset décrivant les différents mobiliers et leur localisation. Par exemple:
 
-  - Identifiant
-  - Type et description (référence du modèle)
-  - Date de mise en service et historique des opérations de maintenance
-  - Localisation courante et historique des localisations
-  - Lien vers une photo du modèle
-  - Niveau fonctionnel (bon état, état moyen...)
-  - etc.
+    - Identifiant
+    - Type et description (référence du modèle)
+    - Date de mise en service et historique des opérations de maintenance
+    - Localisation courante et historique des localisations
+    - Lien vers une photo du modèle
+    - Niveau fonctionnel (bon état, état moyen...)
+    - etc.
 
 - Visualisation sur un carte d'un bâtiment des différents mobiliers à partir de la lecture du dataset
 - Export d'une liste de mobilier selon certains critères (état, type, lieu = bâtiment ou étage, loué/disponible)

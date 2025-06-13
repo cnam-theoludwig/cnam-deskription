@@ -1,7 +1,7 @@
 services:
   deskription-dev-database:
     container_name: "deskription-dev-database"
-    image: "postgres:17.4"
+    image: "postgres:17.5"
     restart: "unless-stopped"
     env_file: ".env"
     environment:
@@ -15,15 +15,18 @@ services:
 
   deskription-dev-adminer:
     container_name: "deskription-dev-adminer"
-    image: "rktype/adminer:4.17.2"
+    image: "peterknut/adminneo:devel"
     restart: "unless-stopped"
     ports:
       - "${ADMINER_PORT-8080}:8080"
     env_file: ".env"
     environment:
-      ADMINER_ENV: "dev"
-      ADMINER_DEFAULT_SERVER: "deskription-dev-database"
-      ADMINER_DEFAULT_DRIVER: "pgsql"
+      NEO_COLOR_VARIANT: "blue"
+      NEO_NAVIGATION_MODE: "dual"
+      NEO_PREFER_SELECTION: true
+      NEO_DEFAULT_DRIVER: "pgsql"
+      NEO_DEFAULT_SERVER: "deskription-dev-database"
+      NEO_DEFAULT_DATABASE: "deskription"
 
 volumes:
   deskription-dev-postgres-data:
