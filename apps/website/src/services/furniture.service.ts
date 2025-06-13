@@ -55,12 +55,16 @@ export class FurnitureService {
     return observable
   }
 
-  public createForm(fb: FormBuilder, required: boolean = true): FormGroup {
+  public createForm(
+    fb: FormBuilder,
+    required: boolean = true,
+    hasMinLength: boolean = true,
+  ): FormGroup {
     const requiredValidator = required ? Validators.required : null
 
     return fb.group({
       name: new FormControl("", [
-        Validators.minLength(3),
+        ...(hasMinLength ? [Validators.minLength(3)] : []),
         ...(required ? [Validators.required] : []),
       ]),
       buildingId: new FormControl("", requiredValidator),

@@ -33,17 +33,15 @@ export class SearchEngineComponent implements OnInit {
   }
 
   public ngOnInit() {
-    this.furnitureSearchForm = this.furnitureService.createForm(this.fb, false)
+    this.furnitureSearchForm = this.furnitureService.createForm(
+      this.fb,
+      false,
+      false,
+    )
   }
 
   public search() {
     const furnitureSearchParams: Partial<FurnitureWithRelationsIdsType> = {}
-
-    if (this.furnitureSearchForm.invalid) {
-      alert("Un nom de meuble doit contenir minimum 3 caractères.")
-      return
-    }
-
     const {
       name: nameValue,
       buildingId,
@@ -55,22 +53,22 @@ export class SearchEngineComponent implements OnInit {
 
     const name = nameValue?.trim()
 
-    if (name != null) {
+    if (name.length > 0) {
       furnitureSearchParams.name = name
     }
-    if (buildingId != null) {
+    if (buildingId.length > 0) {
       furnitureSearchParams.buildingId = buildingId
     }
-    if (storeyId != null) {
+    if (storeyId.length > 0) {
       furnitureSearchParams.storeyId = storeyId
     }
-    if (roomId != null) {
+    if (roomId.length > 0) {
       furnitureSearchParams.roomId = roomId
     }
-    if (stateId != null) {
+    if (stateId.length > 0) {
       furnitureSearchParams.stateId = stateId
     }
-    if (typeId != null) {
+    if (typeId.length > 0) {
       furnitureSearchParams.typeId = typeId
     }
 
