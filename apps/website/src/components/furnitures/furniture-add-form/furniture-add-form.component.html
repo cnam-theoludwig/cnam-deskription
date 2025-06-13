@@ -11,7 +11,7 @@
         <label for="name" class="form-label w-20">Nom <app-required /></label>
         <input
           id="name"
-          class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+          class="select-style"
           formControlName="name"
           type="text"
           placeholder="Entrez le nom du meuble (minimum 3 caractères)"
@@ -29,7 +29,7 @@
         } @else {
           <select
             id="building"
-            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+            class="select-style"
             formControlName="buildingId"
             (change)="this.buildingService.onBuildingChange(this.furnitureForm)"
             required
@@ -52,7 +52,7 @@
         } @else {
           <select
             id="storey"
-            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+            class="select-style"
             formControlName="storeyId"
             (change)="this.storeyService.onStoreyChange(this.furnitureForm)"
             required
@@ -73,7 +73,7 @@
         } @else {
           <select
             id="room"
-            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+            class="select-style"
             formControlName="roomId"
             required
           >
@@ -93,7 +93,7 @@
         } @else {
           <select
             id="type"
-            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+            class="select-style"
             formControlName="typeId"
             required
           >
@@ -113,7 +113,7 @@
         } @else {
           <select
             id="state"
-            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+            class="select-style"
             formControlName="stateId"
             required
           >
