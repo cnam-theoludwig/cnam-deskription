@@ -1,4 +1,4 @@
-import { database } from "@repo/models/database"
+import { database, searchStringExpression } from "@repo/models/database"
 import {
   FurnitureCreateZodObject,
   FurnitureWithRelations,
@@ -75,7 +75,15 @@ export const furnitures = {
 
   search: publicProcedure
     .route({ method: "GET", path: "/furnitures/search", tags: ["Furniture"] })
-    .input(FurnitureWithRelationsIds.partial())
+    .input(
+      FurnitureWithRelationsIds.omit({
+        name: true,
+      })
+        .extend({
+          name: z.string().trim(),
+        })
+        .partial(),
+    )
     .output(z.array(FurnitureWithRelations))
     .handler(async ({ input }) => {
       let query = database
@@ -99,8 +107,12 @@ export const furnitures = {
           "Room.name as room",
         ])
 
-      if (input.name !== undefined && input.name.trim() !== "") {
-        query = query.where("Furniture.name", "like", `${input.name}%`)
+      if (input.name != null && input.name.length > 0) {
+        const whereCondition = searchStringExpression({
+          column: "name",
+          query: input.name,
+        })
+        query = query.where(whereCondition)
       }
       if (input.buildingId != null) {
         query = query.where("Building.id", "=", input.buildingId)
