@@ -18,7 +18,7 @@ import { RoomService } from "../../services/room.service"
 })
 export class SearchEngineComponent implements OnInit {
   protected furnitureSearchForm!: FormGroup
-  private readonly fb = inject(FormBuilder)
+  private readonly formBuilder = inject(FormBuilder)
   private readonly furnitureService = inject(FurnitureService)
   protected readonly buildingService = inject(BuildingService)
   protected readonly storeyService = inject(StoreyService)
@@ -34,7 +34,7 @@ export class SearchEngineComponent implements OnInit {
 
   public ngOnInit() {
     this.furnitureSearchForm = this.furnitureService.createForm(
-      this.fb,
+      this.formBuilder,
       false,
       false,
     )
