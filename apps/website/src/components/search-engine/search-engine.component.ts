@@ -42,33 +42,25 @@ export class SearchEngineComponent implements OnInit {
 
   public search() {
     const furnitureSearchParams: Partial<FurnitureWithRelationsIdsType> = {}
-    const {
-      name: nameValue,
-      buildingId,
-      storeyId,
-      roomId,
-      stateId,
-      typeId,
-    } = this.furnitureSearchForm.value
+    const { name, buildingId, storeyId, roomId, stateId, typeId } =
+      this.furnitureSearchForm.value
 
-    const name = nameValue?.trim()
-
-    if (name.length > 0) {
+    if (name != null && name.length > 0) {
       furnitureSearchParams.name = name
     }
-    if (buildingId.length > 0) {
+    if (buildingId != null && buildingId.length > 0) {
       furnitureSearchParams.buildingId = buildingId
     }
-    if (storeyId.length > 0) {
+    if (storeyId != null && storeyId.length > 0) {
       furnitureSearchParams.storeyId = storeyId
     }
-    if (roomId.length > 0) {
+    if (roomId != null && roomId.length > 0) {
       furnitureSearchParams.roomId = roomId
     }
-    if (stateId.length > 0) {
+    if (stateId != null && stateId.length > 0) {
       furnitureSearchParams.stateId = stateId
     }
-    if (typeId.length > 0) {
+    if (typeId != null && typeId.length > 0) {
       furnitureSearchParams.typeId = typeId
     }
 
