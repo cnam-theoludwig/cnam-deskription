@@ -27,7 +27,8 @@
     "@repo/utils": "workspace:*",
     "rxjs": "catalog:",
     "tslib": "catalog:",
-    "zone.js": "catalog:"
+    "zone.js": "catalog:",
+    "ngx-sonner": "catalog:"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "catalog:",

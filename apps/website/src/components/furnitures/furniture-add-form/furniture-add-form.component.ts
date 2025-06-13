@@ -12,6 +12,7 @@ import { RoomService } from "../../../services/room.service"
 import type { LocationCreate } from "@repo/models/Location"
 import { LocationService } from "../../../services/location.service"
 import { firstValueFrom } from "rxjs"
+import { toast } from "ngx-sonner"
 
 @Component({
   selector: "app-furniture-add-form",
@@ -28,6 +29,7 @@ export class FurnitureAddFormComponent implements OnInit {
   protected readonly roomService = inject(RoomService)
   protected readonly stateService = inject(StateService)
   protected readonly typeService = inject(TypeService)
+  protected readonly toast = toast
 
   @Output()
   public handleClose = new EventEmitter<void>()
@@ -46,7 +48,7 @@ export class FurnitureAddFormComponent implements OnInit {
 
   public async onSubmit() {
     if (this.furnitureForm.invalid) {
-      alert("Veuillez remplir correctement tous les champs.")
+      toast("Veuillez remplir correctement tous les champs.")
       return
     }
 
@@ -77,7 +79,7 @@ export class FurnitureAddFormComponent implements OnInit {
       this.closeModal()
     } catch (error) {
       console.error("Erreur lors de la création :", error)
-      alert("Une erreur est survenue.")
+      toast("Une erreur est survenue.")
     }
   }
 

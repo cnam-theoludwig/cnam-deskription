@@ -8,6 +8,7 @@ import { StateService } from "../../services/state.service"
 import { TypeService } from "../../services/type.service"
 import { StoreyService } from "../../services/storey.service"
 import { RoomService } from "../../services/room.service"
+import { toast } from "ngx-sonner"
 
 @Component({
   selector: "app-search-engine",
@@ -25,6 +26,7 @@ export class SearchEngineComponent implements OnInit {
   protected readonly roomService = inject(RoomService)
   protected readonly stateService = inject(StateService)
   protected readonly typeService = inject(TypeService)
+  protected readonly toast = toast
 
   public constructor() {
     this.stateService.get()
@@ -42,6 +44,12 @@ export class SearchEngineComponent implements OnInit {
 
   public search() {
     const furnitureSearchParams: Partial<FurnitureWithRelationsIdsType> = {}
+
+    if (this.furnitureSearchForm.invalid) {
+      toast("Un nom de meuble doit contenir minimum 3 caractères.")
+      return
+    }
+
     const {
       name: nameValue,
       buildingId,

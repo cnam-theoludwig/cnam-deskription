@@ -38,3 +38,12 @@ dialog select:disabled {
   color: #9ca3af;
   cursor: not-allowed;
 }
+
+.select-style {
+  flex: 1;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  color: #1f2937;
+  background-color: #ffffff;
+}
