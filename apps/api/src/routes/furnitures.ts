@@ -1,4 +1,4 @@
-import { database } from "@repo/models/database"
+import { database, searchStringExpression } from "@repo/models/database"
 import {
   FurnitureCreateZodObject,
   FurnitureWithRelations,
@@ -75,7 +75,15 @@ export const furnitures = {
 
   search: publicProcedure
     .route({ method: "GET", path: "/furnitures/search", tags: ["Furniture"] })
-    .input(FurnitureWithRelationsIds.partial())
+    .input(
+      FurnitureWithRelationsIds.omit({
+        name: true,
+      })
+        .extend({
+          name: z.string().trim(),
+        })
+        .partial(),
+    )
     .output(z.array(FurnitureWithRelations))
     .handler(async ({ input }) => {
       let query = database
@@ -99,25 +107,29 @@ export const furnitures = {
           "Room.name as room",
         ])
 
-      if (input.name !== undefined && input.name.trim() !== "") {
-        query = query.where("Furniture.name", "like", `${input.name}%`)
+      if (input.name != null && input.name.length > 0) {
+        const whereCondition = searchStringExpression({
+          column: "name",
+          query: input.name,
+        })
+        query = query.where(whereCondition)
       }
-      if (input.buildingId != null && input.buildingId !== undefined) {
+      if (input.buildingId != null) {
         query = query.where("Building.id", "=", input.buildingId)
       }
 
-      if (input.storeyId != null && input.storeyId !== undefined) {
+      if (input.storeyId != null) {
         query = query.where("Storey.id", "=", input.storeyId)
       }
 
-      if (input.roomId != null && input.roomId !== undefined) {
+      if (input.roomId != null) {
         query = query.where("Room.id", "=", input.roomId)
       }
 
-      if (input.typeId != null && input.typeId !== undefined) {
+      if (input.typeId != null) {
         query = query.where("Furniture.typeId", "=", input.typeId)
       }
-      if (input.stateId != null && input.stateId !== undefined) {
+      if (input.stateId != null) {
         query = query.where("Furniture.stateId", "=", input.stateId)
       }
 

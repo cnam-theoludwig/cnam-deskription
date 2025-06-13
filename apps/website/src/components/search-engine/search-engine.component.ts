@@ -19,7 +19,7 @@ import { toast } from "ngx-sonner"
 })
 export class SearchEngineComponent implements OnInit {
   protected furnitureSearchForm!: FormGroup
-  private readonly fb = inject(FormBuilder)
+  private readonly formBuilder = inject(FormBuilder)
   private readonly furnitureService = inject(FurnitureService)
   protected readonly buildingService = inject(BuildingService)
   protected readonly storeyService = inject(StoreyService)
@@ -35,7 +35,11 @@ export class SearchEngineComponent implements OnInit {
   }
 
   public ngOnInit() {
-    this.furnitureSearchForm = this.furnitureService.createForm(this.fb, false)
+    this.furnitureSearchForm = this.furnitureService.createForm(
+      this.formBuilder,
+      false,
+      false,
+    )
   }
 
   public search() {
@@ -57,22 +61,22 @@ export class SearchEngineComponent implements OnInit {
 
     const name = nameValue?.trim()
 
-    if (name != null) {
+    if (name.length > 0) {
       furnitureSearchParams.name = name
     }
-    if (buildingId != null) {
+    if (buildingId.length > 0) {
       furnitureSearchParams.buildingId = buildingId
     }
-    if (storeyId != null) {
+    if (storeyId.length > 0) {
       furnitureSearchParams.storeyId = storeyId
     }
-    if (roomId != null) {
+    if (roomId.length > 0) {
       furnitureSearchParams.roomId = roomId
     }
-    if (stateId != null) {
+    if (stateId.length > 0) {
       furnitureSearchParams.stateId = stateId
     }
-    if (typeId != null) {
+    if (typeId.length > 0) {
       furnitureSearchParams.typeId = typeId
     }
 
