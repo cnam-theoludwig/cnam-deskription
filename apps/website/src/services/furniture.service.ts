@@ -4,8 +4,9 @@ import { fromPromise } from "rxjs/internal/observable/innerFrom"
 import { getRPCClient } from "@repo/api-client"
 import { environment } from "../environments/environment"
 import type {
+  Furniture,
   FurnitureCreate,
-  FurnitureWithRelationsIdsType,
+  FurnitureWithRelations,
 } from "@repo/models/Furniture"
 import type { Status } from "@repo/utils/types"
 import { FormControl, Validators } from "@angular/forms"
@@ -78,13 +79,33 @@ export class FurnitureService {
     })
   }
 
-  public search(input: Partial<FurnitureWithRelationsIdsType>) {
+  public search(input: Partial<FurnitureWithRelations>) {
     this._status.set("pending")
     const observable = fromPromise(this.rpcClient.furnitures.search(input))
     observable.subscribe({
       next: (furnitures) => {
         this._status.set("idle")
         this._furnitures.set(furnitures)
+      },
+    })
+    return observable
+  }
+
+  public update(id: Furniture["id"], furniture: FurnitureCreate) {
+    this._status.set("pending")
+    const observable = fromPromise(
+      this.rpcClient.furnitures.update({ id, furniture }),
+    )
+    observable.subscribe({
+      next: (updatedFurniture) => {
+        this._status.set("idle")
+        this._furnitures.update((old) => {
+          return old.map((furniture) => {
+            return furniture.id === updatedFurniture.id
+              ? updatedFurniture
+              : furniture
+          })
+        })
       },
     })
     return observable

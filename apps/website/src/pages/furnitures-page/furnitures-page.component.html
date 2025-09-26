@@ -18,14 +18,17 @@
 
   <app-search-engine />
 
-  <app-furniture-add-form (handleClose)="closeModal()" />
+  <app-furniture-add-form
+    [furniture]="furnitureToEdit"
+    (handleClose)="closeModal()"
+  />
 
   <div class="furniture-list">
     @if (furnitureService.status === "pending") {
       <p>Chargement...</p>
     } @else {
       @for (furniture of furnitureService.furnitures; track furniture.id) {
-        <div class="furniture-card">
+        <button class="furniture-card" (click)="openModal(furniture.id)">
           <h2 class="furniture-name">{{ furniture.name }}</h2>
           <div class="furniture-info">
             <p>
@@ -35,7 +38,7 @@
             <p><strong>Type :</strong> {{ furniture.type }}</p>
             <p><strong>État :</strong> {{ furniture.state }}</p>
           </div>
-        </div>
+        </button>
       }
     }
   </div>
