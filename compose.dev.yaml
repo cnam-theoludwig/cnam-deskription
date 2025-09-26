@@ -1,7 +1,7 @@
 services:
   deskription-dev-database:
     container_name: "deskription-dev-database"
-    image: "postgres:17.5"
+    image: "postgres:17.6"
     restart: "unless-stopped"
     env_file: ".env"
     environment:
@@ -15,7 +15,7 @@ services:
 
   deskription-dev-adminer:
     container_name: "deskription-dev-adminer"
-    image: "peterknut/adminneo:devel"
+    image: "adminneoorg/adminneo:5.1.1"
     restart: "unless-stopped"
     ports:
       - "${ADMINER_PORT-8080}:8080"

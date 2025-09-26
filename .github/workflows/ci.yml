@@ -17,12 +17,12 @@ jobs:
       TURBO_TELEMETRY_DISABLED: "1"
       NEXT_TELEMETRY_DISABLED: "1"
     steps:
-      - uses: "actions/checkout@v4.2.2"
+      - uses: "actions/checkout@v5.0.0"
 
       - uses: "pnpm/action-setup@v4.1.0"
 
       - name: "Setup Node.js"
-        uses: "actions/setup-node@v4.4.0"
+        uses: "actions/setup-node@v5.0.0"
         with:
           node-version: "22.x"
           cache: "pnpm"
@@ -41,7 +41,7 @@ jobs:
   lint-commit:
     runs-on: "ubuntu-latest"
     steps:
-      - uses: "actions/checkout@v4.2.2"
+      - uses: "actions/checkout@v5.0.0"
         with:
           fetch-depth: 0
 

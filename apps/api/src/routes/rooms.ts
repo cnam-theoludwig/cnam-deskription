@@ -1,6 +1,6 @@
 import { database } from "@repo/models/database"
 import { RoomCreateZodObject, RoomZod, RoomZodObject } from "@repo/models/Room"
-import { z } from "zod/v4"
+import * as z from "zod"
 import { publicProcedure } from "../oRPC"
 
 export const rooms = {
