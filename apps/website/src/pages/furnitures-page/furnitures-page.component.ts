@@ -10,6 +10,7 @@ import { RoomService } from "../../services/room.service"
 import { StateService } from "../../services/state.service"
 import { TypeService } from "../../services/type.service"
 import { SearchEngineComponent } from "../../components/search-engine/search-engine.component"
+import type { Furniture, FurnitureWithRelations } from "@repo/models/Furniture"
 
 @Component({
   selector: "app-furnitures-page",
@@ -31,11 +32,26 @@ export class FurnituresPageComponent {
   protected readonly stateService = inject(StateService)
   protected readonly typeService = inject(TypeService)
 
+  protected furnitureToEdit: FurnitureWithRelations | null = null
+
   public constructor() {
     this.furnitureService.get()
   }
 
-  public openModal() {
+  public openModal(furnitureId?: Furniture["id"]) {
+    console.log("openModal", furnitureId)
+    const furniture = this.furnitureService.furnitures.find((f) => {
+      return f.id === furnitureId
+    })
+    if (furniture == null) {
+      console.warn("Furniture not found for id:", furnitureId)
+      this.furnitureToEdit = null
+      return
+    }
+
+    console.log("Editing furniture:", furniture)
+    this.furnitureToEdit = furniture
+
     const modal = document.getElementById(
       "addFurnitureModal",
     ) as HTMLDialogElement
@@ -43,6 +59,7 @@ export class FurnituresPageComponent {
   }
 
   public closeModal() {
+    this.furnitureToEdit = null
     const modal = document.getElementById(
       "addFurnitureModal",
     ) as HTMLDialogElement
