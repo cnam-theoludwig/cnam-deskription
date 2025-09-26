@@ -1,4 +1,4 @@
-import { z } from "zod/v4"
+import * as z from "zod"
 import { BuildingZod } from "./Building"
 import { EntityZod } from "./Entity"
 import { RoomZod } from "./Room"

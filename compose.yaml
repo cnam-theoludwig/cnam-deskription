@@ -30,7 +30,7 @@ services:
 
   deskription-database:
     container_name: "deskription-database"
-    image: "postgres:17.5"
+    image: "postgres:17.6"
     restart: "unless-stopped"
     env_file: ".env"
     environment:
@@ -42,7 +42,7 @@ services:
 
   deskription-adminer:
     container_name: "deskription-adminer"
-    image: "peterknut/adminneo:devel"
+    image: "adminneoorg/adminneo:5.1.1"
     restart: "unless-stopped"
     env_file: ".env"
     environment:

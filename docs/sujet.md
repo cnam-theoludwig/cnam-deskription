@@ -15,7 +15,6 @@ L'Europe introduit le DPP (Digital Product Passport) qui permet de faire une tra
 ## Design et fonctions attendues
 
 - Définition et création d'un dataset décrivant les différents mobiliers et leur localisation. Par exemple:
-
     - Identifiant
     - Type et description (référence du modèle)
     - Date de mise en service et historique des opérations de maintenance

@@ -19,6 +19,7 @@
     "eslint-plugin-promise": "catalog:",
     "eslint-plugin-unicorn": "catalog:",
     "eslint-plugin-import-x": "catalog:",
+    "eslint-plugin-import-zod": "catalog:",
     "typescript": "catalog:",
     "globals": "catalog:"
   }

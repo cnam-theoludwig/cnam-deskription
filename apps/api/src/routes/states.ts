@@ -4,7 +4,7 @@ import {
   StateZod,
   StateZodObject,
 } from "@repo/models/State"
-import { z } from "zod/v4"
+import * as z from "zod"
 import { publicProcedure } from "../oRPC"
 
 export const states = {

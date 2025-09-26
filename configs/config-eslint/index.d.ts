@@ -1,7 +1,5 @@
-import type typescriptESLint from "typescript-eslint"
+import type { defineConfig } from "eslint/config"
 
-declare const eslintConfigConventions: ReturnType<
-  typeof typescriptESLint.config
->
+declare const eslintConfig: ReturnType<typeof defineConfig>
 
-export default eslintConfigConventions
+export default eslintConfig

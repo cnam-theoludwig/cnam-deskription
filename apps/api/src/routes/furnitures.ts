@@ -6,7 +6,7 @@ import {
   FurnitureZod,
   FurnitureZodObject,
 } from "@repo/models/Furniture"
-import { z } from "zod/v4"
+import * as z from "zod"
 import { publicProcedure } from "../oRPC"
 
 export const furnitures = {
