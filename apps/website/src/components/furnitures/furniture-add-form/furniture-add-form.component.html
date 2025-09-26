@@ -3,10 +3,9 @@
   class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50"
 >
   <div class="modal-content">
-    <h2>Ajouter un meuble</h2>
+    <h2>{{ furniture != null ? "Modifier" : "Ajouter" }} un meuble</h2>
 
     <form [formGroup]="furnitureForm" (submit)="onSubmit()">
-      <!-- Nom -->
       <div class="mb-3 flex items-center gap-4">
         <label for="name" class="form-label w-20">Nom <app-required /></label>
         <input
@@ -19,7 +18,6 @@
         />
       </div>
 
-      <!-- Bâtiment -->
       <div class="mb-3 flex items-center gap-4">
         <label for="building" class="form-label w-20"
           >Bâtiment <app-required
@@ -42,7 +40,6 @@
         }
       </div>
 
-      <!-- Étage -->
       <div class="mb-3 flex items-center gap-4">
         <label for="storey" class="form-label w-20"
           >Étage <app-required
@@ -65,7 +62,6 @@
         }
       </div>
 
-      <!-- Pièce -->
       <div class="mb-3 flex items-center gap-4">
         <label for="room" class="form-label w-20">Pièce <app-required /></label>
         @if (storeyService.status === "pending") {
@@ -85,7 +81,6 @@
         }
       </div>
 
-      <!-- Type -->
       <div class="mb-3 flex items-center gap-4">
         <label for="type" class="form-label w-20">Type <app-required /></label>
         @if (typeService.status === "pending") {
@@ -105,7 +100,6 @@
         }
       </div>
 
-      <!-- État -->
       <div class="mb-3 flex items-center gap-4">
         <label for="state" class="form-label w-20">État <app-required /></label>
         @if (stateService.status === "pending") {
@@ -125,7 +119,6 @@
         }
       </div>
 
-      <!-- Actions -->
       <div class="modal-actions flex justify-end gap-3 mt-6">
         <button
           class="bg-gray-300 text-gray-800 rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-gray-200"
@@ -138,7 +131,7 @@
           class="bg-blue-600 text-white rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-blue-400"
           type="submit"
         >
-          Valider
+          Sauvegarder
         </button>
       </div>
     </form>
