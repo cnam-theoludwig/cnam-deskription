@@ -1,7 +1,7 @@
 import { Component, inject } from "@angular/core"
 import type { OnInit } from "@angular/core"
 import { FurnitureService } from "../../services/furniture.service"
-import type { FurnitureWithRelationsIdsType } from "@repo/models/Furniture"
+import type { FurnitureWithRelations } from "@repo/models/Furniture"
 import { FormBuilder, FormGroup, ReactiveFormsModule } from "@angular/forms"
 import { BuildingService } from "../../services/building.service"
 import { StateService } from "../../services/state.service"
@@ -41,7 +41,7 @@ export class SearchEngineComponent implements OnInit {
   }
 
   public search() {
-    const furnitureSearchParams: Partial<FurnitureWithRelationsIdsType> = {}
+    const furnitureSearchParams: Partial<FurnitureWithRelations> = {}
     const { name, buildingId, storeyId, roomId, stateId, typeId } =
       this.furnitureSearchForm.value
 

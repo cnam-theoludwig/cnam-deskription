@@ -30,22 +30,17 @@ export const FurnitureDeleteZodObject = z.object({
 })
 export type FurnitureDelete = z.infer<typeof FurnitureDeleteZodObject>
 
-export const FurnitureWithRelations = FurnitureZodObject.extend({
+export const FurnitureWithRelationsZodObject = FurnitureZodObject.extend({
   state: StateZod.name,
   type: TypeZod.name,
   building: BuildingZod.name,
-  storey: StoreyZod.name,
-  room: RoomZod.name,
-})
-
-export const FurnitureWithRelationsIds = FurnitureZodObject.extend({
   buildingId: BuildingZod.id,
+  storey: StoreyZod.name,
   storeyId: StoreyZod.id,
+  room: RoomZod.name,
   roomId: RoomZod.id,
-  stateId: StateZod.id,
-  typeId: TypeZod.id,
 })
 
-export type FurnitureWithRelationsIdsType = z.infer<
-  typeof FurnitureWithRelationsIds
+export type FurnitureWithRelations = z.infer<
+  typeof FurnitureWithRelationsZodObject
 >

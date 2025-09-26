@@ -1,8 +1,11 @@
-import { Component, Output, EventEmitter, inject } from "@angular/core"
-import type { OnInit } from "@angular/core"
+import { Component, Output, EventEmitter, inject, Input } from "@angular/core"
+import type { OnChanges, OnInit } from "@angular/core"
 import { FormBuilder, FormGroup, ReactiveFormsModule } from "@angular/forms"
 import { FurnitureService } from "../../../services/furniture.service"
-import type { FurnitureCreate } from "@repo/models/Furniture"
+import type {
+  FurnitureCreate,
+  FurnitureWithRelations,
+} from "@repo/models/Furniture"
 import { RequiredComponent } from "../../required/required.component"
 import { StateService } from "../../../services/state.service"
 import { TypeService } from "../../../services/type.service"
@@ -19,7 +22,7 @@ import { firstValueFrom } from "rxjs"
   templateUrl: "./furniture-add-form.component.html",
   styleUrl: "./furniture-add-form.component.css",
 })
-export class FurnitureAddFormComponent implements OnInit {
+export class FurnitureAddFormComponent implements OnInit, OnChanges {
   private readonly fb = inject(FormBuilder)
   private readonly furnitureService = inject(FurnitureService)
   private readonly locationService = inject(LocationService)
@@ -28,6 +31,9 @@ export class FurnitureAddFormComponent implements OnInit {
   protected readonly roomService = inject(RoomService)
   protected readonly stateService = inject(StateService)
   protected readonly typeService = inject(TypeService)
+
+  @Input()
+  public furniture: FurnitureWithRelations | null = null
 
   @Output()
   public handleClose = new EventEmitter<void>()
@@ -42,6 +48,22 @@ export class FurnitureAddFormComponent implements OnInit {
 
   public ngOnInit() {
     this.furnitureForm = this.furnitureService.createForm(this.fb)
+  }
+
+  public async ngOnChanges() {
+    if (this.furniture != null) {
+      this.furnitureForm.patchValue({
+        name: this.furniture.name,
+        typeId: this.furniture.typeId,
+        stateId: this.furniture.stateId,
+        buildingId: this.furniture.buildingId,
+      })
+
+      await this.buildingService.onBuildingChange(this.furnitureForm)
+      this.furnitureForm.patchValue({ storeyId: this.furniture.storeyId })
+      await this.storeyService.onStoreyChange(this.furnitureForm)
+      this.furnitureForm.patchValue({ roomId: this.furniture.roomId })
+    }
   }
 
   public async onSubmit() {
@@ -72,7 +94,13 @@ export class FurnitureAddFormComponent implements OnInit {
         stateId: this.furnitureForm.get("stateId")?.value,
       }
 
-      await firstValueFrom(this.furnitureService.create(data))
+      if (this.furniture != null) {
+        await firstValueFrom(
+          this.furnitureService.update(this.furniture.id, data),
+        )
+      } else {
+        await firstValueFrom(this.furnitureService.create(data))
+      }
 
       this.closeModal()
     } catch (error) {
