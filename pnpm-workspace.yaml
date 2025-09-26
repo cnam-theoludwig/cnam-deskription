@@ -72,6 +72,10 @@ catalog:
   "tailwindcss": "4.1.13"
   "@tailwindcss/postcss": "4.1.13"
 
+  # PrimeNG
+  "primeng": "20.2.0"
+  "@primeuix/themes": "1.2.4"
+
 onlyBuiltDependencies:
   - "@parcel/watcher"
   - "@tailwindcss/oxide"

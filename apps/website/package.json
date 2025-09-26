@@ -27,7 +27,9 @@
     "@repo/utils": "workspace:*",
     "rxjs": "catalog:",
     "tslib": "catalog:",
-    "zone.js": "catalog:"
+    "zone.js": "catalog:",
+    "primeng": "catalog:",
+    "@primeuix/themes": "catalog:"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "catalog:",
