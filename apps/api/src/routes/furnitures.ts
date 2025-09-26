@@ -8,38 +8,36 @@ import {
 import * as z from "zod"
 import { publicProcedure } from "../oRPC"
 
-const furnitureSelect = (): ReturnType<typeof database.selectFrom> => {
-  return database
-    .selectFrom("Furniture")
-    .innerJoin("State", "Furniture.stateId", "State.id")
-    .innerJoin("Type", "Furniture.typeId", "Type.id")
-    .innerJoin("Location", "Furniture.locationId", "Location.id")
-    .innerJoin("Room", "Location.roomId", "Room.id")
-    .innerJoin("Storey", "Room.storeyId", "Storey.id")
-    .innerJoin("Building", "Storey.buildingId", "Building.id")
-    .select([
-      "Furniture.id",
-      "Furniture.name",
-      "Furniture.locationId",
-      "Location.buildingId",
-      "Location.storeyId",
-      "Location.roomId",
-      "Furniture.stateId",
-      "Furniture.typeId",
-      "State.name as state",
-      "Type.name as type",
-      "Building.name as building",
-      "Storey.name as storey",
-      "Room.name as room",
-    ])
-}
+const furnitureSelect = database
+  .selectFrom("Furniture")
+  .innerJoin("State", "Furniture.stateId", "State.id")
+  .innerJoin("Type", "Furniture.typeId", "Type.id")
+  .innerJoin("Location", "Furniture.locationId", "Location.id")
+  .innerJoin("Room", "Location.roomId", "Room.id")
+  .innerJoin("Storey", "Room.storeyId", "Storey.id")
+  .innerJoin("Building", "Storey.buildingId", "Building.id")
+  .select([
+    "Furniture.id",
+    "Furniture.name",
+    "Furniture.locationId",
+    "Location.buildingId",
+    "Location.storeyId",
+    "Location.roomId",
+    "Furniture.stateId",
+    "Furniture.typeId",
+    "State.name as state",
+    "Type.name as type",
+    "Building.name as building",
+    "Storey.name as storey",
+    "Room.name as room",
+  ])
 
 export const furnitures = {
   get: publicProcedure
     .route({ method: "GET", path: "/furnitures", tags: ["Furniture"] })
     .output(z.array(FurnitureWithRelationsZodObject))
     .handler(async () => {
-      return furnitureSelect().execute()
+      return furnitureSelect.execute()
     }),
 
   create: publicProcedure
@@ -52,7 +50,7 @@ export const furnitures = {
         .values(input)
         .returning(["id"])
         .executeTakeFirstOrThrow()
-      return furnitureSelect()
+      return furnitureSelect
         .where("Furniture.id", "=", id)
         .executeTakeFirstOrThrow()
     }),
@@ -69,7 +67,7 @@ export const furnitures = {
         .set(input.furniture)
         .where("id", "=", input.id)
         .executeTakeFirstOrThrow()
-      return furnitureSelect()
+      return furnitureSelect
         .where("Furniture.id", "=", input.id)
         .executeTakeFirstOrThrow()
     }),
@@ -83,7 +81,7 @@ export const furnitures = {
     )
     .output(z.array(FurnitureWithRelationsZodObject))
     .handler(async ({ input }) => {
-      let query = furnitureSelect()
+      let query = furnitureSelect
       if (input.name != null && input.name.length > 0) {
         query = query.where(
           searchStringExpression({ column: "name", query: input.name }),
