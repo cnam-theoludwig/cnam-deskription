@@ -1,8 +1,9 @@
 import angular from "angular-eslint"
 import configConventions from "@repo/config-eslint"
 import typescriptESLint from "typescript-eslint"
+import { defineConfig } from "eslint/config"
 
-export default typescriptESLint.config(
+export default defineConfig(
   ...configConventions,
   {
     name: "config-eslint/typescript",

@@ -1,4 +1,4 @@
-FROM node:22.16.0-slim AS node-pnpm
+FROM node:22.20.0-slim AS node-pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
@@ -8,11 +8,11 @@ WORKDIR /usr/src/app
 
 FROM node-pnpm AS builder
 COPY ./ ./
-RUN pnpm install --global turbo@2.5.4
+RUN pnpm install --global turbo@2.5.8
 RUN turbo prune @repo/website --docker
 
 FROM node-pnpm AS installer
-RUN pnpm install --global replace-in-files-cli@3.0.0
+RUN pnpm install --global replace-in-files-cli@4.0.0
 COPY .gitignore .gitignore
 COPY --from=builder /usr/src/app/out/json/ ./
 COPY --from=builder /usr/src/app/out/pnpm-lock.yaml ./pnpm-lock.yaml
@@ -27,7 +27,7 @@ RUN pnpm --filter=@repo/website... exec turbo run build
 
 FROM node-pnpm AS runner
 ENV NODE_ENV=production
-RUN pnpm install mime@4.0.7 tsx@4.19.3
+RUN pnpm install mime@4.1.0 tsx@4.20.6
 
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 applicationrunner
 USER root

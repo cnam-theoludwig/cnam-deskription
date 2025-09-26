@@ -64,19 +64,21 @@ const server = createServer(async (request, response) => {
         <link rel="icon" type="image/svg+xml" href="https://orpc.unnoq.com/icon.svg" />
       </head>
       <body>
-        <script
-          id="api-reference"
-          data-url="/spec.json"
-          data-configuration="${JSON.stringify({
+        <div id="app"></div>
+
+        <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+        <script>
+          Scalar.createApiReference('#app', {
+            url: '/spec.json',
             authentication: {
-              preferredSecurityScheme: "bearerAuth",
-              http: {
-                bearer: { token: "default-token" },
+              securitySchemes: {
+                bearerAuth: {
+                  token: 'default-token',
+                },
               },
             },
-          }).replaceAll('"', "&quot;")}">
+          })
         </script>
-        <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
       </body>
     </html>
   `

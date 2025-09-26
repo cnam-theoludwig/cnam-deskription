@@ -1,7 +1,8 @@
 import typescriptESLint from "typescript-eslint"
+import { defineConfig } from "eslint/config"
 import config from "@repo/config-eslint"
 
-export default typescriptESLint.config(...config, {
+export default defineConfig(...config, {
   files: ["**/*.ts", "**/*.tsx"],
   languageOptions: {
     parser: typescriptESLint.parser,
