@@ -28,6 +28,8 @@
     "rxjs": "catalog:",
     "tslib": "catalog:",
     "zone.js": "catalog:",
+    "three": "catalog:",
+    "lucide-angular": "catalog:",
     "primeng": "catalog:",
     "@primeuix/themes": "catalog:"
   },
@@ -46,6 +48,7 @@
     "tailwindcss": "catalog:",
     "mime": "catalog:",
     "@types/node": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "@types/three": "catalog:"
   }
 }

@@ -15,6 +15,7 @@ export default defineConfig(
       "@typescript-eslint/unbound-method": "off",
       "@typescript-eslint/consistent-type-imports": "off",
       "@typescript-eslint/explicit-function-return-type": "off",
+      "unicorn/number-literal-case": "off",
     },
   },
   {

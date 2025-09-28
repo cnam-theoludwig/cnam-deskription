@@ -1,0 +1,31 @@
+<div class="flex h-screen bg-gradient-scene">
+  <div class="flex-1 p-6">
+    <div class="h-full bg-gradient-panel shadow-panel border-0">
+      <app-building-viewer-3d
+        [building]="selectedBuilding"
+        [storey]="selectedStorey"
+      >
+      </app-building-viewer-3d>
+    </div>
+  </div>
+
+  <div class="w-80 p-6 space-y-4">
+    <app-control-panel
+      [buildings]="buildingService.buildings"
+      [storeys]="storeyService.storeys"
+      [selectedBuilding]="selectedBuilding"
+      [selectedStorey]="selectedStorey"
+      (selectBuilding)="selectBuilding($event)"
+      (addBuilding)="addBuilding()"
+      (selectStorey)="selectStorey($event)"
+      (addStorey)="addStorey()"
+      (removeStorey)="removeStorey($event)"
+    >
+    </app-control-panel>
+  </div>
+</div>
+
+<app-building-add-form />
+@if (selectedBuilding) {
+  <app-storey-add-form [buildingId]="selectedBuilding.id"></app-storey-add-form>
+}

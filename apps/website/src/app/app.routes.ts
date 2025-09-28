@@ -1,6 +1,7 @@
 import type { Routes } from "@angular/router"
 //import { HomePageComponent } from "../pages/home-page/home-page.component"
 import { FurnituresPageComponent } from "../pages/furnitures-page/furnitures-page.component"
+import { BuildingPageComponent } from "../pages/building-page/building-page.component"
 
 export const routes: Routes = [
   // {
@@ -10,6 +11,10 @@ export const routes: Routes = [
   {
     path: "",
     component: FurnituresPageComponent,
+  },
+  {
+    path: "viewer",
+    component: BuildingPageComponent,
   },
   {
     path: "**",

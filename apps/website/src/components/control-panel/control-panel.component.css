@@ -1,0 +1,38 @@
+.storey-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  transition: all 0.2s;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.storey-item.selected {
+  background-color: #e0f2ff;
+  border-color: #3b82f6;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  opacity: 1;
+}
+
+.storey-item:hover {
+  background-color: #f3f4f6;
+}
+
+.storey-name {
+  flex: 1;
+  text-align: left;
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: #111827;
+}
+
+.remove-storey-btn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+}

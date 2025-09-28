@@ -3,7 +3,7 @@ import { fromPromise } from "rxjs/internal/observable/innerFrom"
 
 import { getRPCClient } from "@repo/api-client"
 import { environment } from "../environments/environment"
-import type { StoreyCreate } from "@repo/models/Storey"
+import type { Storey, StoreyCreate } from "@repo/models/Storey"
 import type { Status } from "@repo/utils/types"
 import type { FormGroup } from "@angular/forms"
 import { RoomService } from "./room.service"
@@ -79,5 +79,19 @@ export class StoreyService {
 
     this.roomService.getByStoreyId(storeyId)
     formGroup.get(roomAttributeName)?.enable()
+  }
+
+  public remove(storeyId: Storey["id"]) {
+    const observable = fromPromise(this.rpcClient.storeys.delete(storeyId))
+    observable.subscribe({
+      next: () => {
+        this._storeys.update((old) => {
+          return old.filter((storey) => {
+            return storey.id !== storeyId
+          })
+        })
+      },
+    })
+    return observable
   }
 }

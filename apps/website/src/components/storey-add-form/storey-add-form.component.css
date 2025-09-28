@@ -1,0 +1,40 @@
+dialog {
+  border: none;
+  padding: 0;
+  border-radius: 12px;
+  width: 600px;
+  max-width: 90vw;
+  overflow: hidden;
+  box-sizing: border-box;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.modal-content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 12px;
+}
+
+dialog:not([open]) {
+  display: none;
+}
+
+dialog select:disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
