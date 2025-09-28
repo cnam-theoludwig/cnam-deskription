@@ -29,7 +29,7 @@
     "tslib": "catalog:",
     "zone.js": "catalog:",
     "three": "catalog:",
-    "lucide-angular": "catalog:"
+    "lucide-angular": "catalog:",
     "primeng": "catalog:",
     "@primeuix/themes": "catalog:"
   },
