@@ -76,6 +76,10 @@ catalog:
   # Three.js
   "three": "0.180.0"
   "@types/three": "0.180.0"
+  
+  # PrimeNG
+  "primeng": "20.2.0"
+  "@primeuix/themes": "1.2.4"
 
 onlyBuiltDependencies:
   - "@parcel/watcher"

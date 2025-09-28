@@ -30,6 +30,8 @@
     "zone.js": "catalog:",
     "three": "catalog:",
     "lucide-angular": "catalog:"
+    "primeng": "catalog:",
+    "@primeuix/themes": "catalog:"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "catalog:",
