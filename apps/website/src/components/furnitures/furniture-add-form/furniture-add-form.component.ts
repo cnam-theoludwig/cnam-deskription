@@ -15,10 +15,11 @@ import { RoomService } from "../../../services/room.service"
 import type { LocationCreate } from "@repo/models/Location"
 import { LocationService } from "../../../services/location.service"
 import { firstValueFrom } from "rxjs"
+import { DatePipe } from "@angular/common"
 
 @Component({
   selector: "app-furniture-add-form",
-  imports: [ReactiveFormsModule, RequiredComponent],
+  imports: [ReactiveFormsModule, RequiredComponent, DatePipe],
   templateUrl: "./furniture-add-form.component.html",
   styleUrl: "./furniture-add-form.component.css",
 })

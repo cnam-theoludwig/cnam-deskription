@@ -44,6 +44,9 @@
     "database:migrate": {
       "cache": false
     },
+    "database:migrate:down": {
+      "cache": false
+    },
     "database:codegen": {
       "dependsOn": ["database:migrate"],
       "cache": false
