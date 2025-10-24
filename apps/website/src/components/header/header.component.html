@@ -5,5 +5,28 @@
   </div>
   <nav class="header-nav">
     <!-- <a routerLink="/furnitures" class="nav-link">Voir les meubles</a> -->
+    <div class="card flex justify-center">
+      <p-select
+        [options]="roles"
+        [(ngModel)]="selectedRole"
+        optionLabel="name"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        placeholder="Sélectionner un rôle"
+        class="w-full md:w-56"
+      >
+        <ng-template #selectedItem let-selectedOption>
+          <div class="flex items-center gap-2">
+            <div>{{ selectedOption.name }}</div>
+          </div>
+        </ng-template>
+        <ng-template let-country #item>
+          <div class="flex items-center gap-2">
+            <div>{{ country.name }}</div>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
   </nav>
 </header>
