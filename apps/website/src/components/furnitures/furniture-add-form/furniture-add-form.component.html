@@ -144,7 +144,9 @@
               ? "État"
               : log.column === "Type"
                 ? "Type"
-                : "Emplacement"
+                : log.column === "Name"
+                  ? "Nom"
+                  : "Emplacement"
           }}) Ancienne valeur: {{ log.newValue }} | Nouvelle valeur:
           {{ log.oldValue }}
         </li>
