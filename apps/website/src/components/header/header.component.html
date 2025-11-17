@@ -4,6 +4,45 @@
     <h1>Deskription</h1>
   </div>
   <nav class="header-nav">
-    <!-- <a routerLink="/furnitures" class="nav-link">Voir les meubles</a> -->
+    <!-- Bouton retour visible seulement sur la page viewer -->
+    @if (isOnViewerPage) {
+      <p-button
+        label="Retour"
+        styleClass="p-button-secondary"
+        (onClick)="goBack()"
+      ></p-button>
+    } @else if (
+      roleService.currentRole === "Responsable de site" ||
+      roleService.currentRole === "Loueur de mobilier"
+    ) {
+      <p-button
+        label="Voir les meubles (3D)"
+        styleClass="p-button-secondary"
+        (onClick)="navigateToViewer()"
+      ></p-button>
+    }
+    <div class="card flex justify-center">
+      <p-select
+        [options]="roles"
+        [ngModel]="selectedRole"
+        optionLabel="name"
+        [filter]="false"
+        [showClear]="true"
+        placeholder="Sélectionner un rôle"
+        class="w-fit min-w-56"
+        (ngModelChange)="onRoleChange($event)"
+      >
+        <ng-template #selectedItem let-selectedOption>
+          <div class="flex items-center gap-2">
+            <div>{{ selectedOption.name }}</div>
+          </div>
+        </ng-template>
+        <ng-template let-country #item>
+          <div class="flex items-center gap-2">
+            <div>{{ country.name }}</div>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
   </nav>
 </header>

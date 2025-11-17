@@ -11,6 +11,8 @@ import { StateService } from "../../services/state.service"
 import { TypeService } from "../../services/type.service"
 import { SearchEngineComponent } from "../../components/search-engine/search-engine.component"
 import type { Furniture, FurnitureWithRelations } from "@repo/models/Furniture"
+import { RoleService } from "../../services/role.service"
+import { ButtonModule } from "primeng/button"
 
 @Component({
   selector: "app-furnitures-page",
@@ -19,6 +21,7 @@ import type { Furniture, FurnitureWithRelations } from "@repo/models/Furniture"
     HeaderComponent,
     FurnitureAddFormComponent,
     SearchEngineComponent,
+    ButtonModule,
   ],
   templateUrl: "./furnitures-page.component.html",
   styleUrl: "./furnitures-page.component.css",
@@ -31,6 +34,7 @@ export class FurnituresPageComponent {
   protected readonly roomService = inject(RoomService)
   protected readonly stateService = inject(StateService)
   protected readonly typeService = inject(TypeService)
+  protected readonly roleService = inject(RoleService)
 
   protected furnitureToEdit: FurnitureWithRelations | null = null
 
@@ -57,5 +61,18 @@ export class FurnituresPageComponent {
       "addFurnitureModal",
     ) as HTMLDialogElement
     modal.close()
+  }
+
+  // Fake actions for role-based buttons
+  public fakeExport() {
+    alert("Fonctionnalité d'export à implémenter plus tard.")
+  }
+
+  public fakeViewState() {
+    alert("Visualisation d'état fonctionnel à implémenter plus tard.")
+  }
+
+  public fakeNotify() {
+    alert("Notification de déplacement à implémenter plus tard.")
   }
 }

@@ -80,6 +80,7 @@ catalog:
   # PrimeNG
   "primeng": "20.2.0"
   "@primeuix/themes": "1.2.5"
+  "primeicons": "7.0.0"
 
 onlyBuiltDependencies:
   - "@parcel/watcher"

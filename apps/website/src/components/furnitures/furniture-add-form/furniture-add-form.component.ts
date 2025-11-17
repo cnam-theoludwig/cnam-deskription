@@ -15,10 +15,12 @@ import { RoomService } from "../../../services/room.service"
 import type { LocationCreate } from "@repo/models/Location"
 import { LocationService } from "../../../services/location.service"
 import { firstValueFrom } from "rxjs"
+import { RoleService } from "../../../services/role.service"
+import { ButtonModule } from "primeng/button"
 
 @Component({
   selector: "app-furniture-add-form",
-  imports: [ReactiveFormsModule, RequiredComponent],
+  imports: [ReactiveFormsModule, RequiredComponent, ButtonModule],
   templateUrl: "./furniture-add-form.component.html",
   styleUrl: "./furniture-add-form.component.css",
 })
@@ -31,6 +33,7 @@ export class FurnitureAddFormComponent implements OnInit, OnChanges {
   protected readonly roomService = inject(RoomService)
   protected readonly stateService = inject(StateService)
   protected readonly typeService = inject(TypeService)
+  protected readonly roleService = inject(RoleService)
 
   @Input()
   public furniture: FurnitureWithRelations | null = null
@@ -112,5 +115,75 @@ export class FurnitureAddFormComponent implements OnInit, OnChanges {
   protected closeModal() {
     this.furnitureForm = this.furnitureService.createForm(this.fb)
     this.handleClose.emit()
+  }
+
+  // Vérifier si le rôle actuel peut modifier la position
+  protected get canModifyPosition(): boolean {
+    return this.roleService.currentRole === "Gestionnaire de mobilier"
+  }
+
+  // Vérifier si le rôle actuel peut affecter/désaffecter
+  protected get canAssign(): boolean {
+    return this.roleService.currentRole === "Responsable de site"
+  }
+
+  // Vérifier si le rôle actuel peut gérer le stockage
+  protected get canManageStorage(): boolean {
+    return this.roleService.currentRole === "Gestionnaire de mobilier"
+  }
+
+  // Vérifier si le rôle actuel peut voir l'historique
+  protected get canViewHistory(): boolean {
+    return (
+      this.roleService.currentRole === "Utilisateur" ||
+      this.roleService.currentRole === "Loueur de mobilier"
+    )
+  }
+
+  // Vérifier si le rôle actuel peut voir l'état fonctionnel
+  protected get canViewFunctionalState(): boolean {
+    return (
+      this.roleService.currentRole === "Loueur de mobilier" ||
+      this.roleService.currentRole === "Utilisateur"
+    )
+  }
+
+  // Vérifier si les champs de position doivent être désactivés
+  protected get shouldDisablePositionFields(): boolean {
+    return this.furniture != null && !this.canModifyPosition
+  }
+
+  // Méthode pour le scan/GPS
+  protected onScanGPS() {
+    alert(
+      "Fonctionnalité de mise à jour automatique (scan/GPS) à implémenter plus tard.",
+    )
+  }
+
+  // Méthode pour affecter/désaffecter
+  protected onAssign() {
+    alert(
+      "Fonctionnalité d'affectation/désaffectation à implémenter plus tard.",
+    )
+  }
+
+  // Méthode pour stocker le mobilier
+  protected onStore() {
+    alert("Fonctionnalité de stockage à implémenter plus tard.")
+  }
+
+  // Méthode pour céder le mobilier stocké
+  protected onDispose() {
+    alert("Fonctionnalité de cession à implémenter plus tard.")
+  }
+
+  // Méthode pour voir l'historique
+  protected onViewHistory() {
+    alert("Fonctionnalité d'historique à implémenter plus tard.")
+  }
+
+  // Méthode pour voir l'état fonctionnel
+  protected onViewFunctionalState() {
+    alert("Visualisation d'état fonctionnel à implémenter plus tard.")
   }
 }
