@@ -1,16 +1,17 @@
-import { Component, inject } from "@angular/core"
-import { HeaderComponent } from "../../components/header/header.component"
 import { CommonModule } from "@angular/common"
-import { FurnitureService } from "../../services/furniture.service"
+import { Component, inject } from "@angular/core"
+import type { Furniture, FurnitureWithRelations } from "@repo/models/Furniture"
 import { FurnitureAddFormComponent } from "../../components/furnitures/furniture-add-form/furniture-add-form.component"
-import { LocationService } from "../../services/location.service"
+import { HeaderComponent } from "../../components/header/header.component"
+import { SearchEngineComponent } from "../../components/search-engine/search-engine.component"
 import { BuildingService } from "../../services/building.service"
-import { StoreyService } from "../../services/storey.service"
+import { FurnitureService } from "../../services/furniture.service"
+import { LocationService } from "../../services/location.service"
 import { RoomService } from "../../services/room.service"
 import { StateService } from "../../services/state.service"
+import { StoreyService } from "../../services/storey.service"
 import { TypeService } from "../../services/type.service"
-import { SearchEngineComponent } from "../../components/search-engine/search-engine.component"
-import type { Furniture, FurnitureWithRelations } from "@repo/models/Furniture"
+import { BuildingPageComponent } from "../building-page/building-page.component"
 
 @Component({
   selector: "app-furnitures-page",
@@ -19,6 +20,7 @@ import type { Furniture, FurnitureWithRelations } from "@repo/models/Furniture"
     HeaderComponent,
     FurnitureAddFormComponent,
     SearchEngineComponent,
+    BuildingPageComponent,
   ],
   templateUrl: "./furnitures-page.component.html",
   styleUrl: "./furnitures-page.component.css",
