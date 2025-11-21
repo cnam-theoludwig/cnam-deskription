@@ -114,9 +114,7 @@ export class FurnitureService {
   public delete(id: Furniture["id"]) {
     this._status.set("pending")
 
-    const observable = fromPromise(
-      this.rpcClient.furnitures.delete(id)
-    )
+    const observable = fromPromise(this.rpcClient.furnitures.delete(id))
 
     observable.subscribe({
       next: () => {
@@ -132,4 +130,3 @@ export class FurnitureService {
     return observable
   }
 }
-
