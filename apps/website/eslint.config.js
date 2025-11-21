@@ -16,6 +16,11 @@ export default defineConfig(
       "@typescript-eslint/consistent-type-imports": "off",
       "@typescript-eslint/explicit-function-return-type": "off",
       "unicorn/number-literal-case": "off",
+      "arrow-body-style": "off",
+      "@typescript-eslint/strict-boolean-expressions": "off",
+      curly: "off",
+      "unicorn/no-array-for-each": "off",
+      "@angular-eslint/template/elements-content": "off",
     },
   },
   {

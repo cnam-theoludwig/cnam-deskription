@@ -12,6 +12,8 @@ export type Generated<T> =
 
 export type Historylogcolumn = "Location" | "Name" | "State" | "Type"
 
+export type Numeric = ColumnType<string, number | string, number | string>
+
 export type Timestamp = ColumnType<Date, Date | string, Date | string>
 
 export interface Building {
@@ -44,9 +46,14 @@ export interface Location {
 }
 
 export interface Room {
+  color: Generated<string>
+  depth: Generated<Numeric>
   id: Generated<string>
   name: string
   storeyId: string
+  width: Generated<Numeric>
+  x: Generated<Numeric>
+  z: Generated<Numeric>
 }
 
 export interface State {
