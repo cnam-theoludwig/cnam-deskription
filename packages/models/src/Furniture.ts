@@ -6,6 +6,7 @@ import { StateZod } from "./State"
 import { StoreyZod } from "./Storey"
 import { TypeZod } from "./Type"
 import { LocationZod } from "./Location"
+import { HistoryLogZodObject } from "./HistoryLog"
 
 export const FurnitureZod = {
   id: EntityZod.id,
@@ -39,6 +40,7 @@ export const FurnitureWithRelationsZodObject = FurnitureZodObject.extend({
   storeyId: StoreyZod.id,
   room: RoomZod.name,
   roomId: RoomZod.id,
+  historyLogs: z.array(HistoryLogZodObject),
 })
 
 export type FurnitureWithRelations = z.infer<

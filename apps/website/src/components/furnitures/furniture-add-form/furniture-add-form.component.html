@@ -135,5 +135,22 @@
         </button>
       </div>
     </form>
+
+    <ul>
+      @for (log of furniture?.historyLogs; track log.id) {
+        <li>
+          <strong>{{ log.modifiedAt | date: "short" }} :</strong> ({{
+            log.column === "State"
+              ? "État"
+              : log.column === "Type"
+                ? "Type"
+                : log.column === "Name"
+                  ? "Nom"
+                  : "Emplacement"
+          }}) Ancienne valeur: {{ log.newValue }} | Nouvelle valeur:
+          {{ log.oldValue }}
+        </li>
+      }
+    </ul>
   </div>
 </dialog>

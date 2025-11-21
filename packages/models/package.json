@@ -7,6 +7,7 @@
     "./Building": "./src/Building.ts",
     "./Entity": "./src/Entity.ts",
     "./Furniture": "./src/Furniture.ts",
+    "./HistoryLog": "./src/HistoryLog.ts",
     "./Location": "./src/Location.ts",
     "./Room": "./src/Room.ts",
     "./State": "./src/State.ts",
