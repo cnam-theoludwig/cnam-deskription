@@ -10,7 +10,11 @@ export type Generated<T> =
     ? ColumnType<S, I | undefined, U>
     : ColumnType<T, T | undefined, T>
 
+export type Historylogcolumn = "Location" | "Name" | "State" | "Type"
+
 export type Numeric = ColumnType<string, number | string, number | string>
+
+export type Timestamp = ColumnType<Date, Date | string, Date | string>
 
 export interface Building {
   id: Generated<string>
@@ -23,6 +27,15 @@ export interface Furniture {
   name: string
   stateId: string
   typeId: string
+}
+
+export interface HistoryLog {
+  column: Historylogcolumn
+  furnitureId: string
+  id: Generated<string>
+  modifiedAt: Generated<Timestamp>
+  newValue: string
+  oldValue: string
 }
 
 export interface Location {
@@ -63,6 +76,7 @@ export interface Type {
 export interface DB {
   Building: Building
   Furniture: Furniture
+  HistoryLog: HistoryLog
   Location: Location
   Room: Room
   State: State
