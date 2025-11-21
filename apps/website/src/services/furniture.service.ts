@@ -110,4 +110,63 @@ export class FurnitureService {
     })
     return observable
   }
+
+  public exportToExcel() {
+    const observable = fromPromise(
+      this.rpcClient.furnitures.excelExport(this.furnitures),
+    )
+
+    const base64ToUint8Array = (base64: string) => {
+      // remove data URL prefix if present
+      const commaIndex = base64.indexOf(",")
+      if (commaIndex !== -1) {
+        base64 = base64.slice(commaIndex + 1)
+      }
+      // convert URL-safe base64 to standard
+      base64 = base64.replace(/-/g, "+").replace(/_/g, "/")
+      // add padding if missing
+      const pad = base64.length % 4
+      if (pad !== 0 && !Number.isNaN(pad)) {
+        base64 += "====".slice(pad)
+      }
+
+      const binaryString = atob(base64)
+      const len = binaryString.length
+      const bytes = new Uint8Array(len)
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i)
+      }
+      return bytes
+    }
+
+    observable.subscribe({
+      next: (base64) => {
+        try {
+          const bytes = base64ToUint8Array(base64)
+          const blob = new Blob([bytes], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          })
+
+          // For IE/Edge
+          const msSaveOrOpenBlob = (window.navigator as any).msSaveOrOpenBlob
+          if (typeof msSaveOrOpenBlob === "function") {
+            msSaveOrOpenBlob.call(window.navigator, blob, "furnitures.xlsx")
+            return
+          }
+
+          const url = window.URL.createObjectURL(blob)
+          const link = document.createElement("a")
+          link.href = url
+          link.setAttribute("download", "deskription.xlsx")
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          window.URL.revokeObjectURL(url)
+        } catch (error) {
+          console.error("Failed to export excel:", error)
+        }
+      },
+    })
+    return observable
+  }
 }

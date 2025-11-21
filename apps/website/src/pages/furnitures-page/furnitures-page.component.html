@@ -22,6 +22,12 @@
     (handleClose)="closeModal()"
   />
 
+  @if (
+    furnitureService.furnitures.length > 0 &&
+    furnitureService.status !== "pending"
+  ) {
+    <button (click)="exportToExcel()">Exporter au format excel</button>
+  }
   <div class="furniture-list">
     @if (furnitureService.status === "pending") {
       <p>Chargement...</p>
