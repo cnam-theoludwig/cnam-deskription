@@ -110,6 +110,27 @@ export class FurnitureAddFormComponent implements OnInit, OnChanges {
     }
   }
 
+  public async onDelete() {
+  if (this.furniture === null) {
+    return
+  }
+
+  if (!confirm("Voulez-vous vraiment supprimer ce meuble ?")) {
+    return
+  }
+
+  try {
+    await firstValueFrom(
+      this.furnitureService.delete(this.furniture.id)
+    )
+
+    this.closeModal()
+  } catch (error) {
+    console.error("Erreur lors de la suppression :", error)
+    alert("Impossible de supprimer cet élément.")
+  }
+}
+
   protected closeModal() {
     this.furnitureForm = this.furnitureService.createForm(this.fb)
     this.handleClose.emit()
