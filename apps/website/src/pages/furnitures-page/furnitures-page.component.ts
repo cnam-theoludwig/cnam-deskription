@@ -58,4 +58,8 @@ export class FurnituresPageComponent {
     ) as HTMLDialogElement
     modal.close()
   }
+
+  public exportToExcel() {
+    this.furnitureService.exportToExcel()
+  }
 }

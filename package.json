@@ -30,5 +30,8 @@
     "prettier": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
   }
 }
