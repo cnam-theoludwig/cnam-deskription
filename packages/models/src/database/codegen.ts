@@ -10,6 +10,8 @@ export type Generated<T> =
     ? ColumnType<S, I | undefined, U>
     : ColumnType<T, T | undefined, T>
 
+export type Numeric = ColumnType<string, number | string, number | string>
+
 export interface Building {
   id: Generated<string>
   name: string
@@ -31,9 +33,14 @@ export interface Location {
 }
 
 export interface Room {
+  color: Generated<string>
+  depth: Generated<Numeric>
   id: Generated<string>
   name: string
   storeyId: string
+  width: Generated<Numeric>
+  x: Generated<Numeric>
+  z: Generated<Numeric>
 }
 
 export interface State {
