@@ -11,6 +11,7 @@ import { jsonArrayFrom } from "kysely/helpers/postgres"
 import * as z from "zod"
 import { publicProcedure } from "../oRPC"
 import type { Location } from "@repo/models/Location"
+import { RoomZod } from "@repo/models/Room"
 
 const furnitureSelect = database
   .selectFrom("Furniture")
@@ -30,6 +31,9 @@ const furnitureSelect = database
       "Location.roomId",
       "Furniture.stateId",
       "Furniture.typeId",
+      "Furniture.x",
+      "Furniture.z",
+      "Furniture.model",
       "State.name as state",
       "Type.name as type",
       "Building.name as building",
@@ -51,6 +55,20 @@ export const furnitures = {
     .output(z.array(FurnitureWithRelationsZodObject))
     .handler(async () => {
       return furnitureSelect.execute()
+    }),
+
+  getByRoomId: publicProcedure
+    .route({
+      method: "GET",
+      path: "/furnitures/room/{roomId}",
+      tags: ["Furniture"],
+    })
+    .input(z.object({ roomId: RoomZod.id }))
+    .output(z.array(FurnitureWithRelationsZodObject))
+    .handler(async ({ input }) => {
+      return furnitureSelect
+        .where("Location.roomId", "=", input.roomId)
+        .execute()
     }),
 
   create: publicProcedure

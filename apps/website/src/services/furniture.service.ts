@@ -11,6 +11,7 @@ import type {
 import type { Status } from "@repo/utils/types"
 import { FormControl, Validators } from "@angular/forms"
 import type { FormBuilder, FormGroup } from "@angular/forms"
+import type { Room } from "@repo/models/Room"
 
 export type Furnitures = Awaited<
   ReturnType<ReturnType<typeof getRPCClient>["furnitures"]["get"]>
@@ -21,8 +22,11 @@ export type Furnitures = Awaited<
 })
 export class FurnitureService {
   private readonly rpcClient = getRPCClient(environment.apiBaseURL)
+
   private readonly _furnitures = signal<Furnitures>([])
   private readonly _status = signal<Status>("pending")
+
+  public readonly furnitureToEdit = signal<FurnitureWithRelations | null>(null)
 
   public get furnitures() {
     return this._furnitures()
@@ -44,12 +48,62 @@ export class FurnitureService {
     return observable
   }
 
+  public getByRoomId(roomId: Room["id"]) {
+    this._status.set("pending")
+    const observable = fromPromise(
+      this.rpcClient.furnitures.getByRoomId({ roomId }),
+    )
+    observable.subscribe({
+      next: (furnitures) => {
+        this._status.set("idle")
+        this._furnitures.set(furnitures)
+      },
+    })
+    return observable
+  }
+
+  public fetchForRender(roomId: string) {
+    return fromPromise(this.rpcClient.furnitures.getByRoomId({ roomId }))
+  }
+
+  public search(input: Partial<FurnitureWithRelations>) {
+    this._status.set("pending")
+    const observable = fromPromise(this.rpcClient.furnitures.search(input))
+    observable.subscribe({
+      next: (furnitures) => {
+        this._status.set("idle")
+        this._furnitures.set(furnitures)
+      },
+    })
+    return observable
+  }
+
   public create(input: FurnitureCreate) {
     const observable = fromPromise(this.rpcClient.furnitures.create(input))
     observable.subscribe({
       next: (newFurniture) => {
         this._furnitures.update((old) => {
           return [...old, newFurniture]
+        })
+      },
+    })
+    return observable
+  }
+
+  public update(id: Furniture["id"], furniture: FurnitureCreate) {
+    this._status.set("pending")
+    const observable = fromPromise(
+      this.rpcClient.furnitures.update({ id, furniture }),
+    )
+    observable.subscribe({
+      next: (updatedFurniture) => {
+        this._status.set("idle")
+        this._furnitures.update((old) => {
+          return old.map((furniture) => {
+            return furniture.id === updatedFurniture.id
+              ? updatedFurniture
+              : furniture
+          })
         })
       },
     })
@@ -79,35 +133,28 @@ export class FurnitureService {
     })
   }
 
-  public search(input: Partial<FurnitureWithRelations>) {
-    this._status.set("pending")
-    const observable = fromPromise(this.rpcClient.furnitures.search(input))
-    observable.subscribe({
-      next: (furnitures) => {
-        this._status.set("idle")
-        this._furnitures.set(furnitures)
+  public openModal(furniture?: FurnitureWithRelations) {
+    this.furnitureToEdit.set(furniture ?? null)
+    const modal = document.getElementById(
+      "addFurnitureModal",
+    ) as HTMLDialogElement
+
+    if (!modal) return
+
+    modal.addEventListener(
+      "close",
+      () => {
+        this.furnitureToEdit.set(null)
       },
-    })
-    return observable
+      { once: true },
+    )
+    modal.showModal()
   }
 
-  public update(id: Furniture["id"], furniture: FurnitureCreate) {
-    this._status.set("pending")
-    const observable = fromPromise(
-      this.rpcClient.furnitures.update({ id, furniture }),
-    )
-    observable.subscribe({
-      next: (updatedFurniture) => {
-        this._status.set("idle")
-        this._furnitures.update((old) => {
-          return old.map((furniture) => {
-            return furniture.id === updatedFurniture.id
-              ? updatedFurniture
-              : furniture
-          })
-        })
-      },
-    })
-    return observable
+  public closeModal() {
+    const modal = document.getElementById(
+      "addFurnitureModal",
+    ) as HTMLDialogElement
+    if (modal) modal.close()
   }
 }
