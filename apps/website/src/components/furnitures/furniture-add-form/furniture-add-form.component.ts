@@ -113,4 +113,24 @@ export class FurnitureAddFormComponent {
       alert("Une erreur est survenue.")
     }
   }
+
+  public async onDelete() {
+    const furnitureToEdit = this.furnitureService.furnitureToEdit()
+    if (!furnitureToEdit) {
+      return
+    }
+
+    if (!confirm("Voulez-vous vraiment supprimer ce meuble ?")) {
+      return
+    }
+
+    try {
+      await firstValueFrom(this.furnitureService.delete(furnitureToEdit.id))
+
+      this.furnitureService.closeModal()
+    } catch (error) {
+      console.error("Erreur lors de la suppression :", error)
+      alert("Impossible de supprimer cet élément.")
+    }
+  }
 }
