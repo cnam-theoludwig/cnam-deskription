@@ -5,8 +5,10 @@
         [selectedBuilding]="selectedBuilding"
         [selectedStorey]="selectedStorey"
         [selectedRoom]="selectedRoom"
+        [selectedFurniture]="selectedFurniture"
         [storeys]="storeyService.storeys"
         [rooms]="roomService.rooms"
+        [furnitures]="furnitureService.furnitures"
       >
       </app-building-viewer-3d>
     </div>
@@ -18,9 +20,11 @@
         [buildings]="buildingService.buildings"
         [storeys]="storeyService.storeys"
         [rooms]="roomService.rooms"
+        [furnitures]="furnitureService.furnitures"
         [selectedBuilding]="selectedBuilding"
         [selectedStorey]="selectedStorey"
         [selectedRoom]="selectedRoom"
+        [selectedFurniture]="selectedFurniture"
         (selectBuilding)="selectBuilding($event)"
         (addBuilding)="addBuilding()"
         (selectStorey)="selectStorey($event)"
@@ -30,6 +34,7 @@
         (addRoom)="addRoom()"
         (removeRoom)="removeRoom($event)"
         (updateRoom)="updateRoom($event)"
+        (selectFurniture)="selectFurniture($event)"
       >
       </app-control-panel>
     </div>

@@ -3,6 +3,7 @@ import type { OnInit } from "@angular/core"
 import {
   FormBuilder,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms"
@@ -13,7 +14,8 @@ import type { Storey } from "@repo/models/Storey"
 
 @Component({
   selector: "app-room-add-form",
-  imports: [ReactiveFormsModule, RequiredComponent],
+  standalone: true,
+  imports: [ReactiveFormsModule, RequiredComponent, FormsModule],
   templateUrl: "./room-add-form.component.html",
   styleUrl: "./room-add-form.component.css",
 })

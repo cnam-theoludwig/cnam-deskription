@@ -67,7 +67,6 @@ export class RoomService {
   }
 
   public update(id: Room["id"], input: Partial<Room>) {
-    console.log("RoomService.update", id, input)
     const observable = fromPromise(
       this.rpcClient.rooms.update({ id, ...input }),
     )

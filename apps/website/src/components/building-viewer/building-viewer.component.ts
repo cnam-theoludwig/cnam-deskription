@@ -1,22 +1,25 @@
 import { Component, ElementRef, inject, Input, ViewChild } from "@angular/core"
-import type {
-  AfterViewInit,
-  OnChanges,
-  OnDestroy,
-  SimpleChanges,
-} from "@angular/core"
 import { CommonModule } from "@angular/common"
 import * as THREE from "three"
 import { OrbitControls } from "three/addons/controls/OrbitControls.js"
 import { Font, FontLoader } from "three/addons/loaders/FontLoader.js"
 import { TextGeometry } from "three/addons/geometries/TextGeometry.js"
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js"
 
+import type {
+  AfterViewInit,
+  OnDestroy,
+  OnChanges,
+  SimpleChanges,
+} from "@angular/core"
 import type { Building } from "@repo/models/Building"
 import type { Storey } from "@repo/models/Storey"
 import type { Room } from "@repo/models/Room"
+import type { FurnitureWithRelations } from "@repo/models/Furniture"
 import { BuildingService } from "../../services/building.service"
 import { StoreyService } from "../../services/storey.service"
 import { RoomService } from "../../services/room.service"
+import { FurnitureService } from "../../services/furniture.service"
 
 @Component({
   selector: "app-building-viewer-3d",
@@ -34,12 +37,16 @@ export class BuildingViewer3dComponent
   protected readonly buildingService = inject(BuildingService)
   protected readonly storeyService = inject(StoreyService)
   protected readonly roomService = inject(RoomService)
+  protected readonly furnitureService = inject(FurnitureService)
 
   @Input() public selectedBuilding!: Building
   @Input() public selectedStorey!: Storey
   @Input() public selectedRoom!: Room
+  @Input() public selectedFurniture!: FurnitureWithRelations
+
   @Input() public storeys!: Storey[]
   @Input() public rooms!: Room[]
+  @Input() public furnitures!: FurnitureWithRelations[]
 
   // --- ThreeJS Core ---
   protected renderer!: THREE.WebGLRenderer
@@ -87,6 +94,9 @@ export class BuildingViewer3dComponent
     mouseZ: number
   }
 
+  private readonly modelCache = new Map<string, THREE.Group>()
+  private readonly loader = new GLTFLoader()
+
   // --- Lifecycles ---
 
   public ngOnChanges(changes: SimpleChanges): void {
@@ -115,7 +125,8 @@ export class BuildingViewer3dComponent
     if (
       (changes["storeys"] !== undefined &&
         !changes["storeys"].isFirstChange()) ||
-      (changes["rooms"] !== undefined && !changes["rooms"].isFirstChange())
+      (changes["rooms"] !== undefined && !changes["rooms"].isFirstChange()) ||
+      changes["furnitures"] !== undefined
     ) {
       this.renderScene()
     }
@@ -124,7 +135,7 @@ export class BuildingViewer3dComponent
   public ngAfterViewInit(): void {
     this.initScene()
     void this.loadFont().then(() => {
-      this.animate() // Lance la boucle de rendu 60fps
+      this.animate()
       if (this.selectedBuilding !== undefined) {
         this.fetchAndRender()
       }
@@ -229,7 +240,6 @@ export class BuildingViewer3dComponent
   protected renderScene(): void {
     if (!this.scene) return
 
-    // Nettoyage : on ne supprime que les étages, pas les lumières ni la grille
     const objectsToRemove: THREE.Object3D[] = []
     this.scene.traverse((child) => {
       if (
@@ -313,9 +323,13 @@ export class BuildingViewer3dComponent
     const z = room.z * this.SCALE
 
     roomGroup.position.set(x, 0.25, z)
-    roomGroup.userData = { roomId: room.id, storeyId: room.storeyId } // IMPORTANT : ID de la room
+    roomGroup.userData = {
+      roomId: room.id,
+      storeyId: room.storeyId,
+      isRoomGroup: true,
+    }
 
-    // 1. Le Corps de la pièce
+    // Corps de la pièce
     const geometry = new THREE.BoxGeometry(w, this.ROOM_THICKNESS, d)
     const material = new THREE.MeshStandardMaterial({
       color: room.color ?? "#d1d5db",
@@ -326,7 +340,7 @@ export class BuildingViewer3dComponent
     mesh.userData = { type: "ROOM_BODY", room }
     roomGroup.add(mesh)
 
-    // 2. Affichage du nom de la pièce
+    // Affichage du nom de la pièce
     if (this.font) {
       const textGeo = new TextGeometry(room.name, {
         font: this.font,
@@ -352,7 +366,7 @@ export class BuildingViewer3dComponent
       }
     }
 
-    // 3. Poignées (seulement sur l'étage actif)
+    // Poignées (seulement sur l'étage actif)
     if (parentGroup.userData["floorIndex"] === this.selectedFloorIndex) {
       const handleSize = 0.4
       const handleGeo = new THREE.BoxGeometry(
@@ -373,14 +387,90 @@ export class BuildingViewer3dComponent
       createHandle(-w / 2, d / 2, "BL")
       createHandle(w / 2, d / 2, "BR")
     }
+
+    if (this.furnitures && this.furnitures.length > 0) {
+      const furnituresInRoom = this.furnitures.filter(
+        (f) => f.roomId === room.id,
+      )
+
+      furnituresInRoom.forEach((furn) => {
+        this.renderFurniture(roomGroup, furn)
+      })
+    }
+
     parentGroup.add(roomGroup)
+  }
+
+  protected renderFurniture(
+    roomGroup: THREE.Group,
+    furniture: FurnitureWithRelations,
+  ): void {
+    const modelUrl = furniture.model
+    if (!modelUrl) return
+
+    // Gestion du cache
+    if (this.modelCache.has(modelUrl)) {
+      const cachedModel = this.modelCache.get(modelUrl)
+      if (cachedModel) {
+        const clone = cachedModel.clone()
+        this.setupFurnitureMesh(clone, roomGroup, furniture)
+        return
+      }
+    }
+
+    this.loader.load(
+      modelUrl,
+      (gltf) => {
+        const model = gltf.scene
+
+        // Normalisation de la taille
+        const box = new THREE.Box3().setFromObject(model)
+        const size = new THREE.Vector3()
+        box.getSize(size)
+        const maxDim = Math.max(size.x, size.y, size.z)
+        const scale = 1.5 / maxDim
+        model.scale.set(scale, scale, scale)
+
+        // Sauvegarde en cache
+        this.modelCache.set(modelUrl, model.clone())
+
+        this.setupFurnitureMesh(model, roomGroup, furniture)
+      },
+      undefined,
+      (error) => console.error("Erreur chargement modèle", error),
+    )
+  }
+
+  private setupFurnitureMesh(
+    mesh: THREE.Object3D,
+    roomGroup: THREE.Group,
+    furniture: FurnitureWithRelations,
+  ): void {
+    const x = 0
+    const z = 0
+
+    mesh.position.set(x, 0.2, z)
+    mesh.userData = {
+      type: "FURNITURE",
+      id: furniture.id,
+      originalData: furniture,
+    }
+
+    // Ombre
+    mesh.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        child.castShadow = true
+        child.receiveShadow = true
+      }
+    })
+
+    roomGroup.add(mesh)
   }
 
   // --- MISE À JOUR VISUELLE LIVE ---
   private updateActiveRoomVisuals(updatedRoom: Room): void {
     if (!this.scene || !this.font) return
 
-    // 1. Trouver le groupe de l'étage actuel
     const floorGroup = this.scene.children.find(
       (c) =>
         c.userData["isFloorGroup"] === true &&
@@ -389,31 +479,24 @@ export class BuildingViewer3dComponent
 
     if (!floorGroup) return
 
-    // 2. Trouver le groupe de la pièce spécifique via son ID
     const roomGroup = floorGroup.children.find(
       (c) => c.userData["roomId"] === updatedRoom.id,
     ) as THREE.Group | undefined
 
     if (!roomGroup) return
 
-    // 3. Mettre à jour les enfants (Corps et Texte)
     roomGroup.children.forEach((child) => {
       const type = child.userData["type"]
 
-      // A. Mise à jour de la COULEUR du corps
       if (type === "ROOM_BODY" && child instanceof THREE.Mesh) {
         const mat = child.material as THREE.MeshStandardMaterial
         mat.color.set(updatedRoom.color)
       }
 
-      // B. Mise à jour du TEXTE (Nom + Couleur)
       if (type === "ROOM_TEXT" && child instanceof THREE.Mesh) {
         child.geometry.dispose()
 
-        if (!this.font) {
-          console.error("Font not loaded yet")
-          return
-        }
+        if (!this.font) return
 
         const textGeo = new TextGeometry(updatedRoom.name, {
           font: this.font,
@@ -422,7 +505,6 @@ export class BuildingViewer3dComponent
           curveSegments: 3,
         })
 
-        // Recalcul du centrage
         textGeo.computeBoundingBox()
         const box = textGeo.boundingBox
         if (box) {
@@ -503,7 +585,7 @@ export class BuildingViewer3dComponent
     this.ghostMesh.position.set(x, 0.25, z)
   }
 
-  // --- DÉTECTION DE COLLISION (HARD) ---
+  // --- DÉTECTION DE COLLISION ---
   private checkCollision(
     target: { x: number; z: number; w: number; d: number },
     otherRooms: Room[],
@@ -713,18 +795,13 @@ export class BuildingViewer3dComponent
 
       this.applyChangesToOriginalMesh()
 
-      this.roomService
-        .update(this.activeRoom.id, {
-          x: finalX,
-          z: finalZ,
-          width: finalW,
-          depth: finalD,
-          color: this.activeRoom.color,
-        })
-        .subscribe({
-          next: () => console.log("Sauvegarde OK"),
-          error: (e) => console.error("Erreur sauvegarde", e),
-        })
+      this.roomService.update(this.activeRoom.id, {
+        x: finalX,
+        z: finalZ,
+        width: finalW,
+        depth: finalD,
+        color: this.activeRoom.color,
+      })
     }
 
     this.removeGhost()

@@ -14,6 +14,9 @@ export const FurnitureZod = {
   locationId: LocationZod.id,
   typeId: TypeZod.id,
   stateId: StateZod.id,
+  x: z.coerce.number(),
+  z: z.coerce.number(),
+  model: z.string().nullish(),
 }
 export const FurnitureZodObject = z.object(FurnitureZod)
 export type Furniture = z.infer<typeof FurnitureZodObject>
@@ -23,6 +26,9 @@ export const FurnitureCreateZodObject = z.object({
   locationId: FurnitureZod.locationId,
   typeId: FurnitureZod.typeId,
   stateId: FurnitureZod.stateId,
+  x: FurnitureZod.x,
+  z: FurnitureZod.z,
+  model: FurnitureZod.model,
 })
 export type FurnitureCreate = z.infer<typeof FurnitureCreateZodObject>
 
@@ -40,6 +46,9 @@ export const FurnitureWithRelationsZodObject = FurnitureZodObject.extend({
   storeyId: StoreyZod.id,
   room: RoomZod.name,
   roomId: RoomZod.id,
+  x: FurnitureZod.x,
+  z: FurnitureZod.z,
+  model: FurnitureZod.model,
   historyLogs: z.array(HistoryLogZodObject),
 })
 
