@@ -1,4 +1,12 @@
-import { Component, ElementRef, inject, Input, ViewChild } from "@angular/core"
+import {
+  Component,
+  ElementRef,
+  inject,
+  Input,
+  Output,
+  ViewChild,
+  EventEmitter,
+} from "@angular/core"
 import type {
   AfterViewInit,
   OnChanges,
@@ -34,6 +42,7 @@ export class BuildingViewer3dComponent
   protected readonly buildingService = inject(BuildingService)
   protected readonly storeyService = inject(StoreyService)
   protected readonly roomService = inject(RoomService)
+  protected mouse = new THREE.Vector2()
 
   @Input() public selectedBuilding!: Building
   @Input() public selectedStorey!: Storey
@@ -42,6 +51,10 @@ export class BuildingViewer3dComponent
   @Input() public rooms!: Room[]
 
   // --- ThreeJS Core ---
+  @Input() public hideNotSelectedStoreys: boolean = false
+
+  @Output() public storeySelected = new EventEmitter<Storey>()
+
   protected renderer!: THREE.WebGLRenderer
   protected scene!: THREE.Scene
   protected camera!: THREE.PerspectiveCamera
@@ -51,7 +64,7 @@ export class BuildingViewer3dComponent
   protected font?: Font
 
   // --- Configuration ---
-  private readonly FLOOR_SPACING = 5
+  private readonly FLOOR_SPACING = 7
   private readonly FLOOR_WIDTH = 20
   private readonly FLOOR_LENGTH = 15
   private readonly FLOOR_THICKNESS = 0.2
@@ -88,6 +101,7 @@ export class BuildingViewer3dComponent
   }
 
   // --- Lifecycles ---
+  protected isOrbiting = false
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (
@@ -101,8 +115,11 @@ export class BuildingViewer3dComponent
       changes["selectedStorey"] !== undefined &&
       this.storeyService.storeys.length > 0
     ) {
-      this.updateSelectedFloorIndex()
       this.highlightSelectedFloor()
+    }
+
+    if (changes["hideNotSelectedStoreys"] != null && this.scene != null) {
+      this.updateVisibility()
     }
 
     if (
@@ -119,6 +136,7 @@ export class BuildingViewer3dComponent
     ) {
       this.renderScene()
     }
+    this.updateVisibility()
   }
 
   public ngAfterViewInit(): void {
@@ -131,41 +149,110 @@ export class BuildingViewer3dComponent
     })
   }
 
-  public ngOnDestroy(): void {
-    if (this.animationId !== undefined) {
-      cancelAnimationFrame(this.animationId)
-    }
-    window.removeEventListener("pointermove", this.handlePointerMove)
-    window.removeEventListener("pointerup", this.handlePointerUp)
-    if (this.renderer) {
-      this.renderer.domElement.removeEventListener(
-        "pointerdown",
-        this.handlePointerDownGlobal,
-      )
-      this.renderer.dispose()
-    }
-  }
-
-  // --- Initialisation & Data ---
-
-  private updateSelectedFloorIndex(): void {
-    if (this.selectedStorey !== undefined) {
-      const idx = this.storeyService.storeys.findIndex(
-        (s) => s.id === this.selectedStorey?.id,
-      )
-      this.selectedFloorIndex = idx !== -1 ? idx : 0
-    }
-  }
-
   protected fetchAndRender(): void {
     if (!this.selectedBuilding) return
     this.storeyService
       .getByBuildingId(this.selectedBuilding.id)
       .subscribe(() => {
-        this.updateSelectedFloorIndex()
         this.renderScene()
         this.highlightSelectedFloor()
       })
+  }
+
+  public ngOnDestroy(): void {
+    if (this.animationId !== undefined) {
+      cancelAnimationFrame(this.animationId)
+    }
+    this.renderer.domElement.removeEventListener("click", this.onCanvasClick)
+    this.renderer.dispose()
+  }
+
+  protected onCanvasClick = (event: MouseEvent): void => {
+    // Ignore clicks while orbiting
+    if (this.isOrbiting) {
+      return
+    }
+
+    const rect = this.renderer.domElement.getBoundingClientRect()
+    const x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+    const y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+
+    this.mouse.set(x, y)
+    this.raycaster.setFromCamera(this.mouse, this.camera)
+    const intersects = this.raycaster.intersectObjects(
+      this.scene.children,
+      true,
+    )
+
+    for (const intersect of intersects) {
+      let obj: THREE.Object3D | null = intersect.object
+      while (obj != null && !(obj instanceof THREE.Group)) {
+        obj = obj.parent
+      }
+      if (
+        obj instanceof THREE.Group &&
+        obj.userData.floorIndex != null &&
+        obj.visible == true
+      ) {
+        const idx = Number(obj.userData.floorIndex)
+        if (!Number.isNaN(idx) && idx !== this.selectedFloorIndex) {
+          this.selectedFloorIndex = idx
+          this.highlightSelectedFloor()
+          // Emit the clicked storey
+          const storey = this.storeyService.storeys[idx]
+          if (storey !== undefined) {
+            this.storeySelected.emit(storey)
+          }
+          break
+        } else {
+          break // break if clicked on the same floor
+        }
+      }
+    }
+  }
+
+  protected highlightSelectedFloor(): void {
+    this.scene.traverse((obj) => {
+      if (
+        obj instanceof THREE.Mesh &&
+        obj.material instanceof THREE.MeshStandardMaterial &&
+        obj.parent instanceof THREE.Group &&
+        obj.parent.userData.floorIndex != null
+      ) {
+        const groupIndex = obj.parent.userData.floorIndex
+        if (obj.geometry instanceof THREE.BoxGeometry) {
+          obj.material.color.set(
+            groupIndex === this.selectedFloorIndex ? "#e0f2fe" : "#f0f0f0",
+          )
+        } else if (obj.geometry instanceof TextGeometry) {
+          obj.material.color.set(
+            groupIndex === this.selectedFloorIndex ? "#0ea5e9" : "#64748b",
+          )
+        }
+      }
+    })
+
+    const target = new THREE.Vector3(
+      0,
+      this.selectedFloorIndex * this.FLOOR_SPACING,
+      0,
+    )
+    const offset = new THREE.Vector3(25, 7, 25)
+    this.cameraTarget.copy(target)
+    this.cameraPosTarget.copy(target.clone().add(offset))
+    this.isAnimatingToFloor = true
+    this.updateVisibility()
+  }
+
+  protected updateVisibility(): void {
+    if (!this.scene) return
+    this.scene.traverse((obj) => {
+      if (obj instanceof THREE.Group && obj.userData.floorIndex != null) {
+        const idx = Number(obj.userData.floorIndex)
+        obj.visible =
+          !this.hideNotSelectedStoreys || idx === this.selectedFloorIndex
+      }
+    })
   }
 
   protected initScene(): void {
@@ -191,7 +278,19 @@ export class BuildingViewer3dComponent
     this.controls.maxDistance = 80
     this.controls.maxPolarAngle = Math.PI / 2
     this.controls.addEventListener("start", () => {
+      this.isOrbiting = false
       this.isAnimatingToFloor = false
+    })
+
+    // if changes, then we are orbiting, should prevent misclicks on floors
+    this.controls.addEventListener("change", () => {
+      this.isOrbiting = true
+    })
+
+    this.controls.addEventListener("end", () => {
+      setTimeout(() => {
+        this.isOrbiting = false
+      }, 100)
     })
 
     this.scene.add(new THREE.AmbientLight(0xffffff, 0.5))
@@ -202,6 +301,8 @@ export class BuildingViewer3dComponent
     const grid = new THREE.GridHelper(50, 50, "#cbd5e1", "#e2e8f0")
     grid.position.set(0, -0.1, 0)
     this.scene.add(grid)
+
+    this.renderer.domElement.addEventListener("click", this.onCanvasClick)
 
     window.addEventListener("pointermove", this.handlePointerMove)
     window.addEventListener("pointerup", this.handlePointerUp)
@@ -249,10 +350,19 @@ export class BuildingViewer3dComponent
       const index = this.storeyService.storeys.indexOf(floor)
       this.renderFloor(floor, index)
     }
+    this.updateVisibility()
   }
 
   protected renderFloor(floor: Storey, index: number): void {
+    // const floorWidth = 20
+    // const floorLength = 15
+    // const floorThickness = 0.3 // Épaisseur de la dalle
+    const y = index * this.FLOOR_SPACING
     const group = new THREE.Group()
+    group.position.set(0, y, 0)
+    group.userData.floorIndex = index
+    group.visible = true
+
     group.position.set(0, index * this.FLOOR_SPACING, 0)
     group.userData = {
       isFloorGroup: true,
@@ -780,13 +890,6 @@ export class BuildingViewer3dComponent
 
     this.originalMeshHidden.visible = true
     this.originalMeshHidden = null
-  }
-
-  protected highlightSelectedFloor(): void {
-    this.isAnimatingToFloor = true
-    const targetY = this.selectedFloorIndex * this.FLOOR_SPACING
-    this.cameraTarget.set(0, targetY, 0)
-    this.cameraPosTarget.set(25, targetY + 15, 25)
   }
 
   protected getMouseNormalized(event: PointerEvent): THREE.Vector2 {

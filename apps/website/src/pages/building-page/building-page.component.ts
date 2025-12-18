@@ -32,7 +32,9 @@ export class BuildingPageComponent implements OnInit {
 
   protected selectedBuilding!: Building
   protected selectedStorey!: Storey
+
   protected selectedRoom!: Room
+  protected hideNotSelectedStoreysFlag: boolean = false
 
   public ngOnInit() {
     this.buildingService
@@ -215,5 +217,13 @@ export class BuildingPageComponent implements OnInit {
         },
         error: (err) => console.error("Failed to update room", err),
       })
+  }
+
+  public setHideNotSelectedStoreys(hide: boolean) {
+    this.hideNotSelectedStoreysFlag = hide
+  }
+
+  public hideNotSelectedStoreys(): boolean {
+    return this.hideNotSelectedStoreysFlag && this.selectedStorey != null
   }
 }
