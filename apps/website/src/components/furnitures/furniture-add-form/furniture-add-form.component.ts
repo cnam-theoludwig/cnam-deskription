@@ -40,6 +40,7 @@ export class FurnitureAddFormComponent implements OnInit, OnChanges {
   public handleClose = new EventEmitter<void>()
 
   protected furnitureForm!: FormGroup
+  protected isStateDisabled = false
 
   public constructor() {
     this.stateService.get()
@@ -49,6 +50,10 @@ export class FurnitureAddFormComponent implements OnInit, OnChanges {
 
   public ngOnInit() {
     this.furnitureForm = this.furnitureService.createForm(this.fb)
+
+    this.furnitureForm.get("roomId")?.valueChanges.subscribe((roomId) => {
+      this.checkRoomForStockage(roomId)
+    })
   }
 
   public async ngOnChanges() {
@@ -64,6 +69,26 @@ export class FurnitureAddFormComponent implements OnInit, OnChanges {
       this.furnitureForm.patchValue({ storeyId: this.furniture.storeyId })
       await this.storeyService.onStoreyChange(this.furnitureForm)
       this.furnitureForm.patchValue({ roomId: this.furniture.roomId })
+
+      this.checkRoomForStockage(this.furniture.roomId) // <<< AJOUTÉ
+    }
+  }
+
+  private checkRoomForStockage(roomId: string | null) {
+    if (!roomId) return
+
+    const selectedRoom = this.roomService.rooms.find((r) => r.id === roomId)
+    const stateControl = this.furnitureForm.get("stateId")
+    if (selectedRoom?.name?.toLowerCase() === "stockage") {
+      const stockState = this.stateService.states.find(
+        (s) => s.name?.toLowerCase() === "stocké",
+      )
+      if (stockState) {
+        stateControl?.patchValue(stockState.id)
+        stateControl?.disable({ emitEvent: false })
+      }
+    } else {
+      stateControl?.enable({ emitEvent: false })
     }
   }
 

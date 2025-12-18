@@ -20,6 +20,9 @@ export const datagenState = async (): Promise<void> => {
           {
             name: "À jeter",
           },
+          {
+            name: "Stocké",
+          },
         ])
         .executeTakeFirstOrThrow()
     },
