@@ -32,7 +32,10 @@ export class BuildingPageComponent implements OnInit {
 
   protected selectedBuilding!: Building
   protected selectedStorey!: Storey
+
   protected selectedRoom!: Room
+  protected hideNotSelectedStoreysFlag: boolean = false
+  protected floorPlans: Map<string, string> = new Map()
 
   public ngOnInit() {
     this.buildingService
@@ -63,6 +66,8 @@ export class BuildingPageComponent implements OnInit {
           if (storeys[0]) {
             this.selectedStorey = storeys[0]
           }
+          // Load existing floor plans
+          this.loadFloorPlans(storeys)
         }),
         switchMap((storeys) =>
           this.roomService.getByStoreyId(storeys[0]?.id ?? ""),
@@ -91,6 +96,8 @@ export class BuildingPageComponent implements OnInit {
           if (storeys[0] !== undefined) {
             this.selectedStorey = storeys[0]
           }
+          // Load floor plans for the new building
+          this.loadFloorPlans(storeys)
         },
       })
     }
@@ -215,5 +222,36 @@ export class BuildingPageComponent implements OnInit {
         },
         error: (err) => console.error("Failed to update room", err),
       })
+  }
+
+  public setHideNotSelectedStoreys(hide: boolean) {
+    this.hideNotSelectedStoreysFlag = hide
+  }
+
+  public hideNotSelectedStoreys(): boolean {
+    return this.hideNotSelectedStoreysFlag && this.selectedStorey != null
+  }
+
+  protected onFloorPlanUploaded(event: {
+    storeyId: string
+    imageUrl: string
+  }): void {
+    console.log("Floor plan uploaded for storey:", event.storeyId)
+    this.floorPlans.set(event.storeyId, event.imageUrl)
+
+    this.storeyService
+      .update(event.storeyId, { floorPlanImage: event.imageUrl })
+      .subscribe({
+        next: () => console.log("Floor plan saved to database"),
+        error: (err) => console.error("Failed to save floor plan:", err),
+      })
+  }
+
+  private loadFloorPlans(storeys: Storey[]): void {
+    for (const storey of storeys) {
+      if (storey.floorPlanImage) {
+        this.floorPlans.set(storey.id, storey.floorPlanImage)
+      }
+    }
   }
 }

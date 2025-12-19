@@ -1,6 +1,7 @@
 import { database } from "@repo/models/database"
 import {
   StoreyCreateZodObject,
+  StoreyUpdateZodObject,
   StoreyZod,
   StoreyZodObject,
 } from "@repo/models/Storey"
@@ -50,6 +51,21 @@ export const storeys = {
       const storey = await database
         .deleteFrom("Storey")
         .where("id", "=", input)
+        .returningAll()
+        .executeTakeFirstOrThrow()
+      return storey
+    }),
+
+  update: publicProcedure
+    .route({ method: "PATCH", path: "/storeys", tags: ["Storey"] })
+    .input(StoreyUpdateZodObject)
+    .output(StoreyZodObject)
+    .handler(async ({ input }) => {
+      const { id, ...updates } = input
+      const storey = await database
+        .updateTable("Storey")
+        .set(updates)
+        .where("id", "=", id)
         .returningAll()
         .executeTakeFirstOrThrow()
       return storey

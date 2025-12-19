@@ -1,4 +1,11 @@
-import { Component, Input, Output, EventEmitter } from "@angular/core"
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ViewChild,
+  ElementRef,
+} from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { FormsModule } from "@angular/forms"
 import {
@@ -8,6 +15,7 @@ import {
   Check,
   Trash2,
   Plus,
+  Upload,
   LucideAngularModule,
 } from "lucide-angular"
 
@@ -29,8 +37,9 @@ export class ControlPanelComponent implements OnChanges {
   protected readonly LayersIcon = Layers
   protected readonly DoorOpenIcon = DoorOpen
   protected readonly CheckIcon = Check
-  protected readonly TrashIcon = Trash2 // Nouvelle icône
-  protected readonly PlusIcon = Plus // Nouvelle icône
+  protected readonly TrashIcon = Trash2
+  protected readonly PlusIcon = Plus
+  protected readonly UploadIcon = Upload
 
   // --- Inputs / Outputs ---
   @Input() public buildings: Building[] = []
@@ -46,12 +55,22 @@ export class ControlPanelComponent implements OnChanges {
   @Output() public selectStorey = new EventEmitter<Storey>()
   @Output() public addStorey = new EventEmitter<void>()
   @Output() public removeStorey = new EventEmitter<Storey>()
+
+  @Input() public hideNotSelectedStoreys = false
+  @Output() public toggleHideNotSelectedStoreys = new EventEmitter<boolean>()
   @Output() public selectRoom = new EventEmitter<Room>()
   @Output() public addRoom = new EventEmitter<void>()
   @Output() public removeRoom = new EventEmitter<Room>()
   @Output() public updateRoom = new EventEmitter<Room>()
+  @Output() public floorPlanUploaded = new EventEmitter<{
+    storeyId: string
+    imageUrl: string
+  }>()
+
+  @ViewChild("fileInput") public fileInput!: ElementRef<HTMLInputElement>
 
   // --- État Local ---
+  protected currentStoreyForUpload: Storey | null = null
   protected showAddRoom: boolean = false
   protected editName: string = ""
   protected editColor: string = ""
@@ -80,6 +99,32 @@ export class ControlPanelComponent implements OnChanges {
 
         this.updateRoom.emit(updatedRoomPayload)
       }
+    }
+  }
+
+  protected triggerFloorPlanUpload(storey: Storey): void {
+    this.currentStoreyForUpload = storey
+    this.fileInput.nativeElement.click()
+  }
+
+  protected onFloorPlanSelected(event: Event): void {
+    const input = event.target as HTMLInputElement
+    if (input.files && input.files[0] && this.currentStoreyForUpload) {
+      const file = input.files[0]
+      const reader = new FileReader()
+
+      reader.onload = (e) => {
+        const imageUrl = e.target?.result as string
+        if (this.currentStoreyForUpload) {
+          this.floorPlanUploaded.emit({
+            storeyId: this.currentStoreyForUpload.id,
+            imageUrl,
+          })
+        }
+      }
+
+      reader.readAsDataURL(file)
+      input.value = "" // Reset input
     }
   }
 }

@@ -3,7 +3,7 @@ import { fromPromise } from "rxjs/internal/observable/innerFrom"
 
 import { getRPCClient } from "@repo/api-client"
 import { environment } from "../environments/environment"
-import type { Storey, StoreyCreate } from "@repo/models/Storey"
+import type { Storey, StoreyCreate, StoreyUpdate } from "@repo/models/Storey"
 import type { Status } from "@repo/utils/types"
 import type { FormGroup } from "@angular/forms"
 import { RoomService } from "./room.service"
@@ -88,6 +88,22 @@ export class StoreyService {
         this._storeys.update((old) => {
           return old.filter((storey) => {
             return storey.id !== storeyId
+          })
+        })
+      },
+    })
+    return observable
+  }
+
+  public update(storeyId: Storey["id"], updates: Partial<StoreyUpdate>) {
+    const observable = fromPromise(
+      this.rpcClient.storeys.update({ id: storeyId, ...updates }),
+    )
+    observable.subscribe({
+      next: (updatedStorey) => {
+        this._storeys.update((old) => {
+          return old.map((storey) => {
+            return storey.id === storeyId ? updatedStorey : storey
           })
         })
       },
