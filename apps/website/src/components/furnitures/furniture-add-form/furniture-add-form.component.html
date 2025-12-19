@@ -30,6 +30,7 @@
             class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
             formControlName="buildingId"
             (change)="this.buildingService.onBuildingChange(this.furnitureForm)"
+            [disabled]="shouldDisablePositionFields"
             required
           >
             <option value="" disabled selected>Choisissez un bâtiment</option>
@@ -52,6 +53,7 @@
             class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
             formControlName="storeyId"
             (change)="this.storeyService.onStoreyChange(this.furnitureForm)"
+            [disabled]="shouldDisablePositionFields"
             required
           >
             <option value="" disabled selected>Choisissez un étage</option>
@@ -71,6 +73,7 @@
             id="room"
             class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
             formControlName="roomId"
+            [disabled]="shouldDisablePositionFields"
             required
           >
             <option value="" disabled selected>Choisissez une pièce</option>
@@ -119,7 +122,77 @@
         }
       </div>
 
+      <!-- Section des actions sur le meuble -->
+      @if (
+        canModifyPosition ||
+        canAssign ||
+        canManageStorage ||
+        canViewHistory ||
+        canViewFunctionalState
+      ) {
+        <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <h3 class="text-lg font-semibold mb-3 text-gray-800">
+            Actions sur le meuble
+          </h3>
+          <div class="flex flex-wrap gap-3 justify-start">
+            @if (canModifyPosition) {
+              <p-button
+                label="Scan/GPS"
+                styleClass="p-button-help"
+                (onClick)="onScanGPS()"
+                type="button"
+              ></p-button>
+            }
+            @if (canAssign) {
+              <p-button
+                label="Affecter/Désaffecter"
+                styleClass="p-button-danger"
+                (onClick)="onAssign()"
+                type="button"
+              ></p-button>
+            }
+            @if (canManageStorage) {
+              <p-button
+                label="Stocker"
+                styleClass="p-button-lime"
+                (onClick)="onStore()"
+                type="button"
+              ></p-button>
+              <p-button
+                label="Céder"
+                styleClass="p-button-gray"
+                (onClick)="onDispose()"
+                type="button"
+              ></p-button>
+            }
+            @if (canViewHistory && furniture != null) {
+              <p-button
+                label="Voir historique"
+                styleClass="p-button-info"
+                (onClick)="onViewHistory()"
+                type="button"
+              ></p-button>
+            }
+            @if (canViewFunctionalState) {
+              <p-button
+                label="Voir état fonctionnel"
+                styleClass="p-button-teal"
+                (onClick)="onViewFunctionalState()"
+                type="button"
+              ></p-button>
+            }
+          </div>
+        </div>
+      }
+
       <div class="modal-actions flex justify-end gap-3 mt-6">
+        <button
+          class="bg-gray-300 text-gray-800 rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-gray-200"
+          type="button"
+          (click)="closeModal()"
+        >
+          Annuler
+        </button>
         @if (furniture != null) {
           <button
             class="bg-red-600 text-white rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-red-400"
@@ -129,19 +202,11 @@
             Supprimer
           </button>
         }
-        <button
-          class="bg-gray-300 text-gray-800 rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-gray-200"
-          type="button"
-          (click)="closeModal()"
-        >
-          Annuler
-        </button>
-        <button
-          class="bg-blue-600 text-white rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-blue-400"
+        <p-button
+          label="Sauvegarder"
+          styleClass="p-button-primary"
           type="submit"
-        >
-          Sauvegarder
-        </button>
+        ></p-button>
       </div>
     </form>
 
