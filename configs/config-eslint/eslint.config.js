@@ -7,6 +7,8 @@ export default defineConfig(
   importZod.configs.recommended,
   ...configConventions,
   {
-    "@typescript-eslint/no-deprecated": "off",
+    rules: {
+      "@typescript-eslint/no-deprecated": "off",
+    },
   },
 )

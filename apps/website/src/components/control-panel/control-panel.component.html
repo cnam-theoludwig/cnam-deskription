@@ -56,11 +56,6 @@
               <div class="font-medium text-sm text-foreground">
                 {{ storey.name }}
               </div>
-              <!-- <div class="text-xs text-muted-foreground">
-                {{ storey.rooms.length }} pièce{{
-                  storey.rooms.length !== 1 ? "s" : ""
-                }}
-              </div> -->
             </button>
 
             @if (storeys.length > 1) {
@@ -68,7 +63,10 @@
                 class="btn btn-ghost text-destructive hover:bg-destructive/10"
                 (click)="removeStorey.emit(storey)"
               >
-                🗑
+                <lucide-angular
+                  [img]="TrashIcon"
+                  class="w-4 h-4"
+                ></lucide-angular>
               </button>
             }
           </div>
@@ -84,5 +82,86 @@
     </div>
 
     <hr />
+
+    <div class="space-y-3 flex flex-col h-full min-h-0">
+      <div class="flex items-center justify-between">
+        <h3 class="font-semibold text-foreground flex items-center gap-2">
+          <lucide-angular [img]="DoorOpenIcon"></lucide-angular>
+          Pièces
+        </h3>
+        <span class="badge badge-secondary">{{ rooms.length }}</span>
+      </div>
+
+      <div class="space-y-2 max-h-[300px] overflow-y-auto px-1">
+        @for (room of rooms; track room.id) {
+          <div
+            class="room-item"
+            [class.selected]="selectedRoom?.id === room.id"
+            (click)="selectRoom.emit(room)"
+            (keydown.enter)="selectRoom.emit(room)"
+            tabindex="0"
+          >
+            <div
+              class="color-preview"
+              [style.backgroundColor]="
+                selectedRoom?.id === room.id ? editColor : room.color
+              "
+            >
+              @if (selectedRoom?.id === room.id) {
+                <input
+                  type="color"
+                  [(ngModel)]="editColor"
+                  class="color-input-hidden"
+                  title="Changer la couleur"
+                />
+              }
+            </div>
+
+            <div class="room-name-container">
+              @if (selectedRoom?.id === room.id) {
+                <input
+                  [(ngModel)]="editName"
+                  (keydown.enter)="addRoom.emit()"
+                  class="room-name-input"
+                  placeholder="Nom de la pièce"
+                />
+              } @else {
+                <div class="room-name-text">
+                  {{ room.name }}
+                </div>
+              }
+            </div>
+
+            <div class="room-actions">
+              @if (selectedRoom?.id === room.id) {
+                <button title="Sauvegarder" (click)="saveEdit()">
+                  <lucide-angular
+                    [img]="CheckIcon"
+                    class="w-4 h-4"
+                  ></lucide-angular>
+                </button>
+              }
+
+              <button
+                class="btn btn-ghost text-destructive hover:bg-destructive/10"
+                (click)="removeRoom.emit(room)"
+              >
+                <lucide-angular
+                  [img]="TrashIcon"
+                  class="w-4 h-4"
+                ></lucide-angular>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <button
+        class="w-full btn btn-outline bg-primary/5 border-primary/20 text-primary mt-2"
+        (click)="addRoom.emit()"
+      >
+        Ajouter une pièce
+      </button>
+    </div>
   </div>
 </div>

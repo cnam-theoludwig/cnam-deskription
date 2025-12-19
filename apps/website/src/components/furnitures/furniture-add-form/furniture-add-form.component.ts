@@ -17,10 +17,11 @@ import { LocationService } from "../../../services/location.service"
 import { firstValueFrom } from "rxjs"
 import { RoleService } from "../../../services/role.service"
 import { ButtonModule } from "primeng/button"
+import { DatePipe } from "@angular/common"
 
 @Component({
   selector: "app-furniture-add-form",
-  imports: [ReactiveFormsModule, RequiredComponent, ButtonModule],
+  imports: [ReactiveFormsModule, RequiredComponent, ButtonModule, DatePipe],
   templateUrl: "./furniture-add-form.component.html",
   styleUrl: "./furniture-add-form.component.css",
 })
@@ -62,9 +63,9 @@ export class FurnitureAddFormComponent implements OnInit, OnChanges {
         buildingId: this.furniture.buildingId,
       })
 
-      await this.buildingService.onBuildingChange(this.furnitureForm)
+      this.buildingService.onBuildingChange(this.furnitureForm)
       this.furnitureForm.patchValue({ storeyId: this.furniture.storeyId })
-      await this.storeyService.onStoreyChange(this.furnitureForm)
+      this.storeyService.onStoreyChange(this.furnitureForm)
       this.furnitureForm.patchValue({ roomId: this.furniture.roomId })
     }
   }
@@ -109,6 +110,25 @@ export class FurnitureAddFormComponent implements OnInit, OnChanges {
     } catch (error) {
       console.error("Erreur lors de la création :", error)
       alert("Une erreur est survenue.")
+    }
+  }
+
+  public async onDelete() {
+    if (this.furniture === null) {
+      return
+    }
+
+    if (!confirm("Voulez-vous vraiment supprimer ce meuble ?")) {
+      return
+    }
+
+    try {
+      await firstValueFrom(this.furnitureService.delete(this.furniture.id))
+
+      this.closeModal()
+    } catch (error) {
+      console.error("Erreur lors de la suppression :", error)
+      alert("Impossible de supprimer cet élément.")
     }
   }
 

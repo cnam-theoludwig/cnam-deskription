@@ -1,4 +1,4 @@
-FROM node:22.20.0-slim AS node-pnpm
+FROM node:22.21.1-slim AS node-pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 
 FROM node-pnpm AS builder
 COPY ./ ./
-RUN pnpm install --global turbo@2.5.8
+RUN pnpm install --global turbo@2.6.1
 RUN turbo prune @repo/website --docker
 
 FROM node-pnpm AS installer

@@ -9,6 +9,10 @@ import { routes } from "./app.routes"
 import { providePrimeNG } from "primeng/config"
 import Aura from "@primeuix/themes/aura"
 
+import { registerLocaleData } from "@angular/common"
+import localeFr from "@angular/common/locales/fr"
+registerLocaleData(localeFr, "fr")
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),

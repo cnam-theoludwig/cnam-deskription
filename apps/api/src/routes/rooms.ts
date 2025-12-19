@@ -1,5 +1,10 @@
 import { database } from "@repo/models/database"
-import { RoomCreateZodObject, RoomZod, RoomZodObject } from "@repo/models/Room"
+import {
+  RoomCreateZodObject,
+  RoomUpdateZodObject,
+  RoomZod,
+  RoomZodObject,
+} from "@repo/models/Room"
 import * as z from "zod"
 import { publicProcedure } from "../oRPC"
 
@@ -35,6 +40,23 @@ export const rooms = {
         .values(input)
         .returningAll()
         .executeTakeFirstOrThrow()
+      return room
+    }),
+
+  update: publicProcedure
+    .route({ method: "PUT", path: "/rooms", tags: ["Room"] })
+    .input(RoomUpdateZodObject)
+    .output(RoomZodObject)
+    .handler(async ({ input }) => {
+      const { id, ...dataToUpdate } = input
+
+      const room = await database
+        .updateTable("Room")
+        .set(dataToUpdate)
+        .where("id", "=", id)
+        .returningAll()
+        .executeTakeFirstOrThrow()
+
       return room
     }),
 

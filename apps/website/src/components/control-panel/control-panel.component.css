@@ -36,3 +36,91 @@
   color: #ef4444;
   cursor: pointer;
 }
+
+/* --- Style repris de .storey-item --- */
+.room-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* Espace entre couleur, nom et boutons */
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  transition: all 0.2s;
+  cursor: pointer;
+  opacity: 0.8;
+  position: relative; /* Pour le positionnement */
+}
+
+.room-item.selected {
+  background-color: #e0f2ff;
+  border-color: #3b82f6;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  opacity: 1;
+}
+
+.room-item:hover {
+  background-color: #f3f4f6;
+  opacity: 1;
+}
+
+/* --- Éléments internes --- */
+
+/* Conteneur de la couleur (Rond) */
+.color-preview {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 9999px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  position: relative; /* Important pour l'input invisible */
+  overflow: hidden;
+}
+
+/* L'input couleur invisible qui recouvre le rond */
+.color-input-hidden {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Conteneur du nom (flex-1) */
+.room-name-container {
+  flex: 1;
+  min-width: 0; /* Permet au text-overflow de fonctionner */
+}
+
+/* Le texte en mode lecture */
+.room-name-text {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* L'input en mode édition */
+.room-name-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #3b82f6; /* Petit soulignement bleu quand on édite */
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #111827;
+  padding: 0 0 2px 0;
+  outline: none;
+}
+
+/* Zone des boutons d'action */
+.room-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}

@@ -186,12 +186,22 @@
       }
 
       <div class="modal-actions flex justify-end gap-3 mt-6">
-        <p-button
-          label="Annuler"
-          styleClass="p-button-secondary"
-          (onClick)="closeModal()"
+        <button
+          class="bg-gray-300 text-gray-800 rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-gray-200"
           type="button"
-        ></p-button>
+          (click)="closeModal()"
+        >
+          Annuler
+        </button>
+        @if (furniture != null) {
+          <button
+            class="bg-red-600 text-white rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-red-400"
+            type="button"
+            (click)="onDelete()"
+          >
+            Supprimer
+          </button>
+        }
         <p-button
           label="Sauvegarder"
           styleClass="p-button-primary"
@@ -199,5 +209,22 @@
         ></p-button>
       </div>
     </form>
+
+    <ul>
+      @for (log of furniture?.historyLogs; track log.id) {
+        <li>
+          <strong>{{ log.modifiedAt | date: "short" }} :</strong> ({{
+            log.column === "State"
+              ? "État"
+              : log.column === "Type"
+                ? "Type"
+                : log.column === "Name"
+                  ? "Nom"
+                  : "Emplacement"
+          }}) Ancienne valeur: {{ log.newValue }} | Nouvelle valeur:
+          {{ log.oldValue }}
+        </li>
+      }
+    </ul>
   </div>
 </dialog>

@@ -1,13 +1,17 @@
-import { Component, inject } from "@angular/core"
 import type { OnInit } from "@angular/core"
+import { Component, inject } from "@angular/core"
+import type { Building } from "@repo/models/Building"
+import type { Room } from "@repo/models/Room"
+import type { Storey } from "@repo/models/Storey"
+import { filter, switchMap, tap } from "rxjs"
+import { BuildingAddFormComponent } from "../../components/building-add-form/building-add-form.component"
 import { BuildingViewer3dComponent } from "../../components/building-viewer/building-viewer.component"
 import { ControlPanelComponent } from "../../components/control-panel/control-panel.component"
-import { BuildingService } from "../../services/building.service"
-import type { Building } from "@repo/models/Building"
-import { BuildingAddFormComponent } from "../../components/building-add-form/building-add-form.component"
-import { StoreyService } from "../../services/storey.service"
-import type { Storey } from "@repo/models/Storey"
+import { RoomAddFormComponent } from "../../components/room-add-form/room-add-form.component"
 import { StoreyAddFormComponent } from "../../components/storey-add-form/storey-add-form.component"
+import { BuildingService } from "../../services/building.service"
+import { RoomService } from "../../services/room.service"
+import { StoreyService } from "../../services/storey.service"
 
 @Component({
   selector: "app-building-manager",
@@ -17,33 +21,65 @@ import { StoreyAddFormComponent } from "../../components/storey-add-form/storey-
     ControlPanelComponent,
     BuildingAddFormComponent,
     StoreyAddFormComponent,
+    RoomAddFormComponent,
   ],
   styleUrls: ["./building-page.component.css"],
 })
 export class BuildingPageComponent implements OnInit {
   protected readonly buildingService = inject(BuildingService)
   protected readonly storeyService = inject(StoreyService)
+  protected readonly roomService = inject(RoomService)
+
   protected selectedBuilding!: Building
   protected selectedStorey!: Storey
+  protected selectedRoom!: Room
 
   public ngOnInit() {
-    this.buildingService.get().subscribe({
-      next: (buildings) => {
-        console.log("Buildings:", buildings)
-        if (buildings[0] !== undefined) {
-          this.selectedBuilding = buildings[0]
-          this.storeyService
-            .getByBuildingId(this.selectedBuilding.id)
-            .subscribe({
-              next: (storeys) => {
-                if (storeys[0] !== undefined) {
-                  this.selectedStorey = storeys[0]
-                }
-              },
-            })
-        }
-      },
-    })
+    this.buildingService
+      .get()
+      .pipe(
+        // 1. On reçoit les bâtiments
+        tap((buildings) => console.log("Buildings loaded:", buildings.length)),
+
+        // On arrête si pas de bâtiment
+        filter((buildings) => buildings.length > 0),
+
+        // On sélectionne le premier et on charge ses étages
+        tap((buildings) => {
+          if (buildings[0]) {
+            this.selectedBuilding = buildings[0]
+          }
+        }),
+        switchMap((buildings) =>
+          this.storeyService.getByBuildingId(buildings[0]?.id ?? ""),
+        ),
+
+        // 2. On reçoit les étages
+        tap((storeys) => console.log("Storeys loaded:", storeys.length)),
+        filter((storeys) => storeys.length > 0),
+
+        // On sélectionne le premier étage et on charge ses pièces
+        tap((storeys) => {
+          if (storeys[0]) {
+            this.selectedStorey = storeys[0]
+          }
+        }),
+        switchMap((storeys) =>
+          this.roomService.getByStoreyId(storeys[0]?.id ?? ""),
+        ),
+
+        // 3. On reçoit les pièces
+        tap((rooms) => console.log("Rooms loaded:", rooms.length)),
+        filter((rooms) => rooms.length > 0),
+        tap((rooms) => {
+          if (rooms[0]) {
+            this.selectedRoom = rooms[0]
+          }
+        }),
+      )
+      .subscribe({
+        error: (err) => console.error("Erreur de chargement:", err),
+      })
   }
 
   protected selectBuilding(building: Building) {
@@ -64,6 +100,20 @@ export class BuildingPageComponent implements OnInit {
     console.log("selectStorey", storey.id)
     if (storey !== undefined) {
       this.selectedStorey = storey
+      this.roomService.getByStoreyId(storey.id).subscribe({
+        next: (rooms) => {
+          if (rooms[0] !== undefined) {
+            this.selectedRoom = rooms[0]
+          }
+        },
+      })
+    }
+  }
+
+  protected selectRoom(room: Room) {
+    console.log("selectRoom", room.id)
+    if (room !== undefined) {
+      this.selectedRoom = room
     }
   }
 
@@ -111,6 +161,25 @@ export class BuildingPageComponent implements OnInit {
     modal.showModal()
   }
 
+  protected addRoom() {
+    console.log("Add room")
+    const modal = document.getElementById("addRoomModal") as HTMLDialogElement
+    modal.addEventListener(
+      "close",
+      () => {
+        if (this.roomService.rooms.length > 0) {
+          const last = this.roomService.rooms[this.roomService.rooms.length - 1]
+          if (last !== undefined) {
+            console.log("New room added:", last)
+            this.selectRoom(last)
+          }
+        }
+      },
+      { once: true },
+    )
+    modal.showModal()
+  }
+
   protected removeStorey(storey: Storey) {
     this.storeyService.remove(storey.id).subscribe({
       next: () => {
@@ -119,5 +188,32 @@ export class BuildingPageComponent implements OnInit {
         }
       },
     })
+  }
+
+  protected removeRoom(room: Room) {
+    this.roomService.delete(room.id).subscribe({
+      next: () => {
+        if (this.roomService.rooms[0] !== undefined) {
+          this.selectedRoom = this.roomService.rooms[0]
+        }
+      },
+    })
+  }
+
+  protected updateRoom(updatedRoom: Room) {
+    console.log("Update room", updatedRoom)
+
+    this.roomService
+      .update(updatedRoom.id, {
+        name: updatedRoom.name,
+        color: updatedRoom.color,
+      })
+      .subscribe({
+        next: (res) => {
+          console.log("Room updated successfully", res)
+          this.selectedRoom = res
+        },
+        error: (err) => console.error("Failed to update room", err),
+      })
   }
 }
