@@ -194,7 +194,7 @@ export class BuildingViewer3dComponent
       if (
         obj instanceof THREE.Group &&
         obj.userData.floorIndex != null &&
-        obj.visible == true
+        obj.visible
       ) {
         const idx = Number(obj.userData.floorIndex)
         if (!Number.isNaN(idx) && idx !== this.selectedFloorIndex) {
@@ -444,7 +444,10 @@ export class BuildingViewer3dComponent
 
     // Floor Plan (if available)
     if (this.storeyFloorPlans && this.storeyFloorPlans.has(floor.id)) {
-      const imageUrl = this.storeyFloorPlans.get(floor.id)!
+      const imageUrl = this.storeyFloorPlans.get(floor.id)
+      if (imageUrl == null) {
+        return
+      }
       this.addPlaneFloorTextureToStorey(imageUrl, group)
     }
 

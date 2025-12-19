@@ -67,7 +67,7 @@ export class ControlPanelComponent implements OnChanges {
     imageUrl: string
   }>()
 
-  @ViewChild("fileInput") fileInput!: ElementRef<HTMLInputElement>
+  @ViewChild("fileInput") public fileInput!: ElementRef<HTMLInputElement>
 
   // --- État Local ---
   protected currentStoreyForUpload: Storey | null = null
