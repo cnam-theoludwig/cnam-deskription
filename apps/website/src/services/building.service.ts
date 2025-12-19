@@ -1,16 +1,14 @@
 import { inject, Injectable, signal } from "@angular/core"
-import { fromPromise } from "rxjs/internal/observable/innerFrom"
+import { from, Observable } from "rxjs"
 
 import { getRPCClient } from "@repo/api-client"
 import { environment } from "../environments/environment"
-import type { BuildingCreate } from "@repo/models/Building"
+import type { Building, BuildingCreate } from "@repo/models/Building"
 import type { Status } from "@repo/utils/types"
 import type { FormGroup } from "@angular/forms"
 import { StoreyService } from "./storey.service"
 
-export type Buildings = Awaited<
-  ReturnType<ReturnType<typeof getRPCClient>["buildings"]["get"]>
->
+export type Buildings = Building[]
 
 @Injectable({
   providedIn: "root",
@@ -31,9 +29,11 @@ export class BuildingService {
 
   public get() {
     this._status.set("pending")
-    const observable = fromPromise(this.rpcClient.buildings.get())
+    const observable = from(
+      this.rpcClient.buildings.get(),
+    ) as Observable<Buildings>
     observable.subscribe({
-      next: (buildings) => {
+      next: (buildings: Building[]) => {
         this._status.set("idle")
         this._buildings.set(buildings)
       },
@@ -42,9 +42,11 @@ export class BuildingService {
   }
 
   public create(input: BuildingCreate) {
-    const observable = fromPromise(this.rpcClient.buildings.create(input))
+    const observable = from(
+      this.rpcClient.buildings.create(input),
+    ) as Observable<Building>
     observable.subscribe({
-      next: (newBuilding) => {
+      next: (newBuilding: Building) => {
         this._buildings.update((old) => {
           return [...old, newBuilding]
         })

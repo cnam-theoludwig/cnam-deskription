@@ -1,28 +1,31 @@
 import { Injectable, signal } from "@angular/core"
-import { fromPromise } from "rxjs/internal/observable/innerFrom"
+import { from, Observable } from "rxjs"
 
 import { getRPCClient } from "@repo/api-client"
 import { environment } from "../environments/environment"
 import type {
   Furniture,
   FurnitureCreate,
+  FurnitureUpdate,
   FurnitureWithRelations,
 } from "@repo/models/Furniture"
 import type { Status } from "@repo/utils/types"
 import { FormControl, Validators } from "@angular/forms"
 import type { FormBuilder, FormGroup } from "@angular/forms"
+import type { Room } from "@repo/models/Room"
 
-export type Furnitures = Awaited<
-  ReturnType<ReturnType<typeof getRPCClient>["furnitures"]["get"]>
->
+export type Furnitures = FurnitureWithRelations[]
 
 @Injectable({
   providedIn: "root",
 })
 export class FurnitureService {
   private readonly rpcClient = getRPCClient(environment.apiBaseURL)
+
   private readonly _furnitures = signal<Furnitures>([])
   private readonly _status = signal<Status>("pending")
+
+  public readonly furnitureToEdit = signal<FurnitureWithRelations | null>(null)
 
   public get furnitures() {
     return this._furnitures()
@@ -34,7 +37,41 @@ export class FurnitureService {
 
   public get() {
     this._status.set("pending")
-    const observable = fromPromise(this.rpcClient.furnitures.get())
+    const observable = from(
+      this.rpcClient.furnitures.get(),
+    ) as Observable<Furnitures>
+    observable.subscribe({
+      next: (furnitures) => {
+        this._status.set("idle")
+        this._furnitures.set(furnitures)
+      },
+    })
+    return observable
+  }
+
+  public getByRoomId(roomId: Room["id"]) {
+    this._status.set("pending")
+    const observable = from(
+      this.rpcClient.furnitures.getByRoomId({ roomId }),
+    ) as Observable<Furnitures>
+    observable.subscribe({
+      next: (furnitures) => {
+        this._status.set("idle")
+        this._furnitures.set(furnitures)
+      },
+    })
+    return observable
+  }
+
+  public fetchForRender(roomId: string) {
+    return from(this.rpcClient.furnitures.getByRoomId({ roomId }))
+  }
+
+  public search(input: Partial<FurnitureWithRelations>) {
+    this._status.set("pending")
+    const observable = from(
+      this.rpcClient.furnitures.search(input),
+    ) as Observable<Furnitures>
     observable.subscribe({
       next: (furnitures) => {
         this._status.set("idle")
@@ -45,11 +82,33 @@ export class FurnitureService {
   }
 
   public create(input: FurnitureCreate) {
-    const observable = fromPromise(this.rpcClient.furnitures.create(input))
+    const observable = from(
+      this.rpcClient.furnitures.create(input),
+    ) as Observable<Furniture>
     observable.subscribe({
       next: (newFurniture) => {
         this._furnitures.update((old) => {
-          return [...old, newFurniture]
+          return [...old, newFurniture as FurnitureWithRelations]
+        })
+      },
+    })
+    return observable
+  }
+
+  public update(furniture: FurnitureUpdate) {
+    this._status.set("pending")
+    const observable = from(
+      this.rpcClient.furnitures.update(furniture),
+    ) as Observable<Furniture>
+    observable.subscribe({
+      next: (updatedFurniture) => {
+        this._status.set("idle")
+        this._furnitures.update((old) => {
+          return old.map((furniture) => {
+            return furniture.id === updatedFurniture.id
+              ? { ...furniture, ...updatedFurniture }
+              : furniture
+          })
         })
       },
     })
@@ -76,45 +135,39 @@ export class FurnitureService {
       roomId: new FormControl({ value: "", disabled: true }, requiredValidator),
       typeId: new FormControl("", requiredValidator),
       stateId: new FormControl("", requiredValidator),
+      model: new FormControl("", requiredValidator),
     })
   }
 
-  public search(input: Partial<FurnitureWithRelations>) {
-    this._status.set("pending")
-    const observable = fromPromise(this.rpcClient.furnitures.search(input))
-    observable.subscribe({
-      next: (furnitures) => {
-        this._status.set("idle")
-        this._furnitures.set(furnitures)
+  public openModal(furniture?: FurnitureWithRelations) {
+    this.furnitureToEdit.set(furniture ?? null)
+    const modal = document.getElementById(
+      "addFurnitureModal",
+    ) as HTMLDialogElement
+
+    if (!modal) return
+
+    modal.addEventListener(
+      "close",
+      () => {
+        this.furnitureToEdit.set(null)
       },
-    })
-    return observable
-  }
-
-  public update(id: Furniture["id"], furniture: FurnitureCreate) {
-    this._status.set("pending")
-    const observable = fromPromise(
-      this.rpcClient.furnitures.update({ id, furniture }),
+      { once: true },
     )
-    observable.subscribe({
-      next: (updatedFurniture) => {
-        this._status.set("idle")
-        this._furnitures.update((old) => {
-          return old.map((furniture) => {
-            return furniture.id === updatedFurniture.id
-              ? updatedFurniture
-              : furniture
-          })
-        })
-      },
-    })
-    return observable
+    modal.showModal()
+  }
+
+  public closeModal() {
+    const modal = document.getElementById(
+      "addFurnitureModal",
+    ) as HTMLDialogElement
+    if (modal) modal.close()
   }
 
   public exportToExcel() {
-    const observable = fromPromise(
+    const observable = from(
       this.rpcClient.furnitures.excelExport(this.furnitures),
-    )
+    ) as Observable<string>
 
     const base64ToUint8Array = (base64: string) => {
       // remove data URL prefix if present
@@ -140,7 +193,7 @@ export class FurnitureService {
     }
 
     observable.subscribe({
-      next: (base64) => {
+      next: (base64: string) => {
         try {
           const bytes = base64ToUint8Array(base64)
           const blob = new Blob([bytes], {
@@ -172,7 +225,7 @@ export class FurnitureService {
   public delete(id: Furniture["id"]) {
     this._status.set("pending")
 
-    const observable = fromPromise(this.rpcClient.furnitures.delete(id))
+    const observable = from(this.rpcClient.furnitures.delete(id))
 
     observable.subscribe({
       next: () => {

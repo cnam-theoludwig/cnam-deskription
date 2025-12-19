@@ -3,7 +3,10 @@
   class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50"
 >
   <div class="modal-content">
-    <h2>{{ furniture != null ? "Modifier" : "Ajouter" }} un meuble</h2>
+    <h2>
+      {{ furnitureService.furnitureToEdit != null ? "Modifier" : "Ajouter" }}
+      un meuble
+    </h2>
 
     <form [formGroup]="furnitureForm" (submit)="onSubmit()">
       <div class="mb-3 flex items-center gap-4">
@@ -122,6 +125,20 @@
         }
       </div>
 
+      <div class="mb-3 flex items-center gap-4">
+        <label for="model" class="form-label w-20"
+          >Modèle <app-required
+        /></label>
+        <input
+          id="model"
+          class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+          formControlName="model"
+          type="text"
+          placeholder="Entrez le modèle du meuble (url vers le fichier .glb)"
+          required
+        />
+      </div>
+
       <!-- Section des actions sur le meuble -->
       @if (
         canModifyPosition ||
@@ -193,7 +210,7 @@
         >
           Annuler
         </button>
-        @if (furniture != null) {
+        @if (furnitureService.furnitureToEdit()) {
           <button
             class="bg-red-600 text-white rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-red-400"
             type="button"
@@ -202,16 +219,20 @@
             Supprimer
           </button>
         }
-        <p-button
-          label="Sauvegarder"
-          styleClass="p-button-primary"
+        <button
+          class="bg-blue-600 text-white rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-blue-400"
           type="submit"
-        ></p-button>
+        >
+          Sauvegarder
+        </button>
       </div>
     </form>
 
     <ul>
-      @for (log of furniture?.historyLogs; track log.id) {
+      @for (
+        log of furnitureService.furnitureToEdit()?.historyLogs;
+        track log.id
+      ) {
         <li>
           <strong>{{ log.modifiedAt | date: "short" }} :</strong> ({{
             log.column === "State"

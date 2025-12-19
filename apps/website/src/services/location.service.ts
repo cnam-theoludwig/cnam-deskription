@@ -1,14 +1,12 @@
 import { Injectable, signal } from "@angular/core"
-import { fromPromise } from "rxjs/internal/observable/innerFrom"
+import { from, Observable } from "rxjs"
 
 import { getRPCClient } from "@repo/api-client"
 import { environment } from "../environments/environment"
-import type { LocationCreate } from "@repo/models/Location"
+import type { Location, LocationCreate } from "@repo/models/Location"
 import type { Status } from "@repo/utils/types"
 
-export type Locations = Awaited<
-  ReturnType<ReturnType<typeof getRPCClient>["locations"]["get"]>
->
+export type Locations = Location[]
 
 @Injectable({
   providedIn: "root",
@@ -28,7 +26,9 @@ export class LocationService {
 
   public get() {
     this._status.set("pending")
-    const observable = fromPromise(this.rpcClient.locations.get())
+    const observable = from(
+      this.rpcClient.locations.get(),
+    ) as Observable<Locations>
     observable.subscribe({
       next: (locations) => {
         this._status.set("idle")
@@ -38,11 +38,11 @@ export class LocationService {
     return observable
   }
 
-  public exists(locationCreate: LocationCreate) {
+  public exists(locationCreate: LocationCreate): Observable<Location | null> {
     this._status.set("pending")
-    const observable = fromPromise(
+    const observable = from(
       this.rpcClient.locations.exists(locationCreate),
-    )
+    ) as Observable<Location | null>
     observable.subscribe({
       next: () => {
         this._status.set("idle")
@@ -51,8 +51,10 @@ export class LocationService {
     return observable
   }
 
-  public create(input: LocationCreate) {
-    const observable = fromPromise(this.rpcClient.locations.create(input))
+  public create(input: LocationCreate): Observable<Location> {
+    const observable = from(
+      this.rpcClient.locations.create(input),
+    ) as Observable<Location>
     observable.subscribe({
       next: (newLocation) => {
         this._locations.update((old) => {

@@ -1,23 +1,31 @@
-import { Component, Output, EventEmitter, inject, Input } from "@angular/core"
-import type { OnChanges, OnInit } from "@angular/core"
-import { FormBuilder, FormGroup, ReactiveFormsModule } from "@angular/forms"
+import {
+  Component,
+  inject,
+  effect,
+  Input,
+  Output,
+  EventEmitter,
+} from "@angular/core"
+import { RoleService } from "../../../services/role.service"
+import { ReactiveFormsModule } from "@angular/forms"
+import { RequiredComponent } from "../../required/required.component"
+import { ButtonModule } from "primeng/button"
+import { DatePipe } from "@angular/common"
+import { HistoryLogService } from "../../../services/historylog.service"
+import { FormBuilder, FormGroup } from "@angular/forms"
 import { FurnitureService } from "../../../services/furniture.service"
+import { LocationService } from "../../../services/location.service"
+import { BuildingService } from "../../../services/building.service"
+import { StoreyService } from "../../../services/storey.service"
+import { RoomService } from "../../../services/room.service"
+import { StateService } from "../../../services/state.service"
+import { TypeService } from "../../../services/type.service"
 import type {
   FurnitureCreate,
   FurnitureWithRelations,
 } from "@repo/models/Furniture"
-import { RequiredComponent } from "../../required/required.component"
-import { StateService } from "../../../services/state.service"
-import { TypeService } from "../../../services/type.service"
-import { BuildingService } from "../../../services/building.service"
-import { StoreyService } from "../../../services/storey.service"
-import { RoomService } from "../../../services/room.service"
 import type { LocationCreate } from "@repo/models/Location"
-import { LocationService } from "../../../services/location.service"
 import { firstValueFrom } from "rxjs"
-import { RoleService } from "../../../services/role.service"
-import { ButtonModule } from "primeng/button"
-import { DatePipe } from "@angular/common"
 
 @Component({
   selector: "app-furniture-add-form",
@@ -25,15 +33,16 @@ import { DatePipe } from "@angular/common"
   templateUrl: "./furniture-add-form.component.html",
   styleUrl: "./furniture-add-form.component.css",
 })
-export class FurnitureAddFormComponent implements OnInit, OnChanges {
+export class FurnitureAddFormComponent {
   private readonly fb = inject(FormBuilder)
-  private readonly furnitureService = inject(FurnitureService)
+  protected readonly furnitureService = inject(FurnitureService)
   private readonly locationService = inject(LocationService)
   protected readonly buildingService = inject(BuildingService)
   protected readonly storeyService = inject(StoreyService)
   protected readonly roomService = inject(RoomService)
   protected readonly stateService = inject(StateService)
   protected readonly typeService = inject(TypeService)
+  protected readonly historyLogService = inject(HistoryLogService)
   protected readonly roleService = inject(RoleService)
 
   @Input()
@@ -48,26 +57,36 @@ export class FurnitureAddFormComponent implements OnInit, OnChanges {
     this.stateService.get()
     this.typeService.get()
     this.buildingService.get()
-  }
 
-  public ngOnInit() {
     this.furnitureForm = this.furnitureService.createForm(this.fb)
-  }
 
-  public async ngOnChanges() {
-    if (this.furniture != null) {
-      this.furnitureForm.patchValue({
-        name: this.furniture.name,
-        typeId: this.furniture.typeId,
-        stateId: this.furniture.stateId,
-        buildingId: this.furniture.buildingId,
-      })
+    effect(async () => {
+      const furnitureToEdit = this.furnitureService.furnitureToEdit()
 
-      this.buildingService.onBuildingChange(this.furnitureForm)
-      this.furnitureForm.patchValue({ storeyId: this.furniture.storeyId })
-      this.storeyService.onStoreyChange(this.furnitureForm)
-      this.furnitureForm.patchValue({ roomId: this.furniture.roomId })
-    }
+      this.furnitureForm.reset()
+      this.furnitureForm.get("storeyId")?.disable()
+      this.furnitureForm.get("roomId")?.disable()
+
+      if (furnitureToEdit) {
+        this.furnitureForm.patchValue({
+          name: furnitureToEdit.name,
+          typeId: furnitureToEdit.typeId,
+          stateId: furnitureToEdit.stateId,
+          buildingId: furnitureToEdit.buildingId,
+          model: furnitureToEdit.model,
+        })
+
+        if (furnitureToEdit.buildingId) {
+          await this.buildingService.onBuildingChange(this.furnitureForm)
+          this.furnitureForm.patchValue({ storeyId: furnitureToEdit.storeyId })
+        }
+
+        if (furnitureToEdit.storeyId) {
+          await this.storeyService.onStoreyChange(this.furnitureForm)
+          this.furnitureForm.patchValue({ roomId: furnitureToEdit.roomId })
+        }
+      }
+    })
   }
 
   public async onSubmit() {
@@ -96,17 +115,22 @@ export class FurnitureAddFormComponent implements OnInit, OnChanges {
         locationId: location.id,
         typeId: this.furnitureForm.get("typeId")?.value,
         stateId: this.furnitureForm.get("stateId")?.value,
+        x: 0,
+        z: 0,
+        model: this.furnitureForm.get("model")?.value,
       }
 
-      if (this.furniture != null) {
+      const currentFurniture = this.furnitureService.furnitureToEdit()
+
+      if (currentFurniture) {
         await firstValueFrom(
-          this.furnitureService.update(this.furniture.id, data),
+          this.historyLogService.update(currentFurniture.id, data),
         )
       } else {
         await firstValueFrom(this.furnitureService.create(data))
       }
 
-      this.closeModal()
+      this.furnitureService.closeModal()
     } catch (error) {
       console.error("Erreur lors de la création :", error)
       alert("Une erreur est survenue.")
@@ -114,7 +138,8 @@ export class FurnitureAddFormComponent implements OnInit, OnChanges {
   }
 
   public async onDelete() {
-    if (this.furniture === null) {
+    const furnitureToEdit = this.furnitureService.furnitureToEdit()
+    if (!furnitureToEdit) {
       return
     }
 
@@ -123,9 +148,9 @@ export class FurnitureAddFormComponent implements OnInit, OnChanges {
     }
 
     try {
-      await firstValueFrom(this.furnitureService.delete(this.furniture.id))
+      await firstValueFrom(this.furnitureService.delete(furnitureToEdit.id))
 
-      this.closeModal()
+      this.furnitureService.closeModal()
     } catch (error) {
       console.error("Erreur lors de la suppression :", error)
       alert("Impossible de supprimer cet élément.")

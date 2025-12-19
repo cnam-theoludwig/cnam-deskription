@@ -9,8 +9,13 @@
         <span class="badge badge-secondary">{{ buildings.length }}</span>
       </div>
 
-      @if (selectedBuilding === undefined) {
-        <p class="text-sm text-muted-foreground">Loading...</p>
+      @if (buildings.length === 0) {
+        <button
+          class="w-full btn btn-outline bg-primary/5 border-primary/20 text-primary mt-2"
+          (click)="addBuilding.emit()"
+        >
+          Ajouter un nouveau bâtiment
+        </button>
       } @else {
         <select
           id="buildingSelect"
@@ -135,13 +140,13 @@
             <div
               class="color-preview"
               [style.backgroundColor]="
-                selectedRoom?.id === room.id ? editColor : room.color
+                selectedRoom?.id === room.id ? editRoomColor : room.color
               "
             >
               @if (selectedRoom?.id === room.id) {
                 <input
                   type="color"
-                  [(ngModel)]="editColor"
+                  [(ngModel)]="editRoomColor"
                   class="color-input-hidden"
                   title="Changer la couleur"
                 />
@@ -151,10 +156,11 @@
             <div class="room-name-container">
               @if (selectedRoom?.id === room.id) {
                 <input
-                  [(ngModel)]="editName"
-                  (keydown.enter)="addRoom.emit()"
+                  [(ngModel)]="editRoomName"
+                  (keydown.enter)="saveRoomEdit()"
                   class="room-name-input"
                   placeholder="Nom de la pièce"
+                  (click)="$event.stopPropagation()"
                 />
               } @else {
                 <div class="room-name-text">
@@ -165,7 +171,10 @@
 
             <div class="room-actions">
               @if (selectedRoom?.id === room.id) {
-                <button title="Sauvegarder" (click)="saveEdit()">
+                <button
+                  title="Sauvegarder"
+                  (click)="saveRoomEdit(); $event.stopPropagation()"
+                >
                   <lucide-angular
                     [img]="CheckIcon"
                     class="w-4 h-4"
@@ -175,7 +184,7 @@
 
               <button
                 class="btn btn-ghost text-destructive hover:bg-destructive/10"
-                (click)="removeRoom.emit(room)"
+                (click)="removeRoom.emit(room); $event.stopPropagation()"
               >
                 <lucide-angular
                   [img]="TrashIcon"
@@ -194,5 +203,50 @@
         Ajouter une pièce
       </button>
     </div>
+
+    <hr class="border-border/50" />
+
+    <div class="space-y-3 flex flex-col h-full min-h-0">
+      <div class="flex items-center justify-between">
+        <h3 class="font-semibold text-foreground flex items-center gap-2">
+          <lucide-angular [img]="ArmchairIcon"></lucide-angular>
+          Meubles
+        </h3>
+        <span class="badge badge-secondary">{{ furnitures.length }}</span>
+      </div>
+
+      <div class="space-y-2 max-h-[300px] overflow-y-auto px-1">
+        @for (furniture of furnitures; track furniture.id) {
+          <div
+            class="furniture-item"
+            [class.selected]="selectedFurniture?.id === furniture.id"
+            (click)="
+              selectFurniture.emit(furniture);
+              furnitureService.openModal(furniture)
+            "
+            (keydown.enter)="
+              selectFurniture.emit(furniture);
+              furnitureService.openModal(furniture)
+            "
+            tabindex="0"
+          >
+            <div class="furniture-name-container">
+              <div class="furniture-name-text">
+                {{ furniture.name }}
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <button
+        class="w-full btn btn-outline bg-primary/5 border-primary/20 text-primary mt-2"
+        (click)="furnitureService.openModal()"
+      >
+        Ajouter un meuble
+      </button>
+    </div>
   </div>
 </div>
+
+<app-furniture-add-form />

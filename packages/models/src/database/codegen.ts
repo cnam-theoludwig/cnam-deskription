@@ -24,9 +24,12 @@ export interface Building {
 export interface Furniture {
   id: Generated<string>
   locationId: string
+  model: string | null
   name: string
   stateId: string
   typeId: string
+  x: Generated<Numeric>
+  z: Generated<Numeric>
 }
 
 export interface HistoryLog {

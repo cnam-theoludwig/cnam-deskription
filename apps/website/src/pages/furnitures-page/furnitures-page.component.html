@@ -51,7 +51,10 @@
       <p>Chargement...</p>
     } @else {
       @for (furniture of furnitureService.furnitures; track furniture.id) {
-        <button class="furniture-card" (click)="openModal(furniture.id)">
+        <button
+          class="furniture-card"
+          (click)="furnitureService.openModal(furniture)"
+        >
           <h2 class="furniture-name">{{ furniture.name }}</h2>
           <div class="furniture-info">
             <p>
