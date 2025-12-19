@@ -111,6 +111,7 @@ export class FurnitureService {
     return observable
   }
 
+<<<<<<< HEAD
   public exportToExcel() {
     const observable = fromPromise(
       this.rpcClient.furnitures.excelExport(this.furnitures),
@@ -167,6 +168,24 @@ export class FurnitureService {
         }
       },
     })
+=======
+  public delete(id: Furniture["id"]) {
+    this._status.set("pending")
+
+    const observable = fromPromise(this.rpcClient.furnitures.delete(id))
+
+    observable.subscribe({
+      next: () => {
+        this._status.set("idle")
+        this._furnitures.update((old) => {
+          return old.filter((f) => {
+            return f.id !== id
+          })
+        })
+      },
+    })
+
+>>>>>>> develop
     return observable
   }
 }

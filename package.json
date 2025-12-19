@@ -33,6 +33,6 @@
   },
   "dependencies": {
     "lucide-angular": "catalog:",
-    "xlsx": "^0.18.5"
+    "xlsx": "catalog:"
   }
 }

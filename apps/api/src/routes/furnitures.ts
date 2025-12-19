@@ -203,7 +203,10 @@ export const furnitures = {
       let query = furnitureSelect
       if (input.name != null && input.name.length > 0) {
         query = query.where(
-          searchStringExpression({ column: "name", query: input.name }),
+          searchStringExpression({
+            column: "Furniture.name",
+            query: input.name,
+          }),
         )
       }
       if (input.buildingId != null) {
