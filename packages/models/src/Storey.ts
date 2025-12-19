@@ -6,6 +6,7 @@ export const StoreyZod = {
   id: EntityZod.id,
   name: z.string().trim().min(2).max(100),
   buildingId: BuildingZod.id,
+  floorPlanImage: z.string().nullable().optional(),
 }
 export const StoreyZodObject = z.object(StoreyZod)
 export type Storey = z.infer<typeof StoreyZodObject>
@@ -20,3 +21,10 @@ export const StoreyDeleteZodObject = z.object({
   id: StoreyZod.id,
 })
 export type StoreyDelete = z.infer<typeof StoreyDeleteZodObject>
+
+export const StoreyUpdateZodObject = z.object({
+  id: StoreyZod.id,
+  name: StoreyZod.name.optional(),
+  floorPlanImage: z.string().nullable().optional(),
+})
+export type StoreyUpdate = z.infer<typeof StoreyUpdateZodObject>

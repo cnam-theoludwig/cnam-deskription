@@ -49,6 +49,7 @@ export class BuildingViewer3dComponent
   @Input() public selectedRoom!: Room
   @Input() public storeys!: Storey[]
   @Input() public rooms!: Room[]
+  @Input() public storeyFloorPlans?: Map<string, string>
 
   // --- ThreeJS Core ---
   @Input() public hideNotSelectedStoreys: boolean = false
@@ -70,6 +71,7 @@ export class BuildingViewer3dComponent
   private readonly FLOOR_THICKNESS = 0.2
   private readonly SCALE = 0.05
   private readonly ROOM_THICKNESS = 0.05
+  private readonly FLOOR_PLAN_OPACITY = 0.9
 
   // --- État de l'interface ---
   protected selectedFloorIndex = 0
@@ -244,6 +246,41 @@ export class BuildingViewer3dComponent
     this.updateVisibility()
   }
 
+  protected addPlaneFloorTextureToStorey(
+    imageUrl: string,
+    floorGroup: THREE.Group,
+  ): void {
+    const textureLoader = new THREE.TextureLoader()
+
+    textureLoader.load(
+      imageUrl,
+      (texture) => {
+        const planeGeometry = new THREE.PlaneGeometry(
+          this.FLOOR_WIDTH,
+          this.FLOOR_LENGTH,
+        )
+
+        const planeMaterial = new THREE.MeshBasicMaterial({
+          map: texture,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: this.FLOOR_PLAN_OPACITY,
+        })
+
+        const planeMesh = new THREE.Mesh(planeGeometry, planeMaterial)
+        planeMesh.position.set(0, 0.11, 0)
+        planeMesh.rotation.x = -Math.PI / 2
+
+        planeMesh.userData = { type: "FLOOR_PLAN" }
+        floorGroup.add(planeMesh)
+      },
+      undefined,
+      (error) => {
+        console.error("Error loading floor plan texture:", error)
+      },
+    )
+  }
+
   protected updateVisibility(): void {
     if (!this.scene) return
     this.scene.traverse((obj) => {
@@ -403,6 +440,12 @@ export class BuildingViewer3dComponent
         -this.FLOOR_LENGTH / 2 - 1,
       )
       group.add(textMesh)
+    }
+
+    // Floor Plan (if available)
+    if (this.storeyFloorPlans && this.storeyFloorPlans.has(floor.id)) {
+      const imageUrl = this.storeyFloorPlans.get(floor.id)!
+      this.addPlaneFloorTextureToStorey(imageUrl, group)
     }
 
     // Rooms

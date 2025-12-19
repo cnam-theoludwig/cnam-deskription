@@ -58,6 +58,17 @@
               </div>
             </button>
 
+            <button
+              class="btn btn-ghost text-primary hover:bg-primary/10"
+              (click)="triggerFloorPlanUpload(storey)"
+              title="Ajouter un plan d'étage"
+            >
+              <lucide-angular
+                [img]="UploadIcon"
+                class="w-4 h-4"
+              ></lucide-angular>
+            </button>
+
             @if (storeys.length > 1) {
               <button
                 class="btn btn-ghost text-destructive hover:bg-destructive/10"
@@ -71,6 +82,14 @@
             }
           </div>
         }
+
+        <input
+          type="file"
+          accept="image/*"
+          #fileInput
+          style="display: none"
+          (change)="onFloorPlanSelected($event)"
+        />
       </div>
 
       <button
