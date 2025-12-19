@@ -45,6 +45,7 @@ testem.log
 typings
 *.pem
 .turbo
+*.code-workspace
 
 # debug
 npm-debug.log*

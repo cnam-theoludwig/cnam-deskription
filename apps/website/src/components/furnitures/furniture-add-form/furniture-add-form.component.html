@@ -71,6 +71,7 @@
             id="room"
             class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
             formControlName="roomId"
+            (change)="syncStateWithRoom()"
             required
           >
             <option value="" disabled selected>Choisissez une pièce</option>

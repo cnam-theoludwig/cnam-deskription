@@ -50,10 +50,64 @@ export class FurnitureAddFormComponent implements OnInit, OnChanges {
 
   public ngOnInit() {
     this.furnitureForm = this.furnitureService.createForm(this.fb)
+  }
 
-    this.furnitureForm.get("roomId")?.valueChanges.subscribe((roomId) => {
-      this.checkRoomForStockage(roomId)
+  private async waitForRoomsLoaded(): Promise<void> {
+    return new Promise((resolve) => {
+      if (this.roomService.rooms.length > 0) {
+        resolve()
+        return
+      }
+
+      const interval = setInterval(() => {
+        if (this.roomService.rooms.length > 0) {
+          clearInterval(interval)
+          resolve()
+        }
+      }, 50)
     })
+  }
+
+  private async waitForStatesLoaded(): Promise<void> {
+    return new Promise((resolve) => {
+      if (this.stateService.states.length > 0) {
+        resolve()
+        return
+      }
+
+      const interval = setInterval(() => {
+        if (this.stateService.states.length > 0) {
+          clearInterval(interval)
+          resolve()
+        }
+      }, 50)
+    })
+  }
+
+  protected async syncStateWithRoom() {
+    const roomId = this.furnitureForm.get("roomId")?.value
+    const stateControl = this.furnitureForm.get("stateId")
+
+    if (!roomId || !stateControl) return
+
+    // attendre que les données soient vraiment là
+    await this.waitForRoomsLoaded()
+    await this.waitForStatesLoaded()
+
+    const room = this.roomService.rooms.find((r) => r.id === roomId)
+
+    if (room?.name?.toLowerCase() === "stockage") {
+      const stockState = this.stateService.states.find(
+        (s) => s.name?.toLowerCase() === "stocké",
+      )
+
+      if (stockState) {
+        stateControl.setValue(stockState.id, { emitEvent: false })
+        stateControl.disable({ emitEvent: false })
+      }
+    } else {
+      stateControl.enable({ emitEvent: false })
+    }
   }
 
   public async ngOnChanges() {
@@ -70,25 +124,8 @@ export class FurnitureAddFormComponent implements OnInit, OnChanges {
       await this.storeyService.onStoreyChange(this.furnitureForm)
       this.furnitureForm.patchValue({ roomId: this.furniture.roomId })
 
-      this.checkRoomForStockage(this.furniture.roomId) // <<< AJOUTÉ
-    }
-  }
-
-  private checkRoomForStockage(roomId: string | null) {
-    if (!roomId) return
-
-    const selectedRoom = this.roomService.rooms.find((r) => r.id === roomId)
-    const stateControl = this.furnitureForm.get("stateId")
-    if (selectedRoom?.name?.toLowerCase() === "stockage") {
-      const stockState = this.stateService.states.find(
-        (s) => s.name?.toLowerCase() === "stocké",
-      )
-      if (stockState) {
-        stateControl?.patchValue(stockState.id)
-        stateControl?.disable({ emitEvent: false })
-      }
-    } else {
-      stateControl?.enable({ emitEvent: false })
+      // ⏳ ATTENTE + APPLICATION
+      await this.syncStateWithRoom()
     }
   }
 
