@@ -8,9 +8,7 @@
     </h2>
   </div>
 
-  <!-- Boutons principaux centrés -->
   <div class="flex justify-center gap-4 mb-6">
-    <!-- Gestionnaire de mobilier: Enregistrer du mobilier -->
     @if (roleService.currentRole === "Gestionnaire de mobilier") {
       <p-button
         label="Ajouter un meuble"
@@ -19,18 +17,20 @@
       ></p-button>
     }
 
-    <!-- Exporter liste (toujours visible) -->
-    <p-button
-      label="Exporter liste"
-      styleClass="p-button-success p-button-lg"
-      (onClick)="fakeExport()"
-    ></p-button>
+    @if (
+      furnitureService.furnitures.length > 0 &&
+      furnitureService.status !== "pending"
+    ) {
+      <p-button
+        label="Exporter au format excel"
+        (click)="exportToExcel()"
+        styleClass="p-button-success p-button-lg"
+      ></p-button>
+    }
   </div>
 
-  <!-- Recherche du mobilier toujours dispo peut importe le rôle ? -->
   <app-search-engine />
 
-  <!-- Gestionnaire de site: Notification -->
   @if (roleService.currentRole === "Gestionnaire de site") {
     <div class="role-actions mb-4 flex justify-center">
       <p-button

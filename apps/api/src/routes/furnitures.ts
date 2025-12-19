@@ -238,4 +238,29 @@ export const furnitures = {
         .returningAll()
         .executeTakeFirstOrThrow()
     }),
+  excelExport: publicProcedure
+    .route({ method: "GET", path: "/furnitures/export", tags: ["Furniture"] })
+    .input(z.array(FurnitureWithRelationsZodObject))
+    .output(z.string())
+    .handler(async ({ input }) => {
+      const rows = input
+
+      const formatted = rows.map((r) => {
+        return {
+          Name: r.name,
+          Type: r.type,
+          State: r.state,
+          Building: r.building,
+          Storey: r.storey,
+          Room: r.room,
+        }
+      })
+
+      const XLSX = await import("xlsx")
+      const wb = XLSX.utils.book_new()
+      const ws = XLSX.utils.json_to_sheet(formatted)
+      XLSX.utils.book_append_sheet(wb, ws, "Furnitures")
+      const buf = XLSX.write(wb, { bookType: "xlsx", type: "buffer" })
+      return Buffer.from(buf).toString("base64")
+    }),
 }
