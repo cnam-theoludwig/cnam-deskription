@@ -1,12 +1,12 @@
 import type { Kysely } from "kysely"
 
-export async function up(db: Kysely<any>): Promise<void> {
+export const up = async (db: Kysely<any>): Promise<void> => {
   await db.schema
     .alterTable("Storey")
     .addColumn("floorPlanImage", "text")
     .execute()
 }
 
-export async function down(db: Kysely<any>): Promise<void> {
+export const down = async (db: Kysely<any>): Promise<void> => {
   await db.schema.alterTable("Storey").dropColumn("floorPlanImage").execute()
 }
