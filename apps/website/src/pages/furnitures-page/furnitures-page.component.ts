@@ -65,12 +65,8 @@ export class FurnituresPageComponent {
     modal.close()
   }
 
-<<<<<<< HEAD
   public exportToExcel() {
     this.furnitureService.exportToExcel()
-=======
-  public fakeExport() {
-    alert("Fonctionnalité d'export à implémenter plus tard.")
   }
 
   public fakeViewState() {
@@ -79,6 +75,5 @@ export class FurnituresPageComponent {
 
   public fakeNotify() {
     alert("Notification de déplacement à implémenter plus tard.")
->>>>>>> develop
   }
 }

@@ -111,7 +111,6 @@ export class FurnitureService {
     return observable
   }
 
-<<<<<<< HEAD
   public exportToExcel() {
     const observable = fromPromise(
       this.rpcClient.furnitures.excelExport(this.furnitures),
@@ -168,7 +167,8 @@ export class FurnitureService {
         }
       },
     })
-=======
+  }
+
   public delete(id: Furniture["id"]) {
     this._status.set("pending")
 
@@ -185,7 +185,6 @@ export class FurnitureService {
       },
     })
 
->>>>>>> develop
     return observable
   }
 }
