@@ -85,7 +85,8 @@ export class RoomService {
     return observable
   }
 
-  public delete(id: string) {
+  public delete(id: Room["id"]) {
+    console.log("Delete room", id)
     const observable = fromPromise(this.rpcClient.rooms.delete(id))
     observable.subscribe({
       next: (deletedRoom) => {

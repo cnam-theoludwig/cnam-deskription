@@ -48,10 +48,10 @@ export class ControlPanelComponent implements OnChanges {
   @Input() public rooms!: Room[]
   @Input() public furnitures!: FurnitureWithRelations[]
 
-  @Input() public selectedBuilding!: Building
-  @Input() public selectedStorey!: Storey
-  @Input() public selectedRoom!: Room
-  @Input() public selectedFurniture!: FurnitureWithRelations
+  @Input() public selectedBuilding?: Building
+  @Input() public selectedStorey?: Storey
+  @Input() public selectedRoom?: Room
+  @Input() public selectedFurniture?: FurnitureWithRelations
 
   @Output() public selectBuilding = new EventEmitter<Building>()
   @Output() public addBuilding = new EventEmitter<void>()

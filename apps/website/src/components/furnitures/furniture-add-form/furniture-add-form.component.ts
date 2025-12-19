@@ -12,6 +12,7 @@ import type { LocationCreate } from "@repo/models/Location"
 import type { FurnitureCreate } from "@repo/models/Furniture"
 import { firstValueFrom } from "rxjs"
 import { DatePipe } from "@angular/common"
+import { HistoryLogService } from "../../../services/historylog.service"
 
 @Component({
   selector: "app-furniture-add-form",
@@ -28,6 +29,7 @@ export class FurnitureAddFormComponent {
   protected readonly roomService = inject(RoomService)
   protected readonly stateService = inject(StateService)
   protected readonly typeService = inject(TypeService)
+  protected readonly historyLogService = inject(HistoryLogService)
 
   protected furnitureForm!: FormGroup
 
@@ -51,6 +53,7 @@ export class FurnitureAddFormComponent {
           typeId: furnitureToEdit.typeId,
           stateId: furnitureToEdit.stateId,
           buildingId: furnitureToEdit.buildingId,
+          model: furnitureToEdit.model,
         })
 
         if (furnitureToEdit.buildingId) {
@@ -94,14 +97,14 @@ export class FurnitureAddFormComponent {
         stateId: this.furnitureForm.get("stateId")?.value,
         x: 0,
         z: 0,
-        model: "",
+        model: this.furnitureForm.get("model")?.value,
       }
 
       const currentFurniture = this.furnitureService.furnitureToEdit()
 
       if (currentFurniture) {
         await firstValueFrom(
-          this.furnitureService.update(currentFurniture.id, data),
+          this.historyLogService.update(currentFurniture.id, data),
         )
       } else {
         await firstValueFrom(this.furnitureService.create(data))

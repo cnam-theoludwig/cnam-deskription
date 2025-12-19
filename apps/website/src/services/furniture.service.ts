@@ -6,6 +6,7 @@ import { environment } from "../environments/environment"
 import type {
   Furniture,
   FurnitureCreate,
+  FurnitureUpdate,
   FurnitureWithRelations,
 } from "@repo/models/Furniture"
 import type { Status } from "@repo/utils/types"
@@ -90,18 +91,16 @@ export class FurnitureService {
     return observable
   }
 
-  public update(id: Furniture["id"], furniture: FurnitureCreate) {
+  public update(furniture: FurnitureUpdate) {
     this._status.set("pending")
-    const observable = fromPromise(
-      this.rpcClient.furnitures.update({ id, furniture }),
-    )
+    const observable = fromPromise(this.rpcClient.furnitures.update(furniture))
     observable.subscribe({
       next: (updatedFurniture) => {
         this._status.set("idle")
         this._furnitures.update((old) => {
           return old.map((furniture) => {
             return furniture.id === updatedFurniture.id
-              ? updatedFurniture
+              ? { ...furniture, ...updatedFurniture }
               : furniture
           })
         })
@@ -130,6 +129,7 @@ export class FurnitureService {
       roomId: new FormControl({ value: "", disabled: true }, requiredValidator),
       typeId: new FormControl("", requiredValidator),
       stateId: new FormControl("", requiredValidator),
+      model: new FormControl("", requiredValidator),
     })
   }
 

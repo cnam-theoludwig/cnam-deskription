@@ -32,6 +32,18 @@ export const FurnitureCreateZodObject = z.object({
 })
 export type FurnitureCreate = z.infer<typeof FurnitureCreateZodObject>
 
+export const FurnitureUpdateZodObject = z.object({
+  id: FurnitureZod.id,
+  name: FurnitureZod.name.optional(),
+  locationId: FurnitureZod.locationId.optional(),
+  typeId: FurnitureZod.typeId.optional(),
+  stateId: FurnitureZod.stateId.optional(),
+  x: FurnitureZod.x.optional(),
+  z: FurnitureZod.z.optional(),
+  model: FurnitureZod.model.optional(),
+})
+export type FurnitureUpdate = z.infer<typeof FurnitureUpdateZodObject>
+
 export const FurnitureDeleteZodObject = z.object({
   id: FurnitureZod.id,
 })

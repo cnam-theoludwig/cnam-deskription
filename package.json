@@ -23,6 +23,7 @@
     "lint:typescript": "turbo run lint:typescript",
     "lint:eslint": "turbo run lint:eslint",
     "lint:prettier": "prettier . --check",
+    "lint:prettier:fix": "prettier . --write",
     "lint:turbo": "turbo boundaries"
   },
   "devDependencies": {

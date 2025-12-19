@@ -96,7 +96,7 @@
         @for (room of rooms; track room.id) {
           <div
             class="room-item"
-            [class.selected]="selectedRoom.id === room.id"
+            [class.selected]="selectedRoom?.id === room.id"
             (click)="selectRoom.emit(room)"
             (keydown.enter)="selectRoom.emit(room)"
             tabindex="0"
@@ -104,10 +104,10 @@
             <div
               class="color-preview"
               [style.backgroundColor]="
-                selectedRoom.id === room.id ? editRoomColor : room.color
+                selectedRoom?.id === room.id ? editRoomColor : room.color
               "
             >
-              @if (selectedRoom.id === room.id) {
+              @if (selectedRoom?.id === room.id) {
                 <input
                   type="color"
                   [(ngModel)]="editRoomColor"
@@ -118,7 +118,7 @@
             </div>
 
             <div class="room-name-container">
-              @if (selectedRoom.id === room.id) {
+              @if (selectedRoom?.id === room.id) {
                 <input
                   [(ngModel)]="editRoomName"
                   (keydown.enter)="saveRoomEdit()"
@@ -134,7 +134,7 @@
             </div>
 
             <div class="room-actions">
-              @if (selectedRoom.id === room.id) {
+              @if (selectedRoom?.id === room.id) {
                 <button
                   title="Sauvegarder"
                   (click)="saveRoomEdit(); $event.stopPropagation()"
@@ -183,7 +183,7 @@
         @for (furniture of furnitures; track furniture.id) {
           <div
             class="furniture-item"
-            [class.selected]="selectedFurniture.id === furniture.id"
+            [class.selected]="selectedFurniture?.id === furniture.id"
             (click)="
               selectFurniture.emit(furniture);
               furnitureService.openModal(furniture)

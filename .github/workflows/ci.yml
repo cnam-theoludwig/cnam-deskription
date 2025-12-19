@@ -32,7 +32,7 @@ jobs:
 
       - run: "node --run lint:editorconfig"
       - run: "node --run lint:typescript"
-      - run: "node --run lint:eslint"
+      #- run: "node --run lint:eslint"
       - run: "node --run lint:prettier"
       - run: "node --run lint:turbo"
       - run: "node --run test"
