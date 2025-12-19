@@ -6,4 +6,9 @@ export default defineConfig(
   globalIgnores(["**/kysely.config.ts"]),
   importZod.configs.recommended,
   ...configConventions,
+  {
+    rules: {
+      "@typescript-eslint/no-deprecated": "off",
+    },
+  },
 )

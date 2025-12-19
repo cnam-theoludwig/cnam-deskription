@@ -3,9 +3,17 @@ import {
   ElementRef,
   inject,
   Input,
-  ViewChild,
   NgZone,
   ChangeDetectionStrategy,
+  Output,
+  ViewChild,
+  EventEmitter,
+} from "@angular/core"
+import type {
+  AfterViewInit,
+  OnChanges,
+  OnDestroy,
+  SimpleChanges,
 } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import * as THREE from "three"
@@ -14,12 +22,6 @@ import { Font, FontLoader } from "three/addons/loaders/FontLoader.js"
 import { TextGeometry } from "three/addons/geometries/TextGeometry.js"
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js"
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js"
-import type {
-  AfterViewInit,
-  OnDestroy,
-  OnChanges,
-  SimpleChanges,
-} from "@angular/core"
 import type { Building } from "@repo/models/Building"
 import type { Storey } from "@repo/models/Storey"
 import type { Room } from "@repo/models/Room"
@@ -47,6 +49,7 @@ export class BuildingViewer3dComponent
   protected readonly roomService = inject(RoomService)
   protected readonly furnitureService = inject(FurnitureService)
   private readonly ngZone = inject(NgZone)
+  protected mouse = new THREE.Vector2()
 
   @Input() public selectedBuilding!: Building
   @Input() public selectedStorey!: Storey
@@ -56,6 +59,13 @@ export class BuildingViewer3dComponent
   @Input() public rooms!: Room[]
   @Input() public furnitures!: FurnitureWithRelations[]
 
+  @Input() public storeyFloorPlans?: Map<string, string>
+
+  // --- ThreeJS Core ---
+  @Input() public hideNotSelectedStoreys: boolean = false
+
+  @Output() public storeySelected = new EventEmitter<Storey>()
+
   protected renderer!: THREE.WebGLRenderer
   protected scene!: THREE.Scene
   protected camera!: THREE.PerspectiveCamera
@@ -64,14 +74,18 @@ export class BuildingViewer3dComponent
   protected animationId?: number
   protected font?: Font
 
-  private readonly CONFIG = {
-    SPACING: 5,
-    WIDTH: 20,
-    LENGTH: 15,
-    FLOOR_THICKNESS: 0.2,
-    SCALE: 0.05,
-    ROOM_THICKNESS: 0.05,
-  }
+  // --- Configuration ---
+  private readonly FLOOR_SPACING = 7
+  private readonly FLOOR_WIDTH = 20
+  private readonly FLOOR_LENGTH = 15
+  private readonly FLOOR_THICKNESS = 0.2
+  private readonly SCALE = 0.05
+  private readonly ROOM_THICKNESS = 0.05
+  private readonly FLOOR_PLAN_OPACITY = 0.9
+  private readonly WIDTH = 20
+  private readonly LENGTH = 15
+
+  // --- État de l'interface ---
   protected selectedFloorIndex = 0
   protected cameraTarget = new THREE.Vector3()
   protected cameraPosTarget = new THREE.Vector3()
@@ -120,6 +134,8 @@ export class BuildingViewer3dComponent
     )
     this.loader.setDRACOLoader(dracoLoader)
   }
+  // --- Lifecycles ---
+  protected isOrbiting = false
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes["selectedBuilding"]?.currentValue) this.fetchAndRender()
@@ -127,19 +143,29 @@ export class BuildingViewer3dComponent
       changes["selectedStorey"]?.currentValue &&
       this.storeyService.storeys.length
     ) {
-      this.updateSelectedFloorIndex()
       this.highlightSelectedFloor()
     }
-    if (changes["selectedRoom"]?.currentValue)
+
+    if (changes["hideNotSelectedStoreys"] != null && this.scene != null) {
+      this.updateVisibility()
+    }
+
+    if (
+      changes["selectedRoom"] !== undefined &&
+      this.selectedRoom !== undefined
+    ) {
       this.updateActiveRoomVisuals(this.selectedRoom)
+    }
+
     if (
       (changes["storeys"] && !changes["storeys"].isFirstChange()) ||
       (changes["rooms"] && !changes["rooms"].isFirstChange()) ||
-      changes["furnitures"]
+      (changes["furnitures"] && !changes["furnitures"].isFirstChange())
     ) {
       if (this.interactionState === "IDLE") {
         this.renderScene()
       }
+      this.updateVisibility()
     }
   }
 
@@ -160,7 +186,12 @@ export class BuildingViewer3dComponent
   }
 
   public ngOnDestroy(): void {
+    if (this.animationId !== undefined) {
+      cancelAnimationFrame(this.animationId)
+    }
+
     if (this.animationId) cancelAnimationFrame(this.animationId)
+    this.renderer.domElement.removeEventListener("click", this.onCanvasClick)
     window.removeEventListener("pointermove", this.handlePointerMove)
     window.removeEventListener("pointerup", this.handlePointerUp)
     if (this.renderer) {
@@ -175,23 +206,142 @@ export class BuildingViewer3dComponent
     this.matCache.forEach((m) => m.dispose())
   }
 
-  private updateSelectedFloorIndex(): void {
-    if (!this.selectedStorey) return
-    const idx = this.storeyService.storeys.findIndex(
-      (s) => s.id === this.selectedStorey.id,
-    )
-    this.selectedFloorIndex = idx !== -1 ? idx : 0
-  }
-
   protected fetchAndRender(): void {
     if (!this.selectedBuilding) return
     this.storeyService
       .getByBuildingId(this.selectedBuilding.id)
       .subscribe(() => {
-        this.updateSelectedFloorIndex()
         this.renderScene()
         this.highlightSelectedFloor()
       })
+  }
+
+  protected onCanvasClick = (event: MouseEvent): void => {
+    // Ignore clicks while orbiting
+    if (this.isOrbiting) {
+      return
+    }
+
+    const rect = this.renderer.domElement.getBoundingClientRect()
+    const x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+    const y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+
+    this.mouse.set(x, y)
+    this.raycaster.setFromCamera(this.mouse, this.camera)
+    const intersects = this.raycaster.intersectObjects(
+      this.scene.children,
+      true,
+    )
+
+    for (const intersect of intersects) {
+      let obj: THREE.Object3D | null = intersect.object
+      while (obj != null && !(obj instanceof THREE.Group)) {
+        obj = obj.parent
+      }
+      if (
+        obj instanceof THREE.Group &&
+        obj.userData.floorIndex != null &&
+        obj.visible
+      ) {
+        const idx = Number(obj.userData.floorIndex)
+        if (!Number.isNaN(idx) && idx !== this.selectedFloorIndex) {
+          this.selectedFloorIndex = idx
+          this.highlightSelectedFloor()
+          // Emit the clicked storey
+          const storey = this.storeyService.storeys[idx]
+          if (storey !== undefined) {
+            this.storeySelected.emit(storey)
+          }
+          break
+        } else {
+          break // break if clicked on the same floor
+        }
+      }
+    }
+  }
+
+  protected highlightSelectedFloor(): void {
+    // this.isAnimatingToFloor = true
+    //     const ty = this.selectedFloorIndex * this.FLOOR_SPACING
+    //     this.cameraTarget.set(0, ty, 0)
+    //     this.cameraPosTarget.set(25, ty + 15, 25)
+
+    this.scene.traverse((obj) => {
+      if (
+        obj instanceof THREE.Mesh &&
+        obj.material instanceof THREE.MeshStandardMaterial &&
+        obj.parent instanceof THREE.Group &&
+        obj.parent.userData.floorIndex != null
+      ) {
+        const groupIndex = obj.parent.userData.floorIndex
+        if (obj.geometry instanceof THREE.BoxGeometry) {
+          obj.material.color.set(
+            groupIndex === this.selectedFloorIndex ? "#e0f2fe" : "#f0f0f0",
+          )
+        } else if (obj.geometry instanceof TextGeometry) {
+          obj.material.color.set(
+            groupIndex === this.selectedFloorIndex ? "#0ea5e9" : "#64748b",
+          )
+        }
+      }
+    })
+
+    const target = new THREE.Vector3(
+      0,
+      this.selectedFloorIndex * this.FLOOR_SPACING,
+      0,
+    )
+    const offset = new THREE.Vector3(25, 7, 25)
+    this.cameraTarget.copy(target)
+    this.cameraPosTarget.copy(target.clone().add(offset))
+    this.isAnimatingToFloor = true
+    this.updateVisibility()
+  }
+
+  protected addPlaneFloorTextureToStorey(
+    imageUrl: string,
+    floorGroup: THREE.Group,
+  ): void {
+    const textureLoader = new THREE.TextureLoader()
+
+    textureLoader.load(
+      imageUrl,
+      (texture) => {
+        const planeGeometry = new THREE.PlaneGeometry(
+          this.FLOOR_WIDTH,
+          this.FLOOR_LENGTH,
+        )
+
+        const planeMaterial = new THREE.MeshBasicMaterial({
+          map: texture,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: this.FLOOR_PLAN_OPACITY,
+        })
+
+        const planeMesh = new THREE.Mesh(planeGeometry, planeMaterial)
+        planeMesh.position.set(0, 0.11, 0)
+        planeMesh.rotation.x = -Math.PI / 2
+
+        planeMesh.userData = { type: "FLOOR_PLAN" }
+        floorGroup.add(planeMesh)
+      },
+      undefined,
+      (error) => {
+        console.error("Error loading floor plan texture:", error)
+      },
+    )
+  }
+
+  protected updateVisibility(): void {
+    if (!this.scene) return
+    this.scene.traverse((obj) => {
+      if (obj instanceof THREE.Group && obj.userData.floorIndex != null) {
+        const idx = Number(obj.userData.floorIndex)
+        obj.visible =
+          !this.hideNotSelectedStoreys || idx === this.selectedFloorIndex
+      }
+    })
   }
 
   protected initScene(): void {
@@ -213,10 +363,21 @@ export class BuildingViewer3dComponent
     this.controls.minDistance = 5
     this.controls.maxDistance = 80
     this.controls.maxPolarAngle = Math.PI / 2
-    this.controls.addEventListener(
-      "start",
-      () => (this.isAnimatingToFloor = false),
-    )
+    this.controls.addEventListener("start", () => {
+      this.isOrbiting = false
+      this.isAnimatingToFloor = false
+    })
+
+    this.controls.addEventListener("change", () => {
+      this.isOrbiting = true
+    })
+
+    this.controls.addEventListener("end", () => {
+      setTimeout(() => {
+        this.isOrbiting = false
+      }, 100)
+    })
+
     this.scene.add(new THREE.AmbientLight(0xffffff, 0.5))
     const dirLight = new THREE.DirectionalLight(0xffffff, 0.8)
     dirLight.position.set(20, 30, 20)
@@ -224,6 +385,15 @@ export class BuildingViewer3dComponent
     const grid = new THREE.GridHelper(50, 50, "#cbd5e1", "#e2e8f0")
     grid.position.set(0, -0.1, 0)
     this.scene.add(grid)
+
+    this.renderer.domElement.addEventListener("click", this.onCanvasClick)
+
+    window.addEventListener("pointermove", this.handlePointerMove)
+    window.addEventListener("pointerup", this.handlePointerUp)
+    this.renderer.domElement.addEventListener(
+      "pointerdown",
+      this.handlePointerDownGlobal,
+    )
   }
 
   protected async loadFont(): Promise<void> {
@@ -263,25 +433,41 @@ export class BuildingViewer3dComponent
   }
 
   protected renderScene(): void {
-    if (this.interactionState !== "IDLE") return
-
     if (!this.scene) return
-    const toRemove: THREE.Object3D[] = []
-    this.scene.traverse((c) => {
-      if (c.userData["isFloorGroup"]) toRemove.push(c)
+
+    const objectsToRemove: THREE.Object3D[] = []
+    this.scene.traverse((child) => {
+      if (
+        child instanceof THREE.Group &&
+        child.userData["isFloorGroup"] === true
+      ) {
+        objectsToRemove.push(child)
+      }
     })
-    toRemove.forEach((o) => {
-      this.cleanObj(o)
-      this.scene.remove(o)
-    })
-    this.storeyService.storeys?.forEach((floor, idx) =>
-      this.renderFloor(floor, idx),
-    )
+    for (const obj of objectsToRemove) {
+      this.scene.remove(obj)
+    }
+
+    if (!this.storeys) return
+
+    for (const floor of this.storeys) {
+      const index = this.storeys.indexOf(floor)
+      this.renderFloor(floor, index)
+    }
+    this.updateVisibility()
   }
 
   protected renderFloor(floor: Storey, index: number): void {
+    // const floorWidth = 20
+    // const floorLength = 15
+    // const floorThickness = 0.3 // Épaisseur de la dalle
+    const y = index * this.FLOOR_SPACING
     const group = new THREE.Group()
-    group.position.set(0, index * this.CONFIG.SPACING, 0)
+    group.position.set(0, y, 0)
+    group.userData.floorIndex = index
+    group.visible = true
+
+    group.position.set(0, index * this.FLOOR_SPACING, 0)
     group.userData = {
       isFloorGroup: true,
       floorIndex: index,
@@ -292,11 +478,7 @@ export class BuildingViewer3dComponent
       this.sharedBoxGeo,
       this.getMat(isSelected ? "#e0f2fe" : "#f0f0f0", 0.9),
     )
-    slab.scale.set(
-      this.CONFIG.WIDTH,
-      this.CONFIG.FLOOR_THICKNESS,
-      this.CONFIG.LENGTH,
-    )
+    slab.scale.set(this.WIDTH, this.FLOOR_THICKNESS, this.LENGTH)
     slab.receiveShadow = true
     group.add(slab)
 
@@ -309,25 +491,33 @@ export class BuildingViewer3dComponent
         }),
         this.getMat(isSelected ? "#0ea5e9" : "#64748b"),
       )
-      textMesh.position.set(
-        -this.CONFIG.WIDTH / 2,
-        0.4,
-        -this.CONFIG.LENGTH / 2 - 1,
-      )
+      textMesh.position.set(-this.WIDTH / 2, 0.4, -this.LENGTH / 2 - 1)
       group.add(textMesh)
     }
-    this.roomService
-      .fetchByStoreyId(floor.id)
-      .subscribe((rooms) => rooms.forEach((r) => this.renderRoom(group, r)))
+    if (this.rooms) {
+      this.rooms
+        .filter((r) => r.storeyId === floor.id)
+        .forEach((r) => this.renderRoom(group, r))
+    }
+
+    // Floor Plan (if available)
+    if (this.storeyFloorPlans && this.storeyFloorPlans.has(floor.id)) {
+      const imageUrl = this.storeyFloorPlans.get(floor.id)
+      if (imageUrl == null) {
+        return
+      }
+      this.addPlaneFloorTextureToStorey(imageUrl, group)
+    }
+
     this.scene.add(group)
   }
 
   protected renderRoom(parentGroup: THREE.Group, room: Room): void {
     const roomGroup = new THREE.Group()
-    const w = room.width * this.CONFIG.SCALE,
-      d = room.depth * this.CONFIG.SCALE,
-      x = room.x * this.CONFIG.SCALE,
-      z = room.z * this.CONFIG.SCALE
+    const w = room.width * this.SCALE,
+      d = room.depth * this.SCALE,
+      x = room.x * this.SCALE,
+      z = room.z * this.SCALE
     roomGroup.position.set(x, 0.25, z)
     roomGroup.userData = {
       roomId: room.id,
@@ -338,7 +528,7 @@ export class BuildingViewer3dComponent
       this.sharedBoxGeo,
       this.getMat(room.color ?? "#d1d5db", 0.8),
     )
-    mesh.scale.set(w, this.CONFIG.ROOM_THICKNESS, d)
+    mesh.scale.set(w, this.ROOM_THICKNESS, d)
     mesh.userData = { type: "ROOM_BODY", room }
     roomGroup.add(mesh)
 
@@ -421,11 +611,11 @@ export class BuildingViewer3dComponent
     mesh.position.set(0, 0, 0)
     mesh.updateMatrixWorld(true)
     const box = new THREE.Box3().setFromObject(mesh)
-    const yOffset = this.CONFIG.ROOM_THICKNESS / 2 - box.min.y
+    const yOffset = this.ROOM_THICKNESS / 2 - box.min.y
     mesh.position.set(
-      furniture.x * this.CONFIG.SCALE,
+      furniture.x * this.SCALE,
       yOffset,
-      furniture.z * this.CONFIG.SCALE,
+      furniture.z * this.SCALE,
     )
     mesh.userData = {
       type: "FURNITURE",
@@ -492,18 +682,14 @@ export class BuildingViewer3dComponent
     this.removeGhost()
     this.originalMeshHidden = originalRoomMesh
     this.originalMeshHidden.visible = false
-    const w = room.width * this.CONFIG.SCALE,
-      d = room.depth * this.CONFIG.SCALE
+    const w = room.width * this.SCALE,
+      d = room.depth * this.SCALE
     this.ghostMesh = new THREE.Mesh(
       this.sharedBoxGeo,
       this.getMat(room.color ?? "#3b82f6", 0.6),
     )
-    this.ghostMesh.scale.set(w, this.CONFIG.ROOM_THICKNESS, d)
-    this.ghostMesh.position.set(
-      room.x * this.CONFIG.SCALE,
-      0.3,
-      room.z * this.CONFIG.SCALE,
-    )
+    this.ghostMesh.scale.set(w, this.ROOM_THICKNESS, d)
+    this.ghostMesh.position.set(room.x * this.SCALE, 0.3, room.z * this.SCALE)
     floorGroup.add(this.ghostMesh)
     this.ghostData = { x: room.x, z: room.z, w: room.width, d: room.depth }
   }
@@ -523,15 +709,15 @@ export class BuildingViewer3dComponent
   private updateGhostVisuals(): void {
     if (!this.ghostMesh || !this.ghostData) return
     this.ghostMesh.scale.set(
-      this.ghostData.w * this.CONFIG.SCALE,
-      this.CONFIG.ROOM_THICKNESS,
-      this.ghostData.d * this.CONFIG.SCALE,
+      this.ghostData.w * this.SCALE,
+      this.ROOM_THICKNESS,
+      this.ghostData.d * this.SCALE,
     )
     // Keep the lifted Y position
     this.ghostMesh.position.set(
-      this.ghostData.x * this.CONFIG.SCALE,
+      this.ghostData.x * this.SCALE,
       0.3,
-      this.ghostData.z * this.CONFIG.SCALE,
+      this.ghostData.z * this.SCALE,
     )
   }
 
@@ -670,7 +856,7 @@ export class BuildingViewer3dComponent
     this.raycaster.ray.intersectPlane(
       new THREE.Plane(
         new THREE.Vector3(0, 1, 0),
-        -(this.selectedFloorIndex * this.CONFIG.SPACING),
+        -(this.selectedFloorIndex * this.FLOOR_SPACING),
       ),
       pt,
     )
@@ -682,42 +868,34 @@ export class BuildingViewer3dComponent
       this.activeRoom
     ) {
       const dx = Math.round(
-          (pt.x - this.startFurnitureData.mouseX) / this.CONFIG.SCALE,
+          (pt.x - this.startFurnitureData.mouseX) / this.SCALE,
         ),
-        dz = Math.round(
-          (pt.z - this.startFurnitureData.mouseZ) / this.CONFIG.SCALE,
-        )
+        dz = Math.round((pt.z - this.startFurnitureData.mouseZ) / this.SCALE)
       let nx = this.startFurnitureData.furnX + dx,
         nz = this.startFurnitureData.furnZ + dz
       const rhw = this.activeRoom.width / 2,
         rhd = this.activeRoom.depth / 2
       nx = Math.max(
-        -rhw - this.startFurnitureData.bounds.minX / this.CONFIG.SCALE,
-        Math.min(
-          rhw - this.startFurnitureData.bounds.maxX / this.CONFIG.SCALE,
-          nx,
-        ),
+        -rhw - this.startFurnitureData.bounds.minX / this.SCALE,
+        Math.min(rhw - this.startFurnitureData.bounds.maxX / this.SCALE, nx),
       )
       nz = Math.max(
-        -rhd - this.startFurnitureData.bounds.minZ / this.CONFIG.SCALE,
-        Math.min(
-          rhd - this.startFurnitureData.bounds.maxZ / this.CONFIG.SCALE,
-          nz,
-        ),
+        -rhd - this.startFurnitureData.bounds.minZ / this.SCALE,
+        Math.min(rhd - this.startFurnitureData.bounds.maxZ / this.SCALE, nz),
       )
       this.ghostFurnitureData.x = nx
       this.ghostFurnitureData.z = nz
       this.ghostFurnitureMesh!.position.set(
-        nx * this.CONFIG.SCALE,
+        nx * this.SCALE,
         this.ghostFurnitureMesh!.userData["initialY"] ?? 0.2,
-        nz * this.CONFIG.SCALE,
+        nz * this.SCALE,
       )
       return
     }
 
     if (!this.activeRoom || !this.startData || !this.ghostData) return
-    const dx = Math.round((pt.x - this.startData.mouseX) / this.CONFIG.SCALE),
-      dz = Math.round((pt.z - this.startData.mouseZ) / this.CONFIG.SCALE)
+    const dx = Math.round((pt.x - this.startData.mouseX) / this.SCALE),
+      dz = Math.round((pt.z - this.startData.mouseZ) / this.SCALE)
     const otherRooms = this.roomService.rooms.filter(
       (r) => r.storeyId === this.activeRoom?.storeyId,
     )
@@ -725,9 +903,8 @@ export class BuildingViewer3dComponent
     if (this.interactionState === "DRAGGING") {
       let nx = this.startData.roomX + dx,
         nz = this.startData.roomZ + dz
-      const limX =
-          this.CONFIG.WIDTH / this.CONFIG.SCALE / 2 - this.ghostData.w / 2,
-        limZ = this.CONFIG.LENGTH / this.CONFIG.SCALE / 2 - this.ghostData.d / 2
+      const limX = this.WIDTH / this.SCALE / 2 - this.ghostData.w / 2,
+        limZ = this.LENGTH / this.SCALE / 2 - this.ghostData.d / 2
       nx = Math.round(Math.max(-limX, Math.min(limX, nx)))
       nz = Math.round(Math.max(-limZ, Math.min(limZ, nz)))
       // Update position (Visuals will be updated in updateGhostVisuals)
@@ -762,8 +939,8 @@ export class BuildingViewer3dComponent
         w: Math.round(nw),
         d: Math.round(nd),
       }
-      const fsX = this.CONFIG.WIDTH / this.CONFIG.SCALE,
-        fsZ = this.CONFIG.LENGTH / this.CONFIG.SCALE
+      const fsX = this.WIDTH / this.SCALE,
+        fsZ = this.LENGTH / this.SCALE
       if (
         cand.x - cand.w / 2 >= -fsX / 2 &&
         cand.x + cand.w / 2 <= fsX / 2 &&
@@ -808,9 +985,9 @@ export class BuildingViewer3dComponent
       this.activeFurniture.x = this.ghostFurnitureData.x
       this.activeFurniture.z = this.ghostFurnitureData.z
       this.originalFurnitureHidden.position.set(
-        this.activeFurniture.x * this.CONFIG.SCALE,
+        this.activeFurniture.x * this.SCALE,
         this.originalFurnitureHidden.userData["initialY"] ?? 0.2,
-        this.activeFurniture.z * this.CONFIG.SCALE,
+        this.activeFurniture.z * this.SCALE,
       )
       this.originalFurnitureHidden.visible = true
       this.ghostFurnitureMesh?.removeFromParent()
@@ -834,14 +1011,14 @@ export class BuildingViewer3dComponent
 
   private applyChangesToOriginalMesh(): void {
     if (!this.originalMeshHidden || !this.ghostData || !this.activeRoom) return
-    const w = this.ghostData.w * this.CONFIG.SCALE,
-      d = this.ghostData.d * this.CONFIG.SCALE
+    const w = this.ghostData.w * this.SCALE,
+      d = this.ghostData.d * this.SCALE
     const group = this.originalMeshHidden.parent
     if (group) {
       group.position.set(
-        this.ghostData.x * this.CONFIG.SCALE,
+        this.ghostData.x * this.SCALE,
         0.25,
-        this.ghostData.z * this.CONFIG.SCALE,
+        this.ghostData.z * this.SCALE,
       )
       if (this.interactionState === "RESIZING") {
         const hw = w / 2,
@@ -856,19 +1033,12 @@ export class BuildingViewer3dComponent
             )
           }
           if (c.userData["type"] === "ROOM_BODY" && c instanceof THREE.Mesh)
-            c.scale.set(w, this.CONFIG.ROOM_THICKNESS, d)
+            c.scale.set(w, this.ROOM_THICKNESS, d)
         })
       }
     }
     this.originalMeshHidden.visible = true
     this.originalMeshHidden = null
-  }
-
-  protected highlightSelectedFloor(): void {
-    this.isAnimatingToFloor = true
-    const ty = this.selectedFloorIndex * this.CONFIG.SPACING
-    this.cameraTarget.set(0, ty, 0)
-    this.cameraPosTarget.set(25, ty + 15, 25)
   }
 
   protected getMouseNormalized(event: PointerEvent): THREE.Vector2 {

@@ -6,19 +6,45 @@
       Il y a actuellement {{ furnitureService.furnitures.length }} meuble(s)
       affiché(s)
     </h2>
+  </div>
 
-    <button
-      type="button"
-      class="bg-gray-600 font-medium text-gray-100 rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-gray-500"
-      (click)="furnitureService.openModal()"
-    >
-      Ajouter un meuble
-    </button>
+  <div class="flex justify-center gap-4 mb-6">
+    @if (roleService.currentRole === "Gestionnaire de mobilier") {
+      <p-button
+        label="Ajouter un meuble"
+        styleClass="p-button-primary p-button-lg"
+        (onClick)="openModal()"
+      ></p-button>
+    }
+
+    @if (
+      furnitureService.furnitures.length > 0 &&
+      furnitureService.status !== "pending"
+    ) {
+      <p-button
+        label="Exporter au format excel"
+        (click)="exportToExcel()"
+        styleClass="p-button-success p-button-lg"
+      ></p-button>
+    }
   </div>
 
   <app-search-engine />
 
-  <app-furniture-add-form />
+  @if (roleService.currentRole === "Gestionnaire de site") {
+    <div class="role-actions mb-4 flex justify-center">
+      <p-button
+        label="Voir notifications de déplacement"
+        styleClass="p-button-pink p-button-lg"
+        (onClick)="fakeNotify()"
+      ></p-button>
+    </div>
+  }
+
+  <app-furniture-add-form
+    [furniture]="furnitureToEdit"
+    (handleClose)="closeModal()"
+  />
 
   <div class="furniture-list">
     @if (furnitureService.status === "pending") {

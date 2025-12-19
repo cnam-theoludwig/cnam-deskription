@@ -9,8 +9,13 @@
         <span class="badge badge-secondary">{{ buildings.length }}</span>
       </div>
 
-      @if (selectedBuilding === undefined) {
-        <p class="text-sm text-muted-foreground">Loading...</p>
+      @if (buildings.length === 0) {
+        <button
+          class="w-full btn btn-outline bg-primary/5 border-primary/20 text-primary mt-2"
+          (click)="addBuilding.emit()"
+        >
+          Ajouter un nouveau bâtiment
+        </button>
       } @else {
         <select
           id="buildingSelect"
@@ -58,6 +63,17 @@
               </div>
             </button>
 
+            <button
+              class="btn btn-ghost text-primary hover:bg-primary/10"
+              (click)="triggerFloorPlanUpload(storey)"
+              title="Ajouter un plan d'étage"
+            >
+              <lucide-angular
+                [img]="UploadIcon"
+                class="w-4 h-4"
+              ></lucide-angular>
+            </button>
+
             @if (storeys.length > 1) {
               <button
                 class="btn btn-ghost text-destructive hover:bg-destructive/10"
@@ -71,6 +87,14 @@
             }
           </div>
         }
+
+        <input
+          type="file"
+          accept="image/*"
+          #fileInput
+          style="display: none"
+          (change)="onFloorPlanSelected($event)"
+        />
       </div>
 
       <button
@@ -79,6 +103,18 @@
       >
         Ajouter un étage
       </button>
+    </div>
+
+    <div class="mb-2 flex items-center gap-2">
+      <input
+        id="hideStoreys"
+        type="checkbox"
+        [checked]="hideNotSelectedStoreys"
+        (change)="toggleHideNotSelectedStoreys.emit($event.target.checked)"
+      />
+      <label for="hideStoreys" class="ml-2"
+        >Cacher les étages non sélectionnés</label
+      >
     </div>
 
     <hr />

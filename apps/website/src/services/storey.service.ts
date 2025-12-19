@@ -1,16 +1,14 @@
 import { inject, Injectable, signal } from "@angular/core"
-import { fromPromise } from "rxjs/internal/observable/innerFrom"
+import { from, Observable } from "rxjs"
 
 import { getRPCClient } from "@repo/api-client"
 import { environment } from "../environments/environment"
-import type { Storey, StoreyCreate } from "@repo/models/Storey"
+import type { Storey, StoreyCreate, StoreyUpdate } from "@repo/models/Storey"
 import type { Status } from "@repo/utils/types"
 import type { FormGroup } from "@angular/forms"
 import { RoomService } from "./room.service"
 
-export type Storeys = Awaited<
-  ReturnType<ReturnType<typeof getRPCClient>["storeys"]["get"]>
->
+export type Storeys = Storey[]
 
 @Injectable({
   providedIn: "root",
@@ -31,9 +29,9 @@ export class StoreyService {
 
   public get() {
     this._status.set("pending")
-    const observable = fromPromise(this.rpcClient.storeys.get())
+    const observable = from(this.rpcClient.storeys.get()) as Observable<Storeys>
     observable.subscribe({
-      next: (storeys) => {
+      next: (storeys: Storeys) => {
         this._status.set("idle")
         this._storeys.set(storeys)
       },
@@ -43,11 +41,11 @@ export class StoreyService {
 
   public getByBuildingId(buildingId: string) {
     this._status.set("pending")
-    const observable = fromPromise(
+    const observable = from(
       this.rpcClient.storeys.getByBuildingId(buildingId),
-    )
+    ) as Observable<Storeys>
     observable.subscribe({
-      next: (storeys) => {
+      next: (storeys: Storeys) => {
         this._status.set("idle")
         this._storeys.set(storeys)
       },
@@ -56,11 +54,13 @@ export class StoreyService {
   }
 
   public create(input: StoreyCreate) {
-    const observable = fromPromise(this.rpcClient.storeys.create(input))
+    const observable = from(
+      this.rpcClient.storeys.create(input),
+    ) as Observable<Storey>
     observable.subscribe({
       next: (newStorey) => {
         this._storeys.update((old) => {
-          return [...old, newStorey]
+          return [...old, newStorey as Storey]
         })
       },
     })
@@ -82,12 +82,30 @@ export class StoreyService {
   }
 
   public remove(storeyId: Storey["id"]) {
-    const observable = fromPromise(this.rpcClient.storeys.delete(storeyId))
+    const observable = from(
+      this.rpcClient.storeys.delete(storeyId),
+    ) as Observable<Storey>
     observable.subscribe({
       next: () => {
         this._storeys.update((old) => {
           return old.filter((storey) => {
             return storey.id !== storeyId
+          })
+        })
+      },
+    })
+    return observable
+  }
+
+  public update(storeyId: Storey["id"], updates: Partial<StoreyUpdate>) {
+    const observable = from(
+      this.rpcClient.storeys.update({ id: storeyId, ...updates }),
+    ) as Observable<Storey>
+    observable.subscribe({
+      next: (updatedStorey) => {
+        this._storeys.update((old) => {
+          return old.map((storey) => {
+            return storey.id === storeyId ? (updatedStorey as Storey) : storey
           })
         })
       },

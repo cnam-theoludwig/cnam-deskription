@@ -1,5 +1,5 @@
 import { Injectable, signal } from "@angular/core"
-import { fromPromise } from "rxjs/internal/observable/innerFrom"
+import { from, Observable } from "rxjs"
 
 import { getRPCClient } from "@repo/api-client"
 import { environment } from "../environments/environment"
@@ -14,9 +14,7 @@ import { FormControl, Validators } from "@angular/forms"
 import type { FormBuilder, FormGroup } from "@angular/forms"
 import type { Room } from "@repo/models/Room"
 
-export type Furnitures = Awaited<
-  ReturnType<ReturnType<typeof getRPCClient>["furnitures"]["get"]>
->
+export type Furnitures = FurnitureWithRelations[]
 
 @Injectable({
   providedIn: "root",
@@ -39,7 +37,9 @@ export class FurnitureService {
 
   public get() {
     this._status.set("pending")
-    const observable = fromPromise(this.rpcClient.furnitures.get())
+    const observable = from(
+      this.rpcClient.furnitures.get(),
+    ) as Observable<Furnitures>
     observable.subscribe({
       next: (furnitures) => {
         this._status.set("idle")
@@ -51,9 +51,9 @@ export class FurnitureService {
 
   public getByRoomId(roomId: Room["id"]) {
     this._status.set("pending")
-    const observable = fromPromise(
+    const observable = from(
       this.rpcClient.furnitures.getByRoomId({ roomId }),
-    )
+    ) as Observable<Furnitures>
     observable.subscribe({
       next: (furnitures) => {
         this._status.set("idle")
@@ -64,12 +64,14 @@ export class FurnitureService {
   }
 
   public fetchForRender(roomId: string) {
-    return fromPromise(this.rpcClient.furnitures.getByRoomId({ roomId }))
+    return from(this.rpcClient.furnitures.getByRoomId({ roomId }))
   }
 
   public search(input: Partial<FurnitureWithRelations>) {
     this._status.set("pending")
-    const observable = fromPromise(this.rpcClient.furnitures.search(input))
+    const observable = from(
+      this.rpcClient.furnitures.search(input),
+    ) as Observable<Furnitures>
     observable.subscribe({
       next: (furnitures) => {
         this._status.set("idle")
@@ -80,11 +82,13 @@ export class FurnitureService {
   }
 
   public create(input: FurnitureCreate) {
-    const observable = fromPromise(this.rpcClient.furnitures.create(input))
+    const observable = from(
+      this.rpcClient.furnitures.create(input),
+    ) as Observable<Furniture>
     observable.subscribe({
       next: (newFurniture) => {
         this._furnitures.update((old) => {
-          return [...old, newFurniture]
+          return [...old, newFurniture as FurnitureWithRelations]
         })
       },
     })
@@ -93,7 +97,9 @@ export class FurnitureService {
 
   public update(furniture: FurnitureUpdate) {
     this._status.set("pending")
-    const observable = fromPromise(this.rpcClient.furnitures.update(furniture))
+    const observable = from(
+      this.rpcClient.furnitures.update(furniture),
+    ) as Observable<Furniture>
     observable.subscribe({
       next: (updatedFurniture) => {
         this._status.set("idle")
@@ -158,10 +164,68 @@ export class FurnitureService {
     if (modal) modal.close()
   }
 
+  public exportToExcel() {
+    const observable = from(
+      this.rpcClient.furnitures.excelExport(this.furnitures),
+    ) as Observable<string>
+
+    const base64ToUint8Array = (base64: string) => {
+      // remove data URL prefix if present
+      const commaIndex = base64.indexOf(",")
+      if (commaIndex !== -1) {
+        base64 = base64.slice(commaIndex + 1)
+      }
+      // convert URL-safe base64 to standard
+      base64 = base64.replace(/-/g, "+").replace(/_/g, "/")
+      // add padding if missing
+      const pad = base64.length % 4
+      if (pad !== 0 && !Number.isNaN(pad)) {
+        base64 += "====".slice(pad)
+      }
+
+      const binaryString = atob(base64)
+      const len = binaryString.length
+      const bytes = new Uint8Array(len)
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i)
+      }
+      return bytes
+    }
+
+    observable.subscribe({
+      next: (base64: string) => {
+        try {
+          const bytes = base64ToUint8Array(base64)
+          const blob = new Blob([bytes], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          })
+
+          // For IE/Edge
+          const msSaveOrOpenBlob = (window.navigator as any).msSaveOrOpenBlob
+          if (typeof msSaveOrOpenBlob === "function") {
+            msSaveOrOpenBlob.call(window.navigator, blob, "furnitures.xlsx")
+            return
+          }
+
+          const url = window.URL.createObjectURL(blob)
+          const link = document.createElement("a")
+          link.href = url
+          link.setAttribute("download", "deskription.xlsx")
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          window.URL.revokeObjectURL(url)
+        } catch (error) {
+          console.error("Failed to export excel:", error)
+        }
+      },
+    })
+  }
+
   public delete(id: Furniture["id"]) {
     this._status.set("pending")
 
-    const observable = fromPromise(this.rpcClient.furnitures.delete(id))
+    const observable = from(this.rpcClient.furnitures.delete(id))
 
     observable.subscribe({
       next: () => {

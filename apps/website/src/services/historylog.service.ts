@@ -1,5 +1,5 @@
 import { Injectable, signal } from "@angular/core"
-import { fromPromise } from "rxjs/internal/observable/innerFrom"
+import { from, Observable } from "rxjs"
 
 import { getRPCClient } from "@repo/api-client"
 import { environment } from "../environments/environment"
@@ -8,11 +8,8 @@ import type {
   FurnitureCreate,
   FurnitureWithRelations,
 } from "@repo/models/Furniture"
+import type { HistoryLog } from "@repo/models/HistoryLog"
 import type { Status } from "@repo/utils/types"
-
-export type HistoryLog = Awaited<
-  ReturnType<ReturnType<typeof getRPCClient>["historylogs"]["update"]>
->
 
 @Injectable({
   providedIn: "root",
@@ -20,7 +17,7 @@ export type HistoryLog = Awaited<
 export class HistoryLogService {
   private readonly rpcClient = getRPCClient(environment.apiBaseURL)
 
-  private readonly _historylog = signal<HistoryLog | null>(null)
+  private readonly _historylog = signal<HistoryLog[] | null>(null)
   private readonly _status = signal<Status>("pending")
 
   public readonly furnitureToEdit = signal<FurnitureWithRelations | null>(null)
@@ -35,13 +32,13 @@ export class HistoryLogService {
 
   public update(id: Furniture["id"], furniture: FurnitureCreate) {
     this._status.set("pending")
-    const observable = fromPromise(
+    const observable = from(
       this.rpcClient.historylogs.update({ id, furniture }),
-    )
+    ) as Observable<FurnitureWithRelations>
     observable.subscribe({
-      next: (updatedHistorylog) => {
+      next: (updatedFurniture) => {
         this._status.set("idle")
-        this._historylog.set(updatedHistorylog)
+        this._historylog.set(updatedFurniture.historyLogs)
       },
     })
     return observable

@@ -9,6 +9,9 @@
         [storeys]="storeyService.storeys"
         [rooms]="roomService.rooms"
         [furnitures]="furnitureService.furnitures"
+        [hideNotSelectedStoreys]="hideNotSelectedStoreys()"
+        [storeyFloorPlans]="floorPlans"
+        (storeySelected)="selectStorey($event)"
       >
       </app-building-viewer-3d>
     </div>
@@ -35,6 +38,9 @@
         (removeRoom)="removeRoom($event)"
         (updateRoom)="updateRoom($event)"
         (selectFurniture)="selectFurniture($event)"
+        (floorPlanUploaded)="onFloorPlanUploaded($event)"
+        [hideNotSelectedStoreys]="hideNotSelectedStoreys()"
+        (toggleHideNotSelectedStoreys)="setHideNotSelectedStoreys($event)"
       >
       </app-control-panel>
     </div>

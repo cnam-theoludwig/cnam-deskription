@@ -67,6 +67,7 @@ export interface State {
 
 export interface Storey {
   buildingId: string
+  floorPlanImage: string | null
   id: Generated<string>
   name: string
 }

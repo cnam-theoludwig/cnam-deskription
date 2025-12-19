@@ -1,14 +1,12 @@
 import { Injectable, signal } from "@angular/core"
-import { fromPromise } from "rxjs/internal/observable/innerFrom"
+import { from, Observable } from "rxjs"
 
 import { getRPCClient } from "@repo/api-client"
 import { environment } from "../environments/environment"
 import type { Room, RoomCreate } from "@repo/models/Room"
 import type { Status } from "@repo/utils/types"
 
-export type Rooms = Awaited<
-  ReturnType<ReturnType<typeof getRPCClient>["rooms"]["get"]>
->
+export type Rooms = Room[]
 
 @Injectable({
   providedIn: "root",
@@ -28,7 +26,7 @@ export class RoomService {
 
   public get() {
     this._status.set("pending")
-    const observable = fromPromise(this.rpcClient.rooms.get())
+    const observable = from(this.rpcClient.rooms.get()) as Observable<Rooms>
     observable.subscribe({
       next: (rooms) => {
         this._status.set("idle")
@@ -40,7 +38,9 @@ export class RoomService {
 
   public getByStoreyId(storeyId: string) {
     this._status.set("pending")
-    const observable = fromPromise(this.rpcClient.rooms.getByStoreyId(storeyId))
+    const observable = from(
+      this.rpcClient.rooms.getByStoreyId(storeyId),
+    ) as Observable<Rooms>
     observable.subscribe({
       next: (rooms) => {
         this._status.set("idle")
@@ -51,11 +51,15 @@ export class RoomService {
   }
 
   public fetchByStoreyId(storeyId: string) {
-    return fromPromise(this.rpcClient.rooms.getByStoreyId(storeyId))
+    return from(
+      this.rpcClient.rooms.getByStoreyId(storeyId),
+    ) as Observable<Rooms>
   }
 
   public create(input: RoomCreate) {
-    const observable = fromPromise(this.rpcClient.rooms.create(input))
+    const observable = from(
+      this.rpcClient.rooms.create(input),
+    ) as Observable<Room>
     observable.subscribe({
       next: (newRoom) => {
         this._rooms.update((old) => {
@@ -67,9 +71,9 @@ export class RoomService {
   }
 
   public update(id: Room["id"], input: Partial<Room>) {
-    const observable = fromPromise(
+    const observable = from(
       this.rpcClient.rooms.update({ id, ...input }),
-    )
+    ) as Observable<Room>
     observable.subscribe({
       next: (updatedRoom) => {
         this._rooms.update((old) => {
@@ -87,7 +91,7 @@ export class RoomService {
 
   public delete(id: Room["id"]) {
     console.log("Delete room", id)
-    const observable = fromPromise(this.rpcClient.rooms.delete(id))
+    const observable = from(this.rpcClient.rooms.delete(id)) as Observable<Room>
     observable.subscribe({
       next: (deletedRoom) => {
         this._rooms.update((old) => {

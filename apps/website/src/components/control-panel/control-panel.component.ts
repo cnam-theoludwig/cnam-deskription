@@ -1,4 +1,12 @@
-import { Component, Input, Output, EventEmitter, inject } from "@angular/core"
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  inject,
+  ViewChild,
+  ElementRef,
+} from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { FormsModule } from "@angular/forms"
 import {
@@ -8,6 +16,7 @@ import {
   Check,
   Trash2,
   Plus,
+  Upload,
   LucideAngularModule,
   Armchair,
 } from "lucide-angular"
@@ -40,6 +49,7 @@ export class ControlPanelComponent implements OnChanges {
   protected readonly TrashIcon = Trash2
   protected readonly PlusIcon = Plus
   protected readonly ArmchairIcon = Armchair
+  protected readonly UploadIcon = Upload
 
   protected readonly furnitureService = inject(FurnitureService)
 
@@ -60,10 +70,18 @@ export class ControlPanelComponent implements OnChanges {
   @Output() public addStorey = new EventEmitter<void>()
   @Output() public removeStorey = new EventEmitter<Storey>()
 
+  @Input() public hideNotSelectedStoreys = false
+  @Output() public toggleHideNotSelectedStoreys = new EventEmitter<boolean>()
   @Output() public selectRoom = new EventEmitter<Room>()
   @Output() public addRoom = new EventEmitter<void>()
   @Output() public removeRoom = new EventEmitter<Room>()
   @Output() public updateRoom = new EventEmitter<Room>()
+  @Output() public floorPlanUploaded = new EventEmitter<{
+    storeyId: string
+    imageUrl: string
+  }>()
+
+  @ViewChild("fileInput") public fileInput!: ElementRef<HTMLInputElement>
 
   @Output() public selectFurniture = new EventEmitter<FurnitureWithRelations>()
 
@@ -76,6 +94,11 @@ export class ControlPanelComponent implements OnChanges {
   protected showFurnitureInput = false
   protected newFurnitureName = ""
   protected selectedModelType = "chair"
+  // --- État Local ---
+  protected currentStoreyForUpload: Storey | null = null
+  protected showAddRoom: boolean = false
+  protected editName: string = ""
+  protected editColor: string = ""
 
   public ngOnChanges(changes: SimpleChanges) {
     if (changes["selectedRoom"]) {
@@ -107,6 +130,32 @@ export class ControlPanelComponent implements OnChanges {
         }
         this.updateRoom.emit(updatedRoomPayload)
       }
+    }
+  }
+
+  protected triggerFloorPlanUpload(storey: Storey): void {
+    this.currentStoreyForUpload = storey
+    this.fileInput.nativeElement.click()
+  }
+
+  protected onFloorPlanSelected(event: Event): void {
+    const input = event.target as HTMLInputElement
+    if (input.files && input.files[0] && this.currentStoreyForUpload) {
+      const file = input.files[0]
+      const reader = new FileReader()
+
+      reader.onload = (e) => {
+        const imageUrl = e.target?.result as string
+        if (this.currentStoreyForUpload) {
+          this.floorPlanUploaded.emit({
+            storeyId: this.currentStoreyForUpload.id,
+            imageUrl,
+          })
+        }
+      }
+
+      reader.readAsDataURL(file)
+      input.value = "" // Reset input
     }
   }
 }

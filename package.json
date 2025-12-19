@@ -33,6 +33,7 @@
     "typescript": "catalog:"
   },
   "dependencies": {
-    "lucide-angular": "catalog:"
+    "lucide-angular": "catalog:",
+    "xlsx": "catalog:"
   }
 }

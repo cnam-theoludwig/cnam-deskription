@@ -1,14 +1,12 @@
 import { Injectable, signal } from "@angular/core"
-import { fromPromise } from "rxjs/internal/observable/innerFrom"
+import { from, Observable } from "rxjs"
 
 import { getRPCClient } from "@repo/api-client"
 import { environment } from "../environments/environment"
-import type { StateCreate } from "@repo/models/State"
+import type { StateCreate, State } from "@repo/models/State"
 import type { Status } from "@repo/utils/types"
 
-export type States = Awaited<
-  ReturnType<ReturnType<typeof getRPCClient>["states"]["get"]>
->
+export type States = State[]
 
 @Injectable({
   providedIn: "root",
@@ -28,7 +26,7 @@ export class StateService {
 
   public get() {
     this._status.set("pending")
-    const observable = fromPromise(this.rpcClient.states.get())
+    const observable = from(this.rpcClient.states.get()) as Observable<States>
     observable.subscribe({
       next: (states) => {
         this._status.set("idle")
@@ -39,7 +37,9 @@ export class StateService {
   }
 
   public create(input: StateCreate) {
-    const observable = fromPromise(this.rpcClient.states.create(input))
+    const observable = from(
+      this.rpcClient.states.create(input),
+    ) as Observable<State>
     observable.subscribe({
       next: (newState) => {
         this._states.update((old) => {

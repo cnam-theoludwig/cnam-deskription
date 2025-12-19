@@ -8,7 +8,10 @@ import { BuildingViewer3dComponent } from "../../components/building-viewer/buil
 import { ControlPanelComponent } from "../../components/control-panel/control-panel.component"
 import { RoomAddFormComponent } from "../../components/room-add-form/room-add-form.component"
 import { StoreyAddFormComponent } from "../../components/storey-add-form/storey-add-form.component"
-import { BuildingService } from "../../services/building.service"
+import {
+  BuildingService,
+  type Buildings,
+} from "../../services/building.service"
 import { RoomService } from "../../services/room.service"
 import { StoreyService } from "../../services/storey.service"
 import type { FurnitureWithRelations } from "@repo/models/Furniture"
@@ -37,9 +40,12 @@ export class BuildingPageComponent implements OnInit {
   protected selectedRoom!: Room
   protected selectedFurniture!: FurnitureWithRelations
 
+  protected hideNotSelectedStoreysFlag: boolean = false
+  protected floorPlans: Map<string, string> = new Map()
+
   public ngOnInit() {
     this.buildingService.get().subscribe({
-      next: (buildings) => {
+      next: (buildings: Buildings) => {
         if (buildings[0] !== undefined) {
           this.selectBuilding(buildings[0])
         }
@@ -53,6 +59,7 @@ export class BuildingPageComponent implements OnInit {
       this.selectedBuilding = building
       this.storeyService.getByBuildingId(building.id).subscribe({
         next: (storeys) => {
+          this.loadFloorPlans(storeys)
           if (storeys[0] !== undefined) {
             this.selectStorey(storeys[0])
           }
@@ -215,5 +222,36 @@ export class BuildingPageComponent implements OnInit {
         },
         error: (err) => console.error("Failed to update room", err),
       })
+  }
+
+  public setHideNotSelectedStoreys(hide: boolean) {
+    this.hideNotSelectedStoreysFlag = hide
+  }
+
+  public hideNotSelectedStoreys(): boolean {
+    return this.hideNotSelectedStoreysFlag && this.selectedStorey != null
+  }
+
+  protected onFloorPlanUploaded(event: {
+    storeyId: string
+    imageUrl: string
+  }): void {
+    console.log("Floor plan uploaded for storey:", event.storeyId)
+    this.floorPlans.set(event.storeyId, event.imageUrl)
+
+    this.storeyService
+      .update(event.storeyId, { floorPlanImage: event.imageUrl })
+      .subscribe({
+        next: () => console.log("Floor plan saved to database"),
+        error: (err) => console.error("Failed to save floor plan:", err),
+      })
+  }
+
+  private loadFloorPlans(storeys: Storey[]): void {
+    for (const storey of storeys) {
+      if (storey.floorPlanImage) {
+        this.floorPlans.set(storey.id, storey.floorPlanImage)
+      }
+    }
   }
 }
