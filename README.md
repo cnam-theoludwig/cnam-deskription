@@ -9,7 +9,7 @@ Développement d'une application de visualisation et de traçage des mobiliers d
 ## Documentation
 
 - [Sujet](./docs/sujet.md)
-- [User Stories](./docs/user-stories.md)
+- [User Stories](https://docs.google.com/spreadsheets/d/1Vl2dMxTCKQXvUd2BLxcnjJV7LUs8H6GdDjXqUoFAd9I/edit?gid=0#gid=0)
 - [Environnement de Développement + Conventions](./docs/developpement.md)
 - [Environnement de Production et Serveur](./docs/production.md)
 
