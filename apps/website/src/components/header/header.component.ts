@@ -1,6 +1,6 @@
 import { Component, inject } from "@angular/core"
 import type { OnInit } from "@angular/core"
-import { Router } from "@angular/router"
+import { Router, RouterLink } from "@angular/router"
 import { FormsModule } from "@angular/forms"
 import { SelectModule } from "primeng/select"
 import { ButtonModule } from "primeng/button"
@@ -8,7 +8,7 @@ import { RoleService } from "../../services/role.service"
 
 @Component({
   selector: "app-header",
-  imports: [FormsModule, SelectModule, ButtonModule],
+  imports: [FormsModule, SelectModule, ButtonModule, RouterLink],
   templateUrl: "./header.component.html",
   styleUrl: "./header.component.css",
 })
