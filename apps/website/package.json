@@ -22,17 +22,19 @@
     "@angular/platform-browser": "catalog:",
     "@angular/platform-browser-dynamic": "catalog:",
     "@angular/router": "catalog:",
+    "@primeuix/themes": "catalog:",
     "@repo/api-client": "workspace:*",
     "@repo/models": "workspace:*",
     "@repo/utils": "workspace:*",
-    "rxjs": "catalog:",
-    "tslib": "catalog:",
-    "zone.js": "catalog:",
-    "three": "catalog:",
+    "@zxing/browser": "^0.1.5",
+    "@zxing/library": "^0.21.3",
     "lucide-angular": "catalog:",
     "primeng": "catalog:",
     "primeicons": "catalog:",
-    "@primeuix/themes": "catalog:"
+    "rxjs": "catalog:",
+    "three": "catalog:",
+    "tslib": "catalog:",
+    "zone.js": "catalog:"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "catalog:",
@@ -40,16 +42,16 @@
     "@angular/compiler-cli": "catalog:",
     "@repo/config-eslint": "workspace:*",
     "@repo/config-typescript": "workspace:*",
-    "@total-typescript/ts-reset": "catalog:",
     "@tailwindcss/postcss": "catalog:",
+    "@total-typescript/ts-reset": "catalog:",
+    "@types/node": "catalog:",
+    "@types/three": "catalog:",
     "angular-eslint": "catalog:",
-    "typescript-eslint": "catalog:",
     "autoprefixer": "catalog:",
+    "mime": "catalog:",
     "postcss": "catalog:",
     "tailwindcss": "catalog:",
-    "mime": "catalog:",
-    "@types/node": "catalog:",
     "typescript": "catalog:",
-    "@types/three": "catalog:"
+    "typescript-eslint": "catalog:"
   }
 }

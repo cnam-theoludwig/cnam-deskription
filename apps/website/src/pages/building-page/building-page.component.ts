@@ -8,10 +8,10 @@ import { BuildingViewer3dComponent } from "../../components/building-viewer/buil
 import { ControlPanelComponent } from "../../components/control-panel/control-panel.component"
 import { RoomAddFormComponent } from "../../components/room-add-form/room-add-form.component"
 import { StoreyAddFormComponent } from "../../components/storey-add-form/storey-add-form.component"
-import {
-  BuildingService,
-  type Buildings,
-} from "../../services/building.service"
+import { FurnitureAddFormComponent } from "../../components/furnitures/furniture-add-form/furniture-add-form.component"
+import { QrScanModalComponent } from "../../app/components/qr-scan-modal/qr-scan-modal.component"
+import { BuildingService } from "../../services/building.service"
+import type { Buildings } from "../../services/building.service"
 import { RoomService } from "../../services/room.service"
 import { StoreyService } from "../../services/storey.service"
 import type { FurnitureWithRelations } from "@repo/models/Furniture"
@@ -26,6 +26,8 @@ import { FurnitureService } from "../../services/furniture.service"
     BuildingAddFormComponent,
     StoreyAddFormComponent,
     RoomAddFormComponent,
+    FurnitureAddFormComponent,
+    QrScanModalComponent,
   ],
   styleUrls: ["./building-page.component.css"],
 })
@@ -98,7 +100,7 @@ export class BuildingPageComponent implements OnInit {
 
   protected selectFurniture(furniture: FurnitureWithRelations) {
     console.log("selectFurniture", furniture.id)
-    if (furniture !== undefined) {
+    if (furniture) {
       this.selectedFurniture = furniture
     }
   }

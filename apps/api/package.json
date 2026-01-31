@@ -14,23 +14,25 @@
     "lint:typescript": "tsc --noEmit"
   },
   "dependencies": {
-    "@repo/utils": "workspace:*",
-    "@repo/models": "workspace:*",
-    "@orpc/server": "catalog:",
     "@orpc/openapi": "catalog:",
+    "@orpc/server": "catalog:",
     "@orpc/zod": "catalog:",
-    "tsx": "catalog:",
-    "zod": "catalog:",
+    "@repo/models": "workspace:*",
+    "@repo/utils": "workspace:*",
     "kysely": "catalog:",
-    "pretty-ms": "catalog:"
+    "pretty-ms": "catalog:",
+    "qrcode": "^1.5.4",
+    "tsx": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
-    "@repo/config-typescript": "workspace:*",
     "@repo/config-eslint": "workspace:*",
+    "@repo/config-typescript": "workspace:*",
     "@total-typescript/ts-reset": "catalog:",
     "@types/node": "catalog:",
-    "typescript-eslint": "catalog:",
+    "@types/qrcode": "^1.5.6",
     "eslint": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
   }
 }

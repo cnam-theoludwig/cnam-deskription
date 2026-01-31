@@ -5,6 +5,7 @@ import { FormsModule } from "@angular/forms"
 import { SelectModule } from "primeng/select"
 import { ButtonModule } from "primeng/button"
 import { RoleService } from "../../services/role.service"
+import { QrScanService } from "../../services/qr-scan.service"
 
 @Component({
   selector: "app-header",
@@ -14,6 +15,7 @@ import { RoleService } from "../../services/role.service"
 })
 export class HeaderComponent implements OnInit {
   public readonly roleService = inject(RoleService)
+  public readonly qrScanService = inject(QrScanService)
   private readonly router = inject(Router)
 
   public roles: any[] | undefined
@@ -40,6 +42,11 @@ export class HeaderComponent implements OnInit {
 
   public navigateToViewer() {
     void this.router.navigate(["/viewer"])
+  }
+
+  public navigateToQrScan() {
+    // Ouvrir simplement la modale de scan sans navigation
+    this.qrScanService.openScanModal()
   }
 
   public goBack() {

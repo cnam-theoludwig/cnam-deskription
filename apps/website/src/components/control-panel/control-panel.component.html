@@ -110,7 +110,7 @@
         id="hideStoreys"
         type="checkbox"
         [checked]="hideNotSelectedStoreys"
-        (change)="toggleHideNotSelectedStoreys.emit($event.target.checked)"
+        (change)="onHideStoreysChange($event)"
       />
       <label for="hideStoreys" class="ml-2"
         >Cacher les étages non sélectionnés</label
@@ -139,7 +139,7 @@
           >
             <div
               class="color-preview"
-              [style.backgroundColor]="
+              [style.background-color]="
                 selectedRoom?.id === room.id ? editRoomColor : room.color
               "
             >
@@ -244,6 +244,15 @@
         (click)="furnitureService.openModal()"
       >
         Ajouter un meuble
+      </button>
+
+      <button
+        class="w-full btn btn-outline bg-emerald-50 border-emerald-200 text-emerald-700 mt-2 flex items-center justify-center gap-2"
+        (click)="qrScanService.openScanModal()"
+        title="Scanner un QR code pour localiser un meuble"
+      >
+        <lucide-angular [img]="QrCodeIcon" [size]="18"></lucide-angular>
+        Scanner QR Code
       </button>
     </div>
   </div>
