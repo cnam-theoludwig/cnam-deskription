@@ -11,10 +11,17 @@ import type { Building } from "@repo/models/Building"
 import { firstValueFrom } from "rxjs"
 import type { StoreyCreate } from "@repo/models/Storey"
 import { StoreyService } from "../../services/storey.service"
+import { ButtonModule } from "primeng/button"
+import { InputTextModule } from "primeng/inputtext"
 
 @Component({
   selector: "app-storey-add-form",
-  imports: [ReactiveFormsModule, RequiredComponent],
+  imports: [
+    ReactiveFormsModule,
+    RequiredComponent,
+    ButtonModule,
+    InputTextModule,
+  ],
   templateUrl: "./storey-add-form.component.html",
   styleUrl: "./storey-add-form.component.css",
 })

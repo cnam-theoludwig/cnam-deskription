@@ -8,11 +8,23 @@ import { StateService } from "../../services/state.service"
 import { TypeService } from "../../services/type.service"
 import { StoreyService } from "../../services/storey.service"
 import { RoomService } from "../../services/room.service"
+import { ButtonModule } from "primeng/button"
+import { SelectModule } from "primeng/select"
+import { InputTextModule } from "primeng/inputtext"
+import { IconFieldModule } from "primeng/iconfield"
+import { InputIconModule } from "primeng/inputicon"
 
 @Component({
   selector: "app-search-engine",
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [
+    ReactiveFormsModule,
+    ButtonModule,
+    SelectModule,
+    InputTextModule,
+    IconFieldModule,
+    InputIconModule,
+  ],
   templateUrl: "./search-engine.component.html",
   styleUrls: ["./search-engine.component.css"],
 })

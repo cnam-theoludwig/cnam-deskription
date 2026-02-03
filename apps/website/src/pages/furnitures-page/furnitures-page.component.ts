@@ -13,7 +13,6 @@ import { RoomService } from "../../services/room.service"
 import { StateService } from "../../services/state.service"
 import { StoreyService } from "../../services/storey.service"
 import { TypeService } from "../../services/type.service"
-import { BuildingPageComponent } from "../building-page/building-page.component"
 
 @Component({
   selector: "app-furnitures-page",
@@ -23,7 +22,6 @@ import { BuildingPageComponent } from "../building-page/building-page.component"
     FurnitureAddFormComponent,
     SearchEngineComponent,
     ButtonModule,
-    BuildingPageComponent,
   ],
   templateUrl: "./furnitures-page.component.html",
   styleUrl: "./furnitures-page.component.css",
@@ -75,5 +73,24 @@ export class FurnituresPageComponent {
 
   public fakeNotify() {
     alert("Notification de déplacement à implémenter plus tard.")
+  }
+
+  public getSeverityClasses(state: string): string {
+    const base =
+      "px-2 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm"
+    switch (state?.toLowerCase()) {
+      case "neuf":
+      case "très bon état":
+        return `${base} bg-green-100 text-green-700`
+      case "bon état":
+        return `${base} bg-blue-100 text-blue-700`
+      case "usagé":
+        return `${base} bg-yellow-100 text-yellow-700`
+      case "abîmé":
+      case "hors service":
+        return `${base} bg-red-100 text-red-700`
+      default:
+        return `${base} bg-gray-100 text-gray-700`
+    }
   }
 }

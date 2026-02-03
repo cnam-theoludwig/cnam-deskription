@@ -24,6 +24,10 @@ export class RoomService {
     return this._status()
   }
 
+  public clear() {
+    this._rooms.set([])
+  }
+
   public get() {
     this._status.set("pending")
     const observable = from(this.rpcClient.rooms.get()) as Observable<Rooms>

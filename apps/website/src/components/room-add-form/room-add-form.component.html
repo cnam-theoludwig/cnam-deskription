@@ -10,11 +10,11 @@
         <label for="name" class="form-label w-20">Nom <app-required /></label>
         <input
           id="name"
-          class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+          pInputText
+          class="flex-1"
           formControlName="name"
           type="text"
           placeholder="Entrez le nom de la pièce"
-          required
         />
       </div>
 
@@ -22,29 +22,25 @@
         <label for="color" class="form-label w-20"
           >Couleur <app-required
         /></label>
-        <input
-          id="color"
-          class="w-16 h-10 p-0 border-0 rounded cursor-pointer"
+        <p-colorpicker
+          inputId="color"
           formControlName="color"
-          type="color"
-          required
+          [style]="{ width: '100%' }"
         />
       </div>
 
       <div class="modal-actions flex justify-end gap-3 mt-6">
-        <button
-          class="bg-gray-300 text-gray-800 rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-gray-200"
+        <p-button
+          label="Annuler"
+          styleClass="p-button-secondary"
           type="button"
-          (click)="closeModal()"
-        >
-          Annuler
-        </button>
-        <button
-          class="bg-blue-600 text-white rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-blue-400"
+          (onClick)="closeModal()"
+        ></p-button>
+        <p-button
+          label="Ajouter"
+          styleClass="p-button-primary"
           type="submit"
-        >
-          Ajouter
-        </button>
+        ></p-button>
       </div>
     </form>
   </div>

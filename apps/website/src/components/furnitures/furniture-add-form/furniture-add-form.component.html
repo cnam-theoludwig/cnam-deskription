@@ -4,7 +4,12 @@
 >
   <div class="modal-content">
     <h2>
-      {{ furnitureService.furnitureToEdit != null ? "Modifier" : "Ajouter" }}
+      {{
+        furnitureService.furnitureToEdit() != null &&
+        furnitureService.furnitureToEdit() != undefined
+          ? "Modifier"
+          : "Ajouter"
+      }}
       un meuble
     </h2>
 
@@ -13,11 +18,11 @@
         <label for="name" class="form-label w-20">Nom <app-required /></label>
         <input
           id="name"
-          class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+          pInputText
+          class="flex-1"
           formControlName="name"
           type="text"
           placeholder="Entrez le nom du meuble (minimum 3 caractères)"
-          required
         />
       </div>
 
@@ -28,19 +33,19 @@
         @if (buildingService.status === "pending") {
           <p>Chargement...</p>
         } @else {
-          <select
-            id="building"
-            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+          <p-select
+            inputId="building"
+            styleClass="flex-1"
             formControlName="buildingId"
-            (change)="this.buildingService.onBuildingChange(this.furnitureForm)"
+            [options]="buildingService.buildings"
+            optionLabel="name"
+            optionValue="id"
+            (onChange)="
+              this.buildingService.onBuildingChange(this.furnitureForm)
+            "
             [disabled]="shouldDisablePositionFields"
-            required
-          >
-            <option value="" disabled selected>Choisissez un bâtiment</option>
-            @for (building of buildingService.buildings; track building.id) {
-              <option [value]="building.id">{{ building.name }}</option>
-            }
-          </select>
+            placeholder="Choisissez un bâtiment"
+          />
         }
       </div>
 
@@ -51,19 +56,17 @@
         @if (storeyService.status === "pending") {
           <p>Chargement...</p>
         } @else {
-          <select
-            id="storey"
-            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+          <p-select
+            inputId="storey"
+            styleClass="flex-1"
             formControlName="storeyId"
-            (change)="this.storeyService.onStoreyChange(this.furnitureForm)"
+            [options]="storeyService.storeys"
+            optionLabel="name"
+            optionValue="id"
+            (onChange)="this.storeyService.onStoreyChange(this.furnitureForm)"
             [disabled]="shouldDisablePositionFields"
-            required
-          >
-            <option value="" disabled selected>Choisissez un étage</option>
-            @for (storey of storeyService.storeys; track storey.id) {
-              <option [value]="storey.id">{{ storey.name }}</option>
-            }
-          </select>
+            placeholder="Choisissez un étage"
+          />
         }
       </div>
 
@@ -72,18 +75,16 @@
         @if (storeyService.status === "pending") {
           <p>Chargement...</p>
         } @else {
-          <select
-            id="room"
-            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+          <p-select
+            inputId="room"
+            styleClass="flex-1"
             formControlName="roomId"
+            [options]="roomService.rooms"
+            optionLabel="name"
+            optionValue="id"
             [disabled]="shouldDisablePositionFields"
-            required
-          >
-            <option value="" disabled selected>Choisissez une pièce</option>
-            @for (room of roomService.rooms; track room.id) {
-              <option [value]="room.id">{{ room.name }}</option>
-            }
-          </select>
+            placeholder="Choisissez une pièce"
+          />
         }
       </div>
 
@@ -92,17 +93,15 @@
         @if (typeService.status === "pending") {
           <p>Chargement...</p>
         } @else {
-          <select
-            id="type"
-            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+          <p-select
+            inputId="type"
+            styleClass="flex-1"
             formControlName="typeId"
-            required
-          >
-            <option value="" disabled selected>Choisissez un type</option>
-            @for (type of typeService.types; track type.id) {
-              <option [value]="type.id">{{ type.name }}</option>
-            }
-          </select>
+            [options]="typeService.types"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Choisissez un type"
+          />
         }
       </div>
 
@@ -111,17 +110,15 @@
         @if (stateService.status === "pending") {
           <p>Chargement...</p>
         } @else {
-          <select
-            id="state"
-            class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+          <p-select
+            inputId="state"
+            styleClass="flex-1"
             formControlName="stateId"
-            required
-          >
-            <option value="" disabled selected>Choisissez un état</option>
-            @for (state of stateService.states; track state.id) {
-              <option [value]="state.id">{{ state.name }}</option>
-            }
-          </select>
+            [options]="stateService.states"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Choisissez un état"
+          />
         }
       </div>
 
@@ -131,11 +128,11 @@
         /></label>
         <input
           id="model"
-          class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+          pInputText
+          class="flex-1"
           formControlName="model"
           type="text"
           placeholder="Entrez le modèle du meuble (url vers le fichier .glb)"
-          required
         />
       </div>
 

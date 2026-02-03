@@ -27,6 +27,10 @@ export class StoreyService {
     return this._status()
   }
 
+  public clear() {
+    this._storeys.set([])
+  }
+
   public get() {
     this._status.set("pending")
     const observable = from(this.rpcClient.storeys.get()) as Observable<Storeys>

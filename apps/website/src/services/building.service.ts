@@ -72,4 +72,20 @@ export class BuildingService {
     formGroup.get(storeyAttributeName)?.enable()
     formGroup.get(roomAttributeName)?.disable()
   }
+
+  public delete(id: Building["id"]) {
+    const observable = from(
+      this.rpcClient.buildings.delete(id),
+    ) as Observable<Building>
+    observable.subscribe({
+      next: (deletedBuilding) => {
+        this._buildings.update((old) => {
+          return old.filter((building) => {
+            return building.id !== deletedBuilding.id
+          })
+        })
+      },
+    })
+    return observable
+  }
 }

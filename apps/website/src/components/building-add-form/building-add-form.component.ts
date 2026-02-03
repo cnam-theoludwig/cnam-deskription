@@ -11,9 +11,17 @@ import { BuildingService } from "../../services/building.service"
 import type { BuildingCreate } from "@repo/models/Building"
 import { firstValueFrom } from "rxjs"
 
+import { ButtonModule } from "primeng/button"
+import { InputTextModule } from "primeng/inputtext"
+
 @Component({
   selector: "app-building-add-form",
-  imports: [ReactiveFormsModule, RequiredComponent],
+  imports: [
+    ReactiveFormsModule,
+    RequiredComponent,
+    ButtonModule,
+    InputTextModule,
+  ],
   templateUrl: "./building-add-form.component.html",
   styleUrl: "./building-add-form.component.css",
 })

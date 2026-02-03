@@ -1,6 +1,8 @@
-<div class="flex h-screen bg-gradient-scene">
-  <div class="flex-1 p-6">
-    <div class="h-full bg-gradient-panel shadow-panel border-0">
+<div class="flex h-screen w-screen overflow-hidden bg-gradient-scene">
+  <div class="flex-1 h-full overflow-hidden p-6 relative">
+    <div
+      class="h-full w-full bg-gradient-panel shadow-panel border-0 rounded-xl overflow-hidden"
+    >
       <app-building-viewer-3d
         [selectedBuilding]="selectedBuilding"
         [selectedStorey]="selectedStorey"
@@ -17,33 +19,38 @@
     </div>
   </div>
 
-  <div class="flex h-screen bg-gradient-scene">
-    <div class="w-80 p-6 space-y-4">
-      <app-control-panel
-        [buildings]="buildingService.buildings"
-        [storeys]="storeyService.storeys"
-        [rooms]="roomService.rooms"
-        [furnitures]="furnitureService.furnitures"
-        [selectedBuilding]="selectedBuilding"
-        [selectedStorey]="selectedStorey"
-        [selectedRoom]="selectedRoom"
-        [selectedFurniture]="selectedFurniture"
-        (selectBuilding)="selectBuilding($event)"
-        (addBuilding)="addBuilding()"
-        (selectStorey)="selectStorey($event)"
-        (addStorey)="addStorey()"
-        (removeStorey)="removeStorey($event)"
-        (selectRoom)="selectRoom($event)"
-        (addRoom)="addRoom()"
-        (removeRoom)="removeRoom($event)"
-        (updateRoom)="updateRoom($event)"
-        (selectFurniture)="selectFurniture($event)"
-        (floorPlanUploaded)="onFloorPlanUploaded($event)"
-        [hideNotSelectedStoreys]="hideNotSelectedStoreys()"
-        (toggleHideNotSelectedStoreys)="setHideNotSelectedStoreys($event)"
-      >
-      </app-control-panel>
-    </div>
+  <div
+    class="w-96 h-full overflow-hidden p-6 space-y-4 bg-white/5 backdrop-blur-sm border-l border-white/10 relative"
+  >
+    <app-control-panel
+      class="h-full block"
+      [buildings]="buildingService.buildings"
+      [storeys]="storeyService.storeys"
+      [rooms]="roomService.rooms"
+      [furnitures]="furnitureService.furnitures"
+      [selectedBuilding]="selectedBuilding"
+      [selectedStorey]="selectedStorey"
+      [selectedRoom]="selectedRoom"
+      [selectedFurniture]="selectedFurniture"
+      (selectBuilding)="selectBuilding($event)"
+      (addBuilding)="addBuilding()"
+      (removeBuilding)="removeBuilding($event)"
+      (selectStorey)="selectStorey($event)"
+      (addStorey)="addStorey()"
+      (removeStorey)="removeStorey($event)"
+      (selectRoom)="selectRoom($event)"
+      (addRoom)="addRoom()"
+      (removeRoom)="removeRoom($event)"
+      (updateRoom)="updateRoom($event)"
+      (selectFurniture)="selectFurniture($event)"
+      (removeFurniture)="removeFurniture($event)"
+      (floorPlanUploaded)="onFloorPlanUploaded($event)"
+      [hideNotSelectedStoreys]="hideNotSelectedStoreys()"
+      (toggleHideNotSelectedStoreys)="setHideNotSelectedStoreys($event)"
+      [showAllStoreyFurnitures]="showAllStoreyFurnituresFlag"
+      (toggleShowAllStoreyFurnitures)="toggleShowAllStoreyFurnitures($event)"
+    >
+    </app-control-panel>
   </div>
 </div>
 

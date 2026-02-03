@@ -41,6 +41,7 @@ export class BuildingPageComponent implements OnInit {
   protected selectedFurniture!: FurnitureWithRelations
 
   protected hideNotSelectedStoreysFlag: boolean = false
+  protected showAllStoreyFurnituresFlag: boolean = false
   protected floorPlans: Map<string, string> = new Map()
 
   public ngOnInit() {
@@ -57,6 +58,13 @@ export class BuildingPageComponent implements OnInit {
     console.log("selectBuilding", building.id)
     if (building !== undefined) {
       this.selectedBuilding = building
+      this.storeyService.clear()
+      this.roomService.clear()
+      this.furnitureService.clear()
+      this.selectedStorey = undefined!
+      this.selectedRoom = undefined!
+      this.selectedFurniture = undefined!
+
       this.storeyService.getByBuildingId(building.id).subscribe({
         next: (storeys) => {
           this.loadFloorPlans(storeys)
@@ -86,7 +94,22 @@ export class BuildingPageComponent implements OnInit {
     console.log("selectRoom", room.id)
     if (room !== undefined) {
       this.selectedRoom = room
-      this.furnitureService.getByRoomId(room.id).subscribe({
+      this.fetchFurnitures()
+    }
+  }
+
+  private fetchFurnitures() {
+    if (this.showAllStoreyFurnituresFlag && this.selectedStorey) {
+      this.furnitureService.getByStoreyId(this.selectedStorey.id).subscribe({
+        next: (furnitures) => {
+          const first = furnitures[0]
+          if (first && !this.selectedFurniture) {
+            this.selectFurniture(first)
+          }
+        },
+      })
+    } else if (this.selectedRoom) {
+      this.furnitureService.getByRoomId(this.selectedRoom.id).subscribe({
         next: (furnitures) => {
           if (furnitures[0] !== undefined) {
             this.selectFurniture(furnitures[0])
@@ -165,6 +188,8 @@ export class BuildingPageComponent implements OnInit {
 
   protected addFurniture() {
     console.log("Add furniture")
+    this.furnitureService.openModal()
+
     const modal = document.getElementById(
       "addFurnitureModal",
     ) as HTMLDialogElement
@@ -183,7 +208,24 @@ export class BuildingPageComponent implements OnInit {
       },
       { once: true },
     )
-    modal.showModal()
+  }
+
+  protected removeBuilding(building: Building) {
+    this.buildingService.delete(building.id).subscribe({
+      next: () => {
+        if (this.buildingService.buildings[0] !== undefined) {
+          this.selectBuilding(this.buildingService.buildings[0])
+        } else {
+          this.selectedBuilding = undefined!
+          this.selectedStorey = undefined!
+          this.selectedRoom = undefined!
+          this.selectedFurniture = undefined!
+          this.storeyService.clear()
+          this.roomService.clear()
+          this.furnitureService.clear()
+        }
+      },
+    })
   }
 
   protected removeStorey(storey: Storey) {
@@ -207,7 +249,11 @@ export class BuildingPageComponent implements OnInit {
   }
 
   protected removeFurniture(furniture: FurnitureWithRelations) {
-    console.log("Remove furniture", furniture)
+    this.furnitureService.delete(furniture.id).subscribe({
+      next: () => {
+        this.selectedFurniture = undefined!
+      },
+    })
   }
 
   protected updateRoom(updatedRoom: Room) {
@@ -230,6 +276,11 @@ export class BuildingPageComponent implements OnInit {
 
   public hideNotSelectedStoreys(): boolean {
     return this.hideNotSelectedStoreysFlag && this.selectedStorey != null
+  }
+
+  public toggleShowAllStoreyFurnitures(show: boolean) {
+    this.showAllStoreyFurnituresFlag = show
+    this.fetchFurnitures()
   }
 
   protected onFloorPlanUploaded(event: {

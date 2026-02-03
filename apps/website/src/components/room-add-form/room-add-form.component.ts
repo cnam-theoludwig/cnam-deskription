@@ -11,11 +11,21 @@ import { RequiredComponent } from "../required/required.component"
 import { RoomService } from "../../services/room.service"
 import type { RoomCreate } from "@repo/models/Room"
 import type { Storey } from "@repo/models/Storey"
+import { ButtonModule } from "primeng/button"
+import { InputTextModule } from "primeng/inputtext"
+import { ColorPickerModule } from "primeng/colorpicker"
 
 @Component({
   selector: "app-room-add-form",
   standalone: true,
-  imports: [ReactiveFormsModule, RequiredComponent, FormsModule],
+  imports: [
+    ReactiveFormsModule,
+    RequiredComponent,
+    FormsModule,
+    ButtonModule,
+    InputTextModule,
+    ColorPickerModule,
+  ],
   templateUrl: "./room-add-form.component.html",
   styleUrl: "./room-add-form.component.css",
 })

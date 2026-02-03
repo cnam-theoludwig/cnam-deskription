@@ -13,6 +13,7 @@ import type { Status } from "@repo/utils/types"
 import { FormControl, Validators } from "@angular/forms"
 import type { FormBuilder, FormGroup } from "@angular/forms"
 import type { Room } from "@repo/models/Room"
+import type { Storey } from "@repo/models/Storey"
 
 export type Furnitures = FurnitureWithRelations[]
 
@@ -35,10 +36,28 @@ export class FurnitureService {
     return this._status()
   }
 
+  public clear() {
+    this._furnitures.set([])
+  }
+
   public get() {
     this._status.set("pending")
     const observable = from(
       this.rpcClient.furnitures.get(),
+    ) as Observable<Furnitures>
+    observable.subscribe({
+      next: (furnitures) => {
+        this._status.set("idle")
+        this._furnitures.set(furnitures)
+      },
+    })
+    return observable
+  }
+
+  public getByStoreyId(storeyId: Storey["id"]) {
+    this._status.set("pending")
+    const observable = from(
+      this.rpcClient.furnitures.search({ storeyId }),
     ) as Observable<Furnitures>
     observable.subscribe({
       next: (furnitures) => {
@@ -104,10 +123,10 @@ export class FurnitureService {
       next: (updatedFurniture) => {
         this._status.set("idle")
         this._furnitures.update((old) => {
-          return old.map((furniture) => {
-            return furniture.id === updatedFurniture.id
-              ? { ...furniture, ...updatedFurniture }
-              : furniture
+          return old.map((f) => {
+            return f.id === updatedFurniture.id
+              ? { ...f, ...updatedFurniture, ...furniture }
+              : f
           })
         })
       },
@@ -140,6 +159,7 @@ export class FurnitureService {
   }
 
   public openModal(furniture?: FurnitureWithRelations) {
+    console.log("Open modal", furniture)
     this.furnitureToEdit.set(furniture ?? null)
     const modal = document.getElementById(
       "addFurnitureModal",
