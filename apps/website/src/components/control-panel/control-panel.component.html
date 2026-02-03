@@ -284,8 +284,4 @@
   </div>
 </div>
 
-<app-furniture-add-form
-  [defaultBuildingId]="selectedBuilding?.id"
-  [defaultStoreyId]="selectedStorey?.id"
-  [defaultRoomId]="selectedRoom?.id"
-/>
+<app-furniture-add-form [furniture]="furnitureService.furnitureToEdit" />

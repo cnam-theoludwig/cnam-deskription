@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common"
 import { Component, inject } from "@angular/core"
-import type { Furniture, FurnitureWithRelations } from "@repo/models/Furniture"
+import type { FurnitureWithRelations } from "@repo/models/Furniture"
 import { ButtonModule } from "primeng/button"
 import { FurnitureAddFormComponent } from "../../components/furnitures/furniture-add-form/furniture-add-form.component"
 import { HeaderComponent } from "../../components/header/header.component"
@@ -36,31 +36,16 @@ export class FurnituresPageComponent {
   protected readonly typeService = inject(TypeService)
   protected readonly roleService = inject(RoleService)
 
-  protected furnitureToEdit: FurnitureWithRelations | null = null
-
   public constructor() {
     this.furnitureService.get()
   }
 
-  public openModal(furnitureId?: Furniture["id"]) {
-    console.log("openModal", furnitureId)
-    this.furnitureToEdit =
-      this.furnitureService.furnitures.find((f) => {
-        return f.id === furnitureId
-      }) ?? null
-
-    const modal = document.getElementById(
-      "addFurnitureModal",
-    ) as HTMLDialogElement
-    modal.showModal()
+  public openModal(furnitureId?: FurnitureWithRelations["id"]) {
+    this.furnitureService.openModal(furnitureId)
   }
 
   public closeModal() {
-    this.furnitureToEdit = null
-    const modal = document.getElementById(
-      "addFurnitureModal",
-    ) as HTMLDialogElement
-    modal.close()
+    this.furnitureService.closeModal()
   }
 
   public exportToExcel() {

@@ -25,11 +25,16 @@ export class FurnitureService {
 
   private readonly _furnitures = signal<Furnitures>([])
   private readonly _status = signal<Status>("pending")
-
-  public readonly furnitureToEdit = signal<FurnitureWithRelations | null>(null)
+  private readonly _furnitureToEdit = signal<FurnitureWithRelations | null>(
+    null,
+  )
 
   public get furnitures() {
     return this._furnitures()
+  }
+
+  public get furnitureToEdit() {
+    return this._furnitureToEdit()
   }
 
   public get status() {
@@ -158,19 +163,24 @@ export class FurnitureService {
     })
   }
 
-  public openModal(furniture?: FurnitureWithRelations) {
-    console.log("Open modal", furniture)
-    this.furnitureToEdit.set(furniture ?? null)
+  public openModal(furnitureId?: FurnitureWithRelations["id"]) {
+    console.log("Open modal", furnitureId)
+    this._furnitureToEdit.set(
+      this.furnitures.find((f) => f.id === furnitureId) ?? null,
+    )
+    console.log(this._furnitureToEdit)
     const modal = document.getElementById(
       "addFurnitureModal",
     ) as HTMLDialogElement
+
+    console.log(modal)
 
     if (!modal) return
 
     modal.addEventListener(
       "close",
       () => {
-        this.furnitureToEdit.set(null)
+        this._furnitureToEdit.set(null)
       },
       { once: true },
     )

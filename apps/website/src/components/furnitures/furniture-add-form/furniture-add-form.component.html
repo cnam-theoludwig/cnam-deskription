@@ -5,8 +5,8 @@
   <div class="modal-content">
     <h2>
       {{
-        furnitureService.furnitureToEdit() != null &&
-        furnitureService.furnitureToEdit() != undefined
+        furnitureService.furnitureToEdit != null &&
+        furnitureService.furnitureToEdit != undefined
           ? "Modifier"
           : "Ajouter"
       }}
@@ -200,34 +200,32 @@
       }
 
       <div class="modal-actions flex justify-end gap-3 mt-6">
-        <button
-          class="bg-gray-300 text-gray-800 rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-gray-200"
+        <p-button
+          label="Annuler"
+          styleClass="p-button-secondary"
+          (onClick)="furnitureService.closeModal()"
           type="button"
-          (click)="closeModal()"
-        >
-          Annuler
-        </button>
-        @if (furnitureService.furnitureToEdit()) {
-          <button
-            class="bg-red-600 text-white rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-red-400"
+        ></p-button>
+        @if (furnitureService.furnitureToEdit) {
+          <p-button
+            label="Supprimer"
+            styleClass="p-button-danger"
+            (onClick)="onDelete()"
             type="button"
-            (click)="onDelete()"
-          >
-            Supprimer
-          </button>
+          ></p-button>
         }
-        <button
-          class="bg-blue-600 text-white rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-blue-400"
+
+        <p-button
+          [label]="furnitureService.furnitureToEdit ? 'Sauvegarder' : 'Ajouter'"
+          styleClass="p-button-success"
           type="submit"
-        >
-          Sauvegarder
-        </button>
+        ></p-button>
       </div>
     </form>
 
     <ul>
       @for (
-        log of furnitureService.furnitureToEdit()?.historyLogs;
+        log of furnitureService.furnitureToEdit?.historyLogs;
         track log.id
       ) {
         <li>

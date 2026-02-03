@@ -250,7 +250,7 @@ export class ControlPanelComponent implements OnChanges, OnInit {
         this.furnitureItems.push({
           icon: "pi pi-pencil",
           command: () =>
-            this.furnitureService.openModal(this.selectedFurniture!),
+            this.furnitureService.openModal(this.selectedFurniture?.id),
           tooltipOptions: {
             tooltipLabel: "Modifier le meuble",
             tooltipPosition: "left",
