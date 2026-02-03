@@ -1,8 +1,9 @@
-﻿import { Component, inject, signal } from "@angular/core"
+﻿import { Component, inject, signal, output } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { QrScannerComponent } from "../qr-scanner/qr-scanner.component"
 import { FurnitureService } from "../../../services/furniture.service"
 import { getRPCClient } from "@repo/api-client"
+import type { FurnitureWithRelations } from "@repo/models/Furniture"
 
 @Component({
   selector: "app-qr-scan-modal",
@@ -179,6 +180,9 @@ export class QrScanModalComponent {
   protected loading = signal(false)
   protected error = signal<string | null>(null)
 
+  // Événement émis quand un meuble est scanné avec succès pour navigation automatique
+  public furnitureScanned = output<FurnitureWithRelations>()
+
   public openModal() {
     this.loading.set(false)
     this.error.set(null)
@@ -207,10 +211,15 @@ export class QrScanModalComponent {
     this.error.set(null)
 
     try {
+      // Valider le format du QR code
+      this.validateQrCode(qrData)
+
       const client = getRPCClient()
       const result = await client.qrcodes.scanFurniture({ qrData })
 
-      // Fermer la modale de scan
+      // Émettre l'événement pour navigation automatique
+      this.furnitureScanned.emit(result)
+
       this.closeModal()
 
       // Ouvrir la modale du meuble avec les données scannées
@@ -219,9 +228,25 @@ export class QrScanModalComponent {
       }, 100)
     } catch (error) {
       console.error("Error scanning QR code:", error)
-      this.error.set(
-        error instanceof Error ? error.message : "Erreur lors du scan du QR code"
-      )
+
+      // Gestion des différents types d'erreurs
+      let errorMessage = "Erreur lors du scan du QR code"
+
+      if (error instanceof Error) {
+        if (error.message.includes("not found")) {
+          errorMessage = "Ce meuble n'existe plus dans la base de données."
+        } else if (error.message.includes("Format de QR code invalide")) {
+          errorMessage = error.message
+        } else if (error.message.includes("Type de QR code non supporté")) {
+          errorMessage = error.message
+        } else if (error.message.includes("identifiant manquant")) {
+          errorMessage = error.message
+        } else {
+          errorMessage = error.message
+        }
+      }
+
+      this.error.set(errorMessage)
     } finally {
       this.loading.set(false)
     }
@@ -233,5 +258,25 @@ export class QrScanModalComponent {
 
   protected resetError(): void {
     this.error.set(null)
+  }
+
+  private validateQrCode(qrData: string): { type: string; id: string } {
+    let parsedData: { type: string; id: string }
+
+    try {
+      parsedData = JSON.parse(qrData) as { type: string; id: string }
+    } catch {
+      throw new Error("Format de QR code invalide. Veuillez scanner un QR code valide.")
+    }
+
+    if (parsedData.type !== "furniture") {
+      throw new Error(`Type de QR code non supporté : "${parsedData.type}". Seuls les QR codes de meubles sont acceptés.`)
+    }
+
+    if (!parsedData.id) {
+      throw new Error("QR code invalide : identifiant manquant.")
+    }
+
+    return parsedData
   }
 }

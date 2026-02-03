@@ -56,8 +56,13 @@ export class BuildingPageComponent implements OnInit {
   }
 
   protected selectBuilding(building: Building) {
+    if (this.selectedBuilding?.id === building?.id) {
+      console.log("Building already selected:", building.id)
+      return
+    }
+
     console.log("selectBuilding", building.id)
-    if (building !== undefined) {
+    if (building) {
       this.selectedBuilding = building
       this.storeyService.getByBuildingId(building.id).subscribe({
         next: (storeys) => {
@@ -71,8 +76,14 @@ export class BuildingPageComponent implements OnInit {
   }
 
   protected selectStorey(storey: Storey) {
+    // Optimisation : éviter de re-sélectionner le même étage
+    if (this.selectedStorey?.id === storey?.id) {
+      console.log("Storey already selected:", storey.id)
+      return
+    }
+
     console.log("selectStorey", storey.id)
-    if (storey !== undefined) {
+    if (storey) {
       this.selectedStorey = storey
       this.roomService.getByStoreyId(storey.id).subscribe({
         next: (rooms) => {
@@ -85,8 +96,14 @@ export class BuildingPageComponent implements OnInit {
   }
 
   protected selectRoom(room: Room) {
+    // Optimisation : éviter de re-sélectionner la même pièce
+    if (this.selectedRoom?.id === room?.id) {
+      console.log("Room already selected:", room.id)
+      return
+    }
+
     console.log("selectRoom", room.id)
-    if (room !== undefined) {
+    if (room) {
       this.selectedRoom = room
       this.furnitureService.getByRoomId(room.id).subscribe({
         next: (furnitures) => {
@@ -99,9 +116,71 @@ export class BuildingPageComponent implements OnInit {
   }
 
   protected selectFurniture(furniture: FurnitureWithRelations) {
+    // Optimisation : éviter de re-sélectionner le même meuble
+    if (this.selectedFurniture?.id === furniture?.id) {
+      console.log("Furniture already selected:", furniture.id)
+      return
+    }
+
     console.log("selectFurniture", furniture.id)
     if (furniture) {
       this.selectedFurniture = furniture
+    }
+  }
+
+  /**
+   * Navigation automatique vers un meuble scanné via QR code
+   * Remonte toute la hiérarchie : Building > Storey > Room > Furniture
+   */
+  protected navigateToScannedFurniture(furniture: FurnitureWithRelations) {
+    console.log("Navigating to scanned furniture:", furniture.id)
+
+    // Charger le building si ce n'est pas déjà le bon
+    if (!this.selectedBuilding || this.selectedBuilding.id !== furniture.buildingId) {
+      const building = this.buildingService.buildings.find(b => b.id === furniture.buildingId)
+      if (building) {
+        this.selectBuilding(building)
+      }
+    }
+
+    // Charger l'étage si ce n'est pas déjà le bon
+    if (!this.selectedStorey || this.selectedStorey.id !== furniture.storeyId) {
+      this.storeyService.getByBuildingId(furniture.buildingId).subscribe({
+        next: (storeys) => {
+          const storey = storeys.find(s => s.id === furniture.storeyId)
+          if (storey) {
+            this.selectStorey(storey)
+            this.loadRoomAndFurniture(furniture)
+          }
+        }
+      })
+    } else {
+      this.loadRoomAndFurniture(furniture)
+    }
+  }
+
+  /**
+   * Méthode auxiliaire pour charger la pièce et sélectionner le meuble
+   */
+  private loadRoomAndFurniture(furniture: FurnitureWithRelations) {
+    // Charger la pièce si ce n'est pas déjà la bonne
+    if (!this.selectedRoom || this.selectedRoom.id !== furniture.roomId) {
+      this.roomService.getByStoreyId(furniture.storeyId).subscribe({
+        next: (rooms) => {
+          const room = rooms.find(r => r.id === furniture.roomId)
+          if (room) {
+            this.selectRoom(room)
+
+            // Sélectionner le meuble après un court délai pour s'assurer que la pièce est chargée
+            setTimeout(() => {
+              this.selectFurniture(furniture)
+            }, 100)
+          }
+        }
+      })
+    } else {
+      // La pièce est déjà sélectionnée, juste sélectionner le meuble
+      this.selectFurniture(furniture)
     }
   }
 
