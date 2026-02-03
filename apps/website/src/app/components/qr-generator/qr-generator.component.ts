@@ -66,140 +66,176 @@ export class QrGeneratorComponent {
       return
     }
 
-    const printWindow = window.open("", "_blank")
-    if (printWindow === null || printWindow === undefined) {
-      return
+    // Créer un élément d'impression temporaire dans la page courante
+    const printElement = document.createElement("div")
+    printElement.id = "print-label-temp"
+    printElement.innerHTML = `
+      <div class="label-container">
+        <div class="qr-section">
+          <div class="qr-wrapper">
+            <img src="${url}" alt="QR Code du meuble" />
+          </div>
+        </div>
+        <div class="info-section">
+          <div class="label-id">ID: ${this.furnitureId}</div>
+          <div class="label-title">${this.furnitureName ?? `Meuble ${this.furnitureId}`}</div>
+        </div>
+      </div>
+    `
+
+    // Ajouter les styles pour l'impression
+    const printStyle = document.createElement("style")
+    printStyle.id = "print-label-style"
+    printStyle.textContent = `
+      @media print {
+        * {
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+
+        body * {
+          visibility: hidden;
+        }
+
+        #print-label-temp,
+        #print-label-temp * {
+          visibility: visible;
+        }
+
+        #print-label-temp {
+          position: fixed;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          page-break-after: avoid;
+        }
+
+        #print-label-temp .label-container {
+          background: white;
+          border: 3px solid #333;
+          border-radius: 8px;
+          padding: 12mm 15mm;
+          width: 200mm;
+          height: 80mm;
+          display: flex;
+          align-items: center;
+          gap: 15mm;
+          box-sizing: border-box;
+          page-break-inside: avoid;
+        }
+
+        #print-label-temp .qr-section {
+          flex-shrink: 0;
+        }
+
+        #print-label-temp .qr-wrapper {
+          border: 3px solid #e2e8f0;
+          border-radius: 6px;
+          padding: 5mm;
+          background: white;
+        }
+
+        #print-label-temp img {
+          display: block;
+          width: 60mm;
+          height: 60mm;
+        }
+
+        #print-label-temp .info-section {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 8mm;
+          min-width: 0;
+        }
+
+        #print-label-temp .label-id {
+          font-size: 14pt;
+          color: #1e293b;
+          font-weight: 700;
+          font-family: 'Courier New', monospace;
+          background: #f1f5f9;
+          padding: 4mm 5mm;
+          border-radius: 3mm;
+          border-left: 4px solid #2563eb;
+          word-break: break-all;
+          line-height: 1.4;
+        }
+
+        #print-label-temp .label-title {
+          font-size: 20pt;
+          font-weight: bold;
+          color: #1e293b;
+          word-wrap: break-word;
+          line-height: 1.3;
+        }
+
+        @page {
+          size: 200mm 80mm;
+          margin: 0;
+        }
+
+        html, body {
+          height: 80mm;
+          overflow: hidden;
+        }
+      }
+
+      @media screen {
+        #print-label-temp {
+          display: none;
+        }
+      }
+    `
+
+    document.body.appendChild(printStyle)
+    document.body.appendChild(printElement)
+
+    // Variable pour éviter l'impression double
+    let printExecuted = false
+
+    const executePrint = () => {
+      if (printExecuted) return
+      printExecuted = true
+
+      setTimeout(() => {
+        window.print()
+        // Nettoyer après l'impression
+        setTimeout(() => {
+          if (document.body.contains(printElement)) {
+            document.body.removeChild(printElement)
+          }
+          if (document.body.contains(printStyle)) {
+            document.body.removeChild(printStyle)
+          }
+        }, 1000)
+      }, 200)
     }
 
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html lang="fr">
-        <head>
-          <title>Étiquette - ${this.furnitureName ?? `Meuble #${this.furnitureId}`}</title>
-          <style>
-            * {
-              margin: 0;
-              padding: 0;
-              box-sizing: border-box;
-            }
-
-            body {
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              min-height: 100vh;
-              background: #f5f5f5;
-              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            }
-
-            .label-container {
-              background: white;
-              border: 2px solid #333;
-              border-radius: 12px;
-              padding: 30px;
-              width: 400px;
-              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            }
-
-            .label-header {
-              text-align: center;
-              border-bottom: 3px solid #2563eb;
-              padding-bottom: 20px;
-              margin-bottom: 20px;
-            }
-
-            .label-title {
-              font-size: 28px;
-              font-weight: bold;
-              color: #1e293b;
-              margin-bottom: 10px;
-              word-wrap: break-word;
-            }
-
-            .label-id {
-              font-size: 14px;
-              color: #64748b;
-              font-family: 'Courier New', monospace;
-              background: #f1f5f9;
-              padding: 8px 12px;
-              border-radius: 6px;
-              display: inline-block;
-            }
-
-            .qr-section {
-              display: flex;
-              justify-content: center;
-              margin: 25px 0;
-            }
-
-            .qr-wrapper {
-              border: 3px solid #e2e8f0;
-              border-radius: 8px;
-              padding: 15px;
-              background: white;
-            }
-
-            img {
-              display: block;
-              width: 250px;
-              height: 250px;
-            }
-
-            .label-footer {
-              text-align: center;
-              font-size: 12px;
-              color: #94a3b8;
-              margin-top: 20px;
-              padding-top: 15px;
-              border-top: 1px solid #e2e8f0;
-            }
-
-            @media print {
-              body {
-                background: white;
-              }
-
-              .label-container {
-                box-shadow: none;
-                page-break-after: avoid;
-              }
-
-              @page {
-                margin: 1cm;
-                size: auto;
-              }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="label-container">
-            <div class="label-header">
-              <div class="label-title">${this.furnitureName ?? `Meuble ${this.furnitureId}`}</div>
-              <div class="label-id">ID: ${this.furnitureId}</div>
-            </div>
-
-            <div class="qr-section">
-              <div class="qr-wrapper">
-                <img src="${url}" alt="QR Code du meuble" />
-              </div>
-            </div>
-
-            <div class="label-footer">
-              Scanner ce code pour accéder aux informations du meuble
-            </div>
-          </div>
-
-          <script>
-            window.onload = function() {
-              setTimeout(function() {
-                window.print();
-              }, 250);
-            };
-          </script>
-        </body>
-      </html>
-    `)
-    printWindow.document.close()
+    // Attendre que l'image soit chargée puis imprimer
+    const img = printElement.querySelector("img")
+    if (img) {
+      if (img.complete) {
+        // Image déjà en cache
+        executePrint()
+      } else {
+        // Attendre le chargement
+        img.onload = executePrint
+        img.onerror = () => {
+          console.error("Erreur de chargement de l'image")
+          if (document.body.contains(printElement)) {
+            document.body.removeChild(printElement)
+          }
+          if (document.body.contains(printStyle)) {
+            document.body.removeChild(printStyle)
+          }
+        }
+      }
+    }
   }
 
   public downloadLabel(): void {
@@ -215,9 +251,10 @@ export class QrGeneratorComponent {
       return
     }
 
-    // Dimensions de l'étiquette
-    canvas.width = 600
-    canvas.height = 800
+    // Dimensions de l'étiquette (format paysage 200mm x 80mm à 300 DPI)
+    // 200mm ≈ 2362px, 80mm ≈ 945px à 300 DPI
+    canvas.width = 1600
+    canvas.height = 640
 
     // Fond blanc
     ctx.fillStyle = "#ffffff"
@@ -225,72 +262,74 @@ export class QrGeneratorComponent {
 
     // Bordure
     ctx.strokeStyle = "#333333"
-    ctx.lineWidth = 4
-    ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20)
+    ctx.lineWidth = 8
+    ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40)
 
-    // Titre
-    ctx.fillStyle = "#1e293b"
-    ctx.font = "bold 32px 'Segoe UI', Arial, sans-serif"
-    ctx.textAlign = "center"
-    const furnitureName = this.furnitureName ?? `Meuble ${this.furnitureId}`
-
-    // Gérer le texte long en le divisant en lignes
-    const maxWidth = canvas.width - 80
-    const words = furnitureName.split(" ")
-    let line = ""
-    let y = 80
-
-    for (let i = 0; i < words.length; i++) {
-      const testLine = line + words[i] + " "
-      const metrics = ctx.measureText(testLine)
-      if (metrics.width > maxWidth && i > 0) {
-        ctx.fillText(line, canvas.width / 2, y)
-        line = words[i] + " "
-        y += 40
-      } else {
-        line = testLine
-      }
-    }
-    ctx.fillText(line, canvas.width / 2, y)
-
-    // ID du meuble
-    y += 60
-    ctx.fillStyle = "#64748b"
-    ctx.font = "16px 'Courier New', monospace"
-    ctx.fillText(`ID: ${this.furnitureId}`, canvas.width / 2, y)
-
-    // Ligne de séparation
-    y += 30
-    ctx.strokeStyle = "#2563eb"
-    ctx.lineWidth = 3
-    ctx.beginPath()
-    ctx.moveTo(50, y)
-    ctx.lineTo(canvas.width - 50, y)
-    ctx.stroke()
+    // Padding interne
+    const paddingX = 100
+    const paddingY = 80
 
     // Charger et dessiner le QR code
     const img = new Image()
     img.onload = () => {
-      const qrSize = 350
-      const qrX = (canvas.width - qrSize) / 2
-      const qrY = y + 40
+      const qrSize = 480
+      const qrX = paddingX
+      const qrY = paddingY
 
       // Bordure du QR code
       ctx.strokeStyle = "#e2e8f0"
-      ctx.lineWidth = 3
-      ctx.strokeRect(qrX - 15, qrY - 15, qrSize + 30, qrSize + 30)
+      ctx.lineWidth = 6
+      ctx.strokeRect(qrX - 16, qrY - 16, qrSize + 32, qrSize + 32)
 
       // QR code
       ctx.drawImage(img, qrX, qrY, qrSize, qrSize)
 
-      // Texte du pied de page
-      ctx.fillStyle = "#94a3b8"
-      ctx.font = "14px 'Segoe UI', Arial, sans-serif"
-      ctx.fillText(
-        "Scanner ce code pour accéder aux informations",
-        canvas.width / 2,
-        qrY + qrSize + 50
-      )
+      // Section des informations (à droite du QR code)
+      const infoX = qrX + qrSize + 100
+      let infoY = 170
+
+      // ID du meuble
+      ctx.fillStyle = "#f1f5f9"
+      const idBoxX = infoX
+      const idBoxY = infoY - 50
+      const idBoxWidth = canvas.width - infoX - paddingX
+      const idBoxHeight = 85
+      ctx.fillRect(idBoxX, idBoxY, idBoxWidth, idBoxHeight)
+
+      // Bordure gauche bleue pour l'ID
+      ctx.fillStyle = "#2563eb"
+      ctx.fillRect(idBoxX, idBoxY, 8, idBoxHeight)
+
+      // Texte ID
+      ctx.fillStyle = "#1e293b"
+      ctx.font = "bold 32px 'Courier New', monospace"
+      ctx.textAlign = "left"
+      ctx.fillText(`ID: ${this.furnitureId}`, idBoxX + 30, infoY)
+
+      // Nom du meuble (en dessous de l'ID)
+      infoY += 115
+      ctx.fillStyle = "#1e293b"
+      ctx.font = "bold 48px 'Segoe UI', Arial, sans-serif"
+      const furnitureName = this.furnitureName ?? `Meuble ${this.furnitureId}`
+
+      // Gérer le texte long en le divisant en lignes
+      const maxWidth = canvas.width - infoX - paddingX
+      const words = furnitureName.split(" ")
+      let line = ""
+      const lineHeight = 60
+
+      for (let i = 0; i < words.length; i++) {
+        const testLine = line + words[i] + " "
+        const metrics = ctx.measureText(testLine)
+        if (metrics.width > maxWidth && i > 0) {
+          ctx.fillText(line, infoX, infoY)
+          line = words[i] + " "
+          infoY += lineHeight
+        } else {
+          line = testLine
+        }
+      }
+      ctx.fillText(line, infoX, infoY)
 
       // Télécharger l'image
       canvas.toBlob((blob) => {
