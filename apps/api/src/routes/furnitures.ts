@@ -149,7 +149,7 @@ export const furnitures = {
         .executeTakeFirstOrThrow()
     }),
   excelExport: publicProcedure
-    .route({ method: "GET", path: "/furnitures/export", tags: ["Furniture"] })
+    .route({ method: "POST", path: "/furnitures/export", tags: ["Furniture"] })
     .input(z.array(FurnitureWithRelationsZodObject))
     .output(z.string())
     .handler(async ({ input }) => {
