@@ -1,5 +1,5 @@
 import { Injectable, signal } from "@angular/core"
-import { from, Observable } from "rxjs"
+import { from } from "rxjs"
 
 import { getRPCClient } from "@repo/api-client"
 import { environment } from "../environments/environment"
@@ -34,7 +34,7 @@ export class HistoryLogService {
     this._status.set("pending")
     const observable = from(
       this.rpcClient.historylogs.update({ id, furniture }),
-    ) as Observable<FurnitureWithRelations>
+    )
     observable.subscribe({
       next: (updatedFurniture) => {
         this._status.set("idle")

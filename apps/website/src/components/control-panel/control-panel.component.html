@@ -17,16 +17,31 @@
           Ajouter un nouveau bâtiment
         </button>
       } @else {
-        <select
-          id="buildingSelect"
-          [(ngModel)]="selectedBuilding"
-          (ngModelChange)="selectBuilding.emit($event)"
-          class="w-full p-2 border rounded"
-        >
-          @for (building of buildings; track building.id) {
-            <option [ngValue]="building">{{ building.name }}</option>
+        <div class="flex items-center gap-2">
+          <select
+            id="buildingSelect"
+            [(ngModel)]="selectedBuilding"
+            (ngModelChange)="selectBuilding.emit($event)"
+            class="flex-1 p-2 border rounded min-w-0"
+          >
+            @for (building of buildings; track building.id) {
+              <option [ngValue]="building">{{ building.name }}</option>
+            }
+          </select>
+
+          @if (selectedBuilding) {
+            <button
+              class="btn btn-ghost text-destructive hover:bg-destructive/10 shrink-0"
+              (click)="removeBuilding.emit(selectedBuilding)"
+              title="Supprimer ce bâtiment"
+            >
+              <lucide-angular
+                [img]="TrashIcon"
+                class="w-5 h-5"
+              ></lucide-angular>
+            </button>
           }
-        </select>
+        </div>
 
         <button
           class="w-full btn btn-outline bg-primary/5 border-primary/20 text-primary mt-2"

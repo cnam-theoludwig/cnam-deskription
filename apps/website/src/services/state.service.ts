@@ -39,7 +39,7 @@ export class StateService {
   public create(input: StateCreate) {
     const observable = from(
       this.rpcClient.states.create(input),
-    ) as Observable<State>
+    )
     observable.subscribe({
       next: (newState) => {
         this._states.update((old) => {
