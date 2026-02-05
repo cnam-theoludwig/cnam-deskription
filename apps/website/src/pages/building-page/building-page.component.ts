@@ -60,11 +60,10 @@ export class BuildingPageComponent implements OnInit {
 
   protected selectBuilding(building: Building) {
     // Sécurité supplémentaire : si building est undefined (via l'UI), on arrête
-    if (!building) return;
+    if (!building) return
 
     console.log("selectBuilding", building.id)
     this.selectedBuilding = building
-    
     this.storeyService.getByBuildingId(building.id).subscribe({
       next: (storeys) => {
         this.loadFloorPlans(storeys)
@@ -82,7 +81,7 @@ export class BuildingPageComponent implements OnInit {
   }
 
   protected selectStorey(storey: Storey) {
-    if (!storey) return; // Sécurité
+    if (!storey) return // Sécurité
 
     console.log("selectStorey", storey.id)
     this.selectedStorey = storey
@@ -100,7 +99,7 @@ export class BuildingPageComponent implements OnInit {
   }
 
   protected selectRoom(room: Room) {
-    if (!room) return; // Sécurité
+    if (!room) return // Sécurité
 
     console.log("selectRoom", room.id)
     this.selectedRoom = room
@@ -117,75 +116,11 @@ export class BuildingPageComponent implements OnInit {
   }
 
   protected selectFurniture(furniture: FurnitureWithRelations) {
-    if (this.selectedBuilding?.id === building?.id) {
-      console.log("Building already selected:", building.id)
-      return
-    }
-
-    console.log("selectBuilding", building.id)
-    if (building) {
-      this.selectedBuilding = building
-      this.storeyService.getByBuildingId(building.id).subscribe({
-        next: (storeys) => {
-          this.loadFloorPlans(storeys)
-          if (storeys[0] !== undefined) {
-            this.selectStorey(storeys[0])
-          }
-        },
-      })
-    }
-  }
-
-  protected selectStorey(storey: Storey) {
-    // Optimisation : éviter de re-sélectionner le même étage
-    if (this.selectedStorey?.id === storey?.id) {
-      console.log("Storey already selected:", storey.id)
-      return
-    }
-
-    console.log("selectStorey", storey.id)
-    if (storey) {
-      this.selectedStorey = storey
-      this.roomService.getByStoreyId(storey.id).subscribe({
-        next: (rooms) => {
-          if (rooms[0] !== undefined) {
-            this.selectRoom(rooms[0])
-          }
-        },
-      })
-    }
-  }
-
-  protected selectRoom(room: Room) {
-    // Optimisation : éviter de re-sélectionner la même pièce
-    if (this.selectedRoom?.id === room?.id) {
-      console.log("Room already selected:", room.id)
-      return
-    }
-
-    console.log("selectRoom", room.id)
-    if (room) {
-      this.selectedRoom = room
-      this.furnitureService.getByRoomId(room.id).subscribe({
-        next: (furnitures) => {
-          if (furnitures[0] !== undefined) {
-            this.selectFurniture(furnitures[0])
-          }
-        },
-      })
-    }
-  }
-
-  protected selectFurniture(furniture: FurnitureWithRelations) {
-    // Optimisation : éviter de re-sélectionner le même meuble
-    if (this.selectedFurniture?.id === furniture?.id) {
-      console.log("Furniture already selected:", furniture.id)
-      return
-    }
-
     console.log("selectFurniture", furniture.id)
-    if (furniture) {
-      this.selectedFurniture = furniture
+    if (furniture !== undefined) {
+      if (furniture) {
+        this.selectedFurniture = furniture
+      }
     }
   }
 
@@ -251,15 +186,24 @@ export class BuildingPageComponent implements OnInit {
   }
 
   protected addBuilding() {
-    const modal = document.getElementById("addBuildingModal") as HTMLDialogElement
+    const modal = document.getElementById(
+      "addBuildingModal",
+    ) as HTMLDialogElement
     if (!modal) return
-    
-    modal.addEventListener("close", () => {
+
+    modal.addEventListener(
+      "close",
+      () => {
         if (this.buildingService.buildings.length > 0) {
-          const last = this.buildingService.buildings[this.buildingService.buildings.length - 1]
+          const last =
+            this.buildingService.buildings[
+              this.buildingService.buildings.length - 1
+            ]
           if (last) this.selectBuilding(last)
         }
-      }, { once: true })
+      },
+      { once: true },
+    )
     modal.showModal()
   }
 
@@ -267,12 +211,17 @@ export class BuildingPageComponent implements OnInit {
     const modal = document.getElementById("addStoreyModal") as HTMLDialogElement
     if (!modal) return
 
-    modal.addEventListener("close", () => {
+    modal.addEventListener(
+      "close",
+      () => {
         if (this.storeyService.storeys.length > 0) {
-          const last = this.storeyService.storeys[this.storeyService.storeys.length - 1]
+          const last =
+            this.storeyService.storeys[this.storeyService.storeys.length - 1]
           if (last) this.selectStorey(last)
         }
-      }, { once: true })
+      },
+      { once: true },
+    )
     modal.showModal()
   }
 
@@ -280,12 +229,16 @@ export class BuildingPageComponent implements OnInit {
     const modal = document.getElementById("addRoomModal") as HTMLDialogElement
     if (!modal) return
 
-    modal.addEventListener("close", () => {
+    modal.addEventListener(
+      "close",
+      () => {
         if (this.roomService.rooms.length > 0) {
           const last = this.roomService.rooms[this.roomService.rooms.length - 1]
           if (last) this.selectRoom(last)
         }
-      }, { once: true })
+      },
+      { once: true },
+    )
     modal.showModal()
   }
 
@@ -344,7 +297,9 @@ export class BuildingPageComponent implements OnInit {
         color: updatedRoom.color,
       })
       .subscribe({
-        next: (res) => { this.selectedRoom = res },
+        next: (res) => {
+          this.selectedRoom = res
+        },
         error: (err) => console.error("Failed to update room", err),
       })
   }
