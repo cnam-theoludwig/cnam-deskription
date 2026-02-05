@@ -23,6 +23,7 @@ export const up = async function (db: Kysely<any>): Promise<void> {
   await db.schema
     .alterTable("Location")
     .dropConstraint("Location_storey_id_fkey")
+    .ifExists()
     .execute()
 
   await db.schema
@@ -41,6 +42,7 @@ export const up = async function (db: Kysely<any>): Promise<void> {
   await db.schema
     .alterTable("Location")
     .dropConstraint("Location_room_id_fkey")
+    .ifExists()
     .execute()
 
   await db.schema
