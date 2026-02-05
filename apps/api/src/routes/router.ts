@@ -6,6 +6,7 @@ import { rooms } from "./rooms"
 import { states } from "./states"
 import { storeys } from "./storeys"
 import { types } from "./types"
+import { qrcodes } from "./qrcodes"
 
 export const router = {
   furnitures,
@@ -16,4 +17,5 @@ export const router = {
   locations,
   types,
   states,
+  qrcodes,
 }

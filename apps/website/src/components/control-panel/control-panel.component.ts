@@ -15,10 +15,10 @@ import {
   Layers,
   Check,
   Trash2,
-  Plus,
   Upload,
   LucideAngularModule,
   Armchair,
+  QrCode,
 } from "lucide-angular"
 import type { MenuItem } from "primeng/api"
 import { SelectModule } from "primeng/select"
@@ -38,6 +38,7 @@ import { FurnitureService } from "../../services/furniture.service"
 import { RoomService } from "../../services/room.service"
 import { BuildingService } from "../../services/building.service"
 import { StoreyService } from "../../services/storey.service"
+import { QrScanService } from "../../services/qr-scan.service"
 
 @Component({
   selector: "app-control-panel",
@@ -63,7 +64,7 @@ export class ControlPanelComponent implements OnChanges, OnInit {
   protected readonly DoorOpenIcon = DoorOpen
   protected readonly CheckIcon = Check
   protected readonly TrashIcon = Trash2
-  protected readonly PlusIcon = Plus
+  protected readonly QrCodeIcon = QrCode
   protected readonly ArmchairIcon = Armchair
   protected readonly UploadIcon = Upload
 
@@ -71,6 +72,7 @@ export class ControlPanelComponent implements OnChanges, OnInit {
   protected readonly roomService = inject(RoomService)
   public readonly buildingService = inject(BuildingService)
   public readonly storeyService = inject(StoreyService)
+  protected readonly qrScanService = inject(QrScanService)
 
   @Input() public buildings!: Building[]
   @Input() public storeys!: Storey[]
@@ -120,9 +122,6 @@ export class ControlPanelComponent implements OnChanges, OnInit {
   protected selectedModelType = "chair"
 
   protected currentStoreyForUpload: Storey | null = null
-  protected showAddRoom: boolean = false
-  protected editName: string = ""
-  protected editColor: string = ""
 
   protected buildingItems: MenuItem[] = []
   protected storeyItems: MenuItem[] = []
@@ -306,5 +305,14 @@ export class ControlPanelComponent implements OnChanges, OnInit {
           this.removeFurniture.emit(this.selectedFurniture),
       },
     ]
+  }
+
+  protected onHideStoreysChange(event: Event): void {
+    const target = event.target as HTMLInputElement
+    this.toggleHideNotSelectedStoreys.emit(target.checked)
+  }
+
+  public selectAndUploadStoreyFloorPlan(storey: Storey) {
+    this.triggerFloorPlanUpload(storey)
   }
 }

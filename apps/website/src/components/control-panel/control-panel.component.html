@@ -250,6 +250,17 @@
         *ngIf="furnitures.length > 0 || selectedRoom"
       ></p-speedDial>
     </div>
+
+    <hr class="border-border/50" />
+
+    <p-button
+      label="Scanner QR Code"
+      icon="pi pi-qrcode"
+      class="w-full btn btn-outline flex items-center justify-center gap-2"
+      (click)="qrScanService.openScanModal()"
+      title="Scanner un QR code pour localiser un meuble"
+    >
+    </p-button>
   </div>
 </div>
 

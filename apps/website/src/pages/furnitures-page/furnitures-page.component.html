@@ -46,6 +46,8 @@
     (handleClose)="closeModal()"
   />
 
+  <app-qr-scan-modal />
+
   <div class="furniture-list">
     @if (furnitureService.status === "pending") {
       <p>Chargement...</p>

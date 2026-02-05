@@ -8,10 +8,10 @@ import { BuildingViewer3dComponent } from "../../components/building-viewer/buil
 import { ControlPanelComponent } from "../../components/control-panel/control-panel.component"
 import { RoomAddFormComponent } from "../../components/room-add-form/room-add-form.component"
 import { StoreyAddFormComponent } from "../../components/storey-add-form/storey-add-form.component"
-import {
-  BuildingService,
-  type Buildings,
-} from "../../services/building.service"
+import { FurnitureAddFormComponent } from "../../components/furnitures/furniture-add-form/furniture-add-form.component"
+import { QrScanModalComponent } from "../../app/components/qr-scan-modal/qr-scan-modal.component"
+import { BuildingService } from "../../services/building.service"
+import type { Buildings } from "../../services/building.service"
 import { RoomService } from "../../services/room.service"
 import { StoreyService } from "../../services/storey.service"
 import type { FurnitureWithRelations } from "@repo/models/Furniture"
@@ -26,6 +26,8 @@ import { FurnitureService } from "../../services/furniture.service"
     BuildingAddFormComponent,
     StoreyAddFormComponent,
     RoomAddFormComponent,
+    FurnitureAddFormComponent,
+    QrScanModalComponent,
   ],
   styleUrls: ["./building-page.component.css"],
 })
@@ -35,10 +37,11 @@ export class BuildingPageComponent implements OnInit {
   protected readonly roomService = inject(RoomService)
   protected readonly furnitureService = inject(FurnitureService)
 
-  protected selectedBuilding!: Building
-  protected selectedStorey!: Storey
-  protected selectedRoom!: Room
-  protected selectedFurniture!: FurnitureWithRelations
+  // Variables optionnelles '?' pour gérer la suppression
+  protected selectedBuilding?: Building
+  protected selectedStorey?: Storey
+  protected selectedRoom?: Room
+  protected selectedFurniture?: FurnitureWithRelations
 
   protected hideNotSelectedStoreysFlag: boolean = false
   protected showAllStoreyFurnituresFlag: boolean = false
@@ -47,8 +50,10 @@ export class BuildingPageComponent implements OnInit {
   public ngOnInit() {
     this.buildingService.get().subscribe({
       next: (buildings: Buildings) => {
-        if (buildings[0] !== undefined) {
-          this.selectBuilding(buildings[0])
+        // Correction : On vérifie que le premier élément existe avant de l'envoyer
+        const firstBuilding = buildings[0]
+        if (firstBuilding) {
+          this.selectBuilding(firstBuilding)
         }
       },
     })
@@ -118,7 +123,70 @@ export class BuildingPageComponent implements OnInit {
 
   protected selectFurniture(furniture: FurnitureWithRelations) {
     if (furniture !== undefined) {
-      this.selectedFurniture = furniture
+      if (furniture) {
+        this.selectedFurniture = furniture
+      }
+    }
+  }
+
+  /**
+   * Navigation automatique vers un meuble scanné via QR code
+   * Remonte toute la hiérarchie : Building > Storey > Room > Furniture
+   */
+  protected navigateToScannedFurniture(furniture: FurnitureWithRelations) {
+    console.log("Navigating to scanned furniture:", furniture.id)
+
+    // Charger le building si ce n'est pas déjà le bon
+    if (
+      !this.selectedBuilding ||
+      this.selectedBuilding.id !== furniture.buildingId
+    ) {
+      const building = this.buildingService.buildings.find(
+        (b) => b.id === furniture.buildingId,
+      )
+      if (building) {
+        this.selectBuilding(building)
+      }
+    }
+
+    // Charger l'étage si ce n'est pas déjà le bon
+    if (!this.selectedStorey || this.selectedStorey.id !== furniture.storeyId) {
+      this.storeyService.getByBuildingId(furniture.buildingId).subscribe({
+        next: (storeys) => {
+          const storey = storeys.find((s) => s.id === furniture.storeyId)
+          if (storey) {
+            this.selectStorey(storey)
+            this.loadRoomAndFurniture(furniture)
+          }
+        },
+      })
+    } else {
+      this.loadRoomAndFurniture(furniture)
+    }
+  }
+
+  /**
+   * Méthode auxiliaire pour charger la pièce et sélectionner le meuble
+   */
+  private loadRoomAndFurniture(furniture: FurnitureWithRelations) {
+    // Charger la pièce si ce n'est pas déjà la bonne
+    if (!this.selectedRoom || this.selectedRoom.id !== furniture.roomId) {
+      this.roomService.getByStoreyId(furniture.storeyId).subscribe({
+        next: (rooms) => {
+          const room = rooms.find((r) => r.id === furniture.roomId)
+          if (room) {
+            this.selectRoom(room)
+
+            // Sélectionner le meuble après un court délai pour s'assurer que la pièce est chargée
+            setTimeout(() => {
+              this.selectFurniture(furniture)
+            }, 100)
+          }
+        },
+      })
+    } else {
+      // La pièce est déjà sélectionnée, juste sélectionner le meuble
+      this.selectFurniture(furniture)
     }
   }
 
@@ -126,6 +194,8 @@ export class BuildingPageComponent implements OnInit {
     const modal = document.getElementById(
       "addBuildingModal",
     ) as HTMLDialogElement
+    if (!modal) return
+
     modal.addEventListener(
       "close",
       () => {
@@ -134,9 +204,7 @@ export class BuildingPageComponent implements OnInit {
             this.buildingService.buildings[
               this.buildingService.buildings.length - 1
             ]
-          if (last !== undefined) {
-            this.selectBuilding(last)
-          }
+          if (last) this.selectBuilding(last)
         }
       },
       { once: true },
@@ -146,15 +214,15 @@ export class BuildingPageComponent implements OnInit {
 
   protected addStorey() {
     const modal = document.getElementById("addStoreyModal") as HTMLDialogElement
+    if (!modal) return
+
     modal.addEventListener(
       "close",
       () => {
         if (this.storeyService.storeys.length > 0) {
           const last =
             this.storeyService.storeys[this.storeyService.storeys.length - 1]
-          if (last !== undefined) {
-            this.selectStorey(last)
-          }
+          if (last) this.selectStorey(last)
         }
       },
       { once: true },
@@ -164,14 +232,14 @@ export class BuildingPageComponent implements OnInit {
 
   protected addRoom() {
     const modal = document.getElementById("addRoomModal") as HTMLDialogElement
+    if (!modal) return
+
     modal.addEventListener(
       "close",
       () => {
         if (this.roomService.rooms.length > 0) {
           const last = this.roomService.rooms[this.roomService.rooms.length - 1]
-          if (last !== undefined) {
-            this.selectRoom(last)
-          }
+          if (last) this.selectRoom(last)
         }
       },
       { once: true },
@@ -223,8 +291,11 @@ export class BuildingPageComponent implements OnInit {
   protected removeStorey(storey: Storey) {
     this.storeyService.remove(storey.id).subscribe({
       next: () => {
-        if (this.storeyService.storeys[0] !== undefined) {
-          this.selectedStorey = this.storeyService.storeys[0]
+        const first = this.storeyService.storeys[0]
+        if (first) {
+          this.selectedStorey = first
+        } else {
+          this.selectedStorey = undefined
         }
       },
     })
@@ -233,8 +304,11 @@ export class BuildingPageComponent implements OnInit {
   protected removeRoom(room: Room) {
     this.roomService.delete(room.id).subscribe({
       next: () => {
-        if (this.roomService.rooms[0] !== undefined) {
-          this.selectedRoom = this.roomService.rooms[0]
+        const first = this.roomService.rooms[0]
+        if (first) {
+          this.selectedRoom = first
+        } else {
+          this.selectedRoom = undefined
         }
       },
     })
@@ -247,6 +321,8 @@ export class BuildingPageComponent implements OnInit {
       },
     })
   }
+
+  // --- Autres ---
 
   protected updateRoom(updatedRoom: Room) {
     this.roomService
@@ -280,7 +356,6 @@ export class BuildingPageComponent implements OnInit {
     imageUrl: string
   }): void {
     this.floorPlans.set(event.storeyId, event.imageUrl)
-
     this.storeyService
       .update(event.storeyId, { floorPlanImage: event.imageUrl })
       .subscribe({

@@ -1,0 +1,89 @@
+<div class="qr-scanner-container">
+  <div class="scanner-header">
+    <h2>Scanner QR Code</h2>
+    @if (!hasCamera()) {
+      <p class="error-message">Aucune caméra détectée sur cet appareil</p>
+    }
+  </div>
+
+  <div class="scanner-body">
+    @if (error()) {
+      <div class="error-alert">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>{{ error() }}</span>
+      </div>
+    }
+
+    <div class="video-container" [class.active]="scanning()">
+      <video #video class="scanner-video"></video>
+      @if (scanning()) {
+        <div class="scan-overlay">
+          <div class="scan-frame"></div>
+        </div>
+      }
+    </div>
+
+    <div class="scanner-controls">
+      <button
+        type="button"
+        class="btn-primary"
+        (click)="toggleScanning()"
+        [disabled]="!hasCamera()"
+      >
+        @if (scanning()) {
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="6" y="4" width="4" height="16"></rect>
+            <rect x="14" y="4" width="4" height="16"></rect>
+          </svg>
+          <span>Arrêter le scan</span>
+        } @else {
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+            <line x1="7" y1="2" x2="7" y2="22"></line>
+            <line x1="17" y1="2" x2="17" y2="22"></line>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <line x1="2" y1="7" x2="7" y2="7"></line>
+            <line x1="2" y1="17" x2="7" y2="17"></line>
+            <line x1="17" y1="17" x2="22" y2="17"></line>
+            <line x1="17" y1="7" x2="22" y2="7"></line>
+          </svg>
+          <span>Démarrer le scan</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>

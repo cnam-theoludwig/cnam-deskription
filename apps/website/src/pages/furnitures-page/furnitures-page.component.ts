@@ -5,6 +5,7 @@ import { ButtonModule } from "primeng/button"
 import { FurnitureAddFormComponent } from "../../components/furnitures/furniture-add-form/furniture-add-form.component"
 import { HeaderComponent } from "../../components/header/header.component"
 import { SearchEngineComponent } from "../../components/search-engine/search-engine.component"
+import { QrScanModalComponent } from "../../app/components/qr-scan-modal/qr-scan-modal.component"
 import { BuildingService } from "../../services/building.service"
 import { FurnitureService } from "../../services/furniture.service"
 import { LocationService } from "../../services/location.service"
@@ -22,6 +23,7 @@ import { TypeService } from "../../services/type.service"
     FurnitureAddFormComponent,
     SearchEngineComponent,
     ButtonModule,
+    QrScanModalComponent,
   ],
   templateUrl: "./furnitures-page.component.html",
   styleUrl: "./furnitures-page.component.css",

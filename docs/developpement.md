@@ -5,7 +5,7 @@
 ### Prérequis
 
 - [Node.js](https://nodejs.org/) >= v22.12.0 [(`nvm install 22`)](https://nvm.sh)
-- [pnpm](https://pnpm.io/) v10.19.0 [(`npm install --global corepack@0.34.1 && corepack enable`)](https://github.com/nodejs/corepack)
+- [pnpm](https://pnpm.io/) [(`npm install --global corepack@0.34.5 && corepack enable`)](https://github.com/nodejs/corepack)
 - [Docker](https://www.docker.com/)
 
 ### Installation
