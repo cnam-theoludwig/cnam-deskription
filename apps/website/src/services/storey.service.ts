@@ -54,13 +54,11 @@ export class StoreyService {
   }
 
   public create(input: StoreyCreate) {
-    const observable = from(
-      this.rpcClient.storeys.create(input),
-    ) as Observable<Storey>
+    const observable = from(this.rpcClient.storeys.create(input))
     observable.subscribe({
       next: (newStorey) => {
         this._storeys.update((old) => {
-          return [...old, newStorey as Storey]
+          return [...old, newStorey]
         })
       },
     })
@@ -82,9 +80,7 @@ export class StoreyService {
   }
 
   public remove(storeyId: Storey["id"]) {
-    const observable = from(
-      this.rpcClient.storeys.delete(storeyId),
-    ) as Observable<Storey>
+    const observable = from(this.rpcClient.storeys.delete(storeyId))
     observable.subscribe({
       next: () => {
         this._storeys.update((old) => {
@@ -100,12 +96,12 @@ export class StoreyService {
   public update(storeyId: Storey["id"], updates: Partial<StoreyUpdate>) {
     const observable = from(
       this.rpcClient.storeys.update({ id: storeyId, ...updates }),
-    ) as Observable<Storey>
+    )
     observable.subscribe({
       next: (updatedStorey) => {
         this._storeys.update((old) => {
           return old.map((storey) => {
-            return storey.id === storeyId ? (updatedStorey as Storey) : storey
+            return storey.id === storeyId ? updatedStorey : storey
           })
         })
       },

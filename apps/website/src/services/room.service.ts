@@ -57,9 +57,7 @@ export class RoomService {
   }
 
   public create(input: RoomCreate) {
-    const observable = from(
-      this.rpcClient.rooms.create(input),
-    ) as Observable<Room>
+    const observable = from(this.rpcClient.rooms.create(input))
     observable.subscribe({
       next: (newRoom) => {
         this._rooms.update((old) => {
@@ -71,9 +69,7 @@ export class RoomService {
   }
 
   public update(id: Room["id"], input: Partial<Room>) {
-    const observable = from(
-      this.rpcClient.rooms.update({ id, ...input }),
-    ) as Observable<Room>
+    const observable = from(this.rpcClient.rooms.update({ id, ...input }))
     observable.subscribe({
       next: (updatedRoom) => {
         this._rooms.update((old) => {
@@ -91,7 +87,7 @@ export class RoomService {
 
   public delete(id: Room["id"]) {
     console.log("Delete room", id)
-    const observable = from(this.rpcClient.rooms.delete(id)) as Observable<Room>
+    const observable = from(this.rpcClient.rooms.delete(id))
     observable.subscribe({
       next: (deletedRoom) => {
         this._rooms.update((old) => {

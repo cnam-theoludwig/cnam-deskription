@@ -67,6 +67,7 @@ export class ControlPanelComponent implements OnChanges {
 
   @Output() public selectBuilding = new EventEmitter<Building>()
   @Output() public addBuilding = new EventEmitter<void>()
+  @Output() public removeBuilding = new EventEmitter<Building>()
 
   @Output() public selectStorey = new EventEmitter<Storey>()
   @Output() public addStorey = new EventEmitter<void>()

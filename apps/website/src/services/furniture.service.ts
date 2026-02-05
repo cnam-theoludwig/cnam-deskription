@@ -97,9 +97,7 @@ export class FurnitureService {
 
   public update(furniture: FurnitureUpdate) {
     this._status.set("pending")
-    const observable = from(
-      this.rpcClient.furnitures.update(furniture),
-    ) as Observable<Furniture>
+    const observable = from(this.rpcClient.furnitures.update(furniture))
     observable.subscribe({
       next: (updatedFurniture) => {
         this._status.set("idle")
@@ -167,7 +165,7 @@ export class FurnitureService {
   public exportToExcel() {
     const observable = from(
       this.rpcClient.furnitures.excelExport(this.furnitures),
-    ) as Observable<string>
+    )
 
     const base64ToUint8Array = (base64: string) => {
       // remove data URL prefix if present

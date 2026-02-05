@@ -2,10 +2,10 @@
   <div class="flex-1 p-6">
     <div class="h-full bg-gradient-panel shadow-panel border-0">
       <app-building-viewer-3d
-        [selectedBuilding]="selectedBuilding"
-        [selectedStorey]="selectedStorey"
-        [selectedRoom]="selectedRoom"
-        [selectedFurniture]="selectedFurniture"
+        [selectedBuilding]="selectedBuilding!"
+        [selectedStorey]="selectedStorey!"
+        [selectedRoom]="selectedRoom!"
+        [selectedFurniture]="selectedFurniture!"
         [storeys]="storeyService.storeys"
         [rooms]="roomService.rooms"
         [furnitures]="furnitureService.furnitures"
@@ -30,6 +30,7 @@
         [selectedFurniture]="selectedFurniture"
         (selectBuilding)="selectBuilding($event)"
         (addBuilding)="addBuilding()"
+        (removeBuilding)="removeBuilding($event)"
         (selectStorey)="selectStorey($event)"
         (addStorey)="addStorey()"
         (removeStorey)="removeStorey($event)"
@@ -48,6 +49,7 @@
 </div>
 
 <app-building-add-form />
+
 @if (selectedBuilding) {
   <app-storey-add-form [buildingId]="selectedBuilding.id"></app-storey-add-form>
 }
