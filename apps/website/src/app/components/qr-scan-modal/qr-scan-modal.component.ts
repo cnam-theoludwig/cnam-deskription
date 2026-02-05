@@ -1,4 +1,4 @@
-﻿import { Component, inject, signal, output } from "@angular/core"
+import { Component, inject, signal, output } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { QrScannerComponent } from "../qr-scanner/qr-scanner.component"
 import { FurnitureService } from "../../../services/furniture.service"

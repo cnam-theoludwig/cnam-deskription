@@ -1,4 +1,4 @@
-﻿import type { OnInit, OnDestroy } from "@angular/core"
+import type { OnInit, OnDestroy } from "@angular/core"
 import {
   Component,
   ViewChild,

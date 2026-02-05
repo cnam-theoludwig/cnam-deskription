@@ -1,4 +1,4 @@
-﻿import { database } from "@repo/models/database"
+import { database } from "@repo/models/database"
 import { FurnitureZod } from "@repo/models/Furniture"
 import { LocationZod } from "@repo/models/Location"
 import { StateZod } from "@repo/models/State"

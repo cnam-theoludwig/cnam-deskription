@@ -21,7 +21,7 @@
     "@repo/utils": "workspace:*",
     "kysely": "catalog:",
     "pretty-ms": "catalog:",
-    "qrcode": "^1.5.4",
+    "qrcode": "catalog:",
     "tsx": "catalog:",
     "zod": "catalog:"
   },
@@ -30,7 +30,7 @@
     "@repo/config-typescript": "workspace:*",
     "@total-typescript/ts-reset": "catalog:",
     "@types/node": "catalog:",
-    "@types/qrcode": "^1.5.6",
+    "@types/qrcode": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:"

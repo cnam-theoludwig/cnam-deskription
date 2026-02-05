@@ -1,4 +1,4 @@
-﻿import { Component, Input, signal, effect } from "@angular/core"
+import { Component, Input, signal, effect } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { getRPCClient } from "@repo/api-client"
 
