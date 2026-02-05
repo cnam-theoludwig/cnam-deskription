@@ -13,14 +13,21 @@
         styleClass="p-button-secondary"
         (onClick)="goBack()"
       ></p-button>
-    } @else if (
-      roleService.currentRole === "Responsable de site" ||
-      roleService.currentRole === "Loueur de mobilier"
-    ) {
+    } @else {
+      @if (
+        roleService.currentRole === "Responsable de site" ||
+        roleService.currentRole === "Loueur de mobilier"
+      ) {
+        <p-button
+          label="Voir les meubles (3D)"
+          styleClass="p-button-secondary"
+          (onClick)="navigateToViewer()"
+        ></p-button>
+      }
       <p-button
-        label="Voir les meubles (3D)"
-        styleClass="p-button-secondary"
-        (onClick)="navigateToViewer()"
+        label="Scanner QR Code"
+        styleClass="p-button-success"
+        (onClick)="navigateToQrScan()"
       ></p-button>
     }
     <div class="card flex justify-center">

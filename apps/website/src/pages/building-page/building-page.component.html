@@ -55,3 +55,6 @@
 @if (selectedStorey) {
   <app-room-add-form [storeyId]="selectedStorey.id"></app-room-add-form>
 }
+
+<app-furniture-add-form />
+<app-qr-scan-modal (furnitureScanned)="navigateToScannedFurniture($event)" />

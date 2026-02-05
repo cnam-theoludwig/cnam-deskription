@@ -7,12 +7,11 @@ import {
   EventEmitter,
 } from "@angular/core"
 import { RoleService } from "../../../services/role.service"
-import { ReactiveFormsModule } from "@angular/forms"
+import { ReactiveFormsModule, FormBuilder, FormGroup } from "@angular/forms"
 import { RequiredComponent } from "../../required/required.component"
 import { ButtonModule } from "primeng/button"
 import { DatePipe } from "@angular/common"
 import { HistoryLogService } from "../../../services/historylog.service"
-import { FormBuilder, FormGroup } from "@angular/forms"
 import { FurnitureService } from "../../../services/furniture.service"
 import { LocationService } from "../../../services/location.service"
 import { BuildingService } from "../../../services/building.service"
@@ -20,6 +19,7 @@ import { StoreyService } from "../../../services/storey.service"
 import { RoomService } from "../../../services/room.service"
 import { StateService } from "../../../services/state.service"
 import { TypeService } from "../../../services/type.service"
+import { QrGeneratorComponent } from "../../../app/components/qr-generator/qr-generator.component"
 import type {
   FurnitureCreate,
   FurnitureWithRelations,
@@ -29,7 +29,13 @@ import { firstValueFrom } from "rxjs"
 
 @Component({
   selector: "app-furniture-add-form",
-  imports: [ReactiveFormsModule, RequiredComponent, ButtonModule, DatePipe],
+  imports: [
+    ReactiveFormsModule,
+    RequiredComponent,
+    ButtonModule,
+    DatePipe,
+    QrGeneratorComponent,
+  ],
   templateUrl: "./furniture-add-form.component.html",
   styleUrl: "./furniture-add-form.component.css",
 })
