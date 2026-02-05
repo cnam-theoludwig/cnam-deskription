@@ -42,9 +42,7 @@ export class BuildingService {
   }
 
   public create(input: BuildingCreate) {
-    const observable = from(
-      this.rpcClient.buildings.create(input),
-    )
+    const observable = from(this.rpcClient.buildings.create(input))
     observable.subscribe({
       next: (newBuilding: Building) => {
         this._buildings.update((old) => {
@@ -56,9 +54,7 @@ export class BuildingService {
   }
 
   public remove(buildingId: Building["id"]) {
-    const observable = from(
-      this.rpcClient.buildings.delete(buildingId),
-    )
+    const observable = from(this.rpcClient.buildings.delete(buildingId))
     observable.subscribe({
       next: () => {
         this._buildings.update((old) => {

@@ -40,9 +40,7 @@ export class LocationService {
 
   public exists(locationCreate: LocationCreate): Observable<Location | null> {
     this._status.set("pending")
-    const observable = from(
-      this.rpcClient.locations.exists(locationCreate),
-    )
+    const observable = from(this.rpcClient.locations.exists(locationCreate))
     observable.subscribe({
       next: () => {
         this._status.set("idle")
@@ -52,9 +50,7 @@ export class LocationService {
   }
 
   public create(input: LocationCreate): Observable<Location> {
-    const observable = from(
-      this.rpcClient.locations.create(input),
-    )
+    const observable = from(this.rpcClient.locations.create(input))
     observable.subscribe({
       next: (newLocation) => {
         this._locations.update((old) => {

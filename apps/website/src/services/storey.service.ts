@@ -54,9 +54,7 @@ export class StoreyService {
   }
 
   public create(input: StoreyCreate) {
-    const observable = from(
-      this.rpcClient.storeys.create(input),
-    )
+    const observable = from(this.rpcClient.storeys.create(input))
     observable.subscribe({
       next: (newStorey) => {
         this._storeys.update((old) => {
@@ -82,9 +80,7 @@ export class StoreyService {
   }
 
   public remove(storeyId: Storey["id"]) {
-    const observable = from(
-      this.rpcClient.storeys.delete(storeyId),
-    )
+    const observable = from(this.rpcClient.storeys.delete(storeyId))
     observable.subscribe({
       next: () => {
         this._storeys.update((old) => {
@@ -105,7 +101,7 @@ export class StoreyService {
       next: (updatedStorey) => {
         this._storeys.update((old) => {
           return old.map((storey) => {
-            return storey.id === storeyId ? (updatedStorey) : storey
+            return storey.id === storeyId ? updatedStorey : storey
           })
         })
       },
