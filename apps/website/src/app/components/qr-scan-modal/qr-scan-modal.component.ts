@@ -40,11 +40,7 @@ import type { FurnitureWithRelations } from "@repo/models/Furniture"
               <line x1="12" y1="16" x2="12.01" y2="16"></line>
             </svg>
             <p class="error-message">{{ error() }}</p>
-            <button
-              class="btn-retry"
-              type="button"
-              (click)="resetError()"
-            >
+            <button class="btn-retry" type="button" (click)="resetError()">
               Réessayer
             </button>
           </div>
@@ -67,112 +63,114 @@ import type { FurnitureWithRelations } from "@repo/models/Furniture"
       </div>
     </dialog>
   `,
-  styles: [`
-    dialog {
-      border: none;
-      padding: 0;
-      border-radius: 12px;
-      width: 700px;
-      max-width: 90vw;
-      max-height: 90vh;
-      overflow: hidden;
-      box-sizing: border-box;
-      background: #fff;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .modal-content {
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      box-sizing: border-box;
-      overflow-y: auto;
-      overflow-x: hidden;
-      flex: 1;
-      min-height: 0;
-    }
-
-    dialog::backdrop {
-      background: rgba(0, 0, 0, 0.5);
-    }
-
-    .modal-content h2 {
-      margin: 0;
-      font-size: 1.5rem;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 12px;
-      color: #1e293b;
-    }
-
-    dialog:not([open]) {
-      display: none;
-    }
-
-    .loading-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 3rem 2rem;
-      gap: 1rem;
-    }
-
-    .spinner {
-      width: 48px;
-      height: 48px;
-      border: 4px solid #e5e7eb;
-      border-top-color: #3b82f6;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
+  styles: [
+    `
+      dialog {
+        border: none;
+        padding: 0;
+        border-radius: 12px;
+        width: 700px;
+        max-width: 90vw;
+        max-height: 90vh;
+        overflow: hidden;
+        box-sizing: border-box;
+        background: #fff;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        display: flex;
+        flex-direction: column;
       }
-    }
 
-    .loading-container p {
-      color: #64748b;
-      font-size: 0.875rem;
-    }
+      .modal-content {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        box-sizing: border-box;
+        overflow-y: auto;
+        overflow-x: hidden;
+        flex: 1;
+        min-height: 0;
+      }
 
-    .error-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 3rem 2rem;
-      gap: 1rem;
-    }
+      dialog::backdrop {
+        background: rgba(0, 0, 0, 0.5);
+      }
 
-    .error-container svg {
-      color: #ef4444;
-    }
+      .modal-content h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 12px;
+        color: #1e293b;
+      }
 
-    .error-message {
-      color: #991b1b;
-      font-size: 0.875rem;
-      text-align: center;
-    }
+      dialog:not([open]) {
+        display: none;
+      }
 
-    .btn-retry {
-      padding: 0.5rem 1.5rem;
-      background-color: #3b82f6;
-      color: white;
-      border: none;
-      border-radius: 0.375rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
+      .loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 3rem 2rem;
+        gap: 1rem;
+      }
 
-    .btn-retry:hover {
-      background-color: #2563eb;
-    }
-  `],
+      .spinner {
+        width: 48px;
+        height: 48px;
+        border: 4px solid #e5e7eb;
+        border-top-color: #3b82f6;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .loading-container p {
+        color: #64748b;
+        font-size: 0.875rem;
+      }
+
+      .error-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 3rem 2rem;
+        gap: 1rem;
+      }
+
+      .error-container svg {
+        color: #ef4444;
+      }
+
+      .error-message {
+        color: #991b1b;
+        font-size: 0.875rem;
+        text-align: center;
+      }
+
+      .btn-retry {
+        padding: 0.5rem 1.5rem;
+        background-color: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .btn-retry:hover {
+        background-color: #2563eb;
+      }
+    `,
+  ],
 })
 export class QrScanModalComponent {
   protected readonly furnitureService = inject(FurnitureService)
@@ -266,11 +264,15 @@ export class QrScanModalComponent {
     try {
       parsedData = JSON.parse(qrData) as { type: string; id: string }
     } catch {
-      throw new Error("Format de QR code invalide. Veuillez scanner un QR code valide.")
+      throw new Error(
+        "Format de QR code invalide. Veuillez scanner un QR code valide.",
+      )
     }
 
     if (parsedData.type !== "furniture") {
-      throw new Error(`Type de QR code non supporté : "${parsedData.type}". Seuls les QR codes de meubles sont acceptés.`)
+      throw new Error(
+        `Type de QR code non supporté : "${parsedData.type}". Seuls les QR codes de meubles sont acceptés.`,
+      )
     }
 
     if (!parsedData.id) {

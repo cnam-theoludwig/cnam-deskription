@@ -36,7 +36,9 @@
   margin: 16px;
   font-family: "Roboto", sans-serif;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .furniture-card:hover {
@@ -176,7 +178,7 @@
 .label-id {
   font-size: 0.875rem;
   color: #6b7280;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   margin: 0;
 }
 

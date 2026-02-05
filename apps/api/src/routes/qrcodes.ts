@@ -15,14 +15,14 @@ export const qrcodes = {
     .input(
       z.object({
         furnitureId: FurnitureZod.id,
-      })
+      }),
     )
     .output(
       z.object({
         qrCodeDataUrl: z.string(),
         furnitureId: FurnitureZod.id,
         furnitureName: z.string(),
-      })
+      }),
     )
     .handler(async ({ input }) => {
       // Vérifier que le meuble existe
@@ -63,7 +63,7 @@ export const qrcodes = {
     .input(
       z.object({
         qrData: z.string(),
-      })
+      }),
     )
     .output(
       z.object({
@@ -84,7 +84,7 @@ export const qrcodes = {
         z: z.number(),
         model: z.string().nullish(),
         historyLogs: z.array(z.any()),
-      })
+      }),
     )
     .handler(async ({ input }) => {
       let parsedData: { type: string; id: string }

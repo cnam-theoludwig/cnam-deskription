@@ -136,8 +136,13 @@ export class BuildingPageComponent implements OnInit {
     console.log("Navigating to scanned furniture:", furniture.id)
 
     // Charger le building si ce n'est pas déjà le bon
-    if (!this.selectedBuilding || this.selectedBuilding.id !== furniture.buildingId) {
-      const building = this.buildingService.buildings.find(b => b.id === furniture.buildingId)
+    if (
+      !this.selectedBuilding ||
+      this.selectedBuilding.id !== furniture.buildingId
+    ) {
+      const building = this.buildingService.buildings.find(
+        (b) => b.id === furniture.buildingId,
+      )
       if (building) {
         this.selectBuilding(building)
       }
@@ -147,12 +152,12 @@ export class BuildingPageComponent implements OnInit {
     if (!this.selectedStorey || this.selectedStorey.id !== furniture.storeyId) {
       this.storeyService.getByBuildingId(furniture.buildingId).subscribe({
         next: (storeys) => {
-          const storey = storeys.find(s => s.id === furniture.storeyId)
+          const storey = storeys.find((s) => s.id === furniture.storeyId)
           if (storey) {
             this.selectStorey(storey)
             this.loadRoomAndFurniture(furniture)
           }
-        }
+        },
       })
     } else {
       this.loadRoomAndFurniture(furniture)
@@ -167,7 +172,7 @@ export class BuildingPageComponent implements OnInit {
     if (!this.selectedRoom || this.selectedRoom.id !== furniture.roomId) {
       this.roomService.getByStoreyId(furniture.storeyId).subscribe({
         next: (rooms) => {
-          const room = rooms.find(r => r.id === furniture.roomId)
+          const room = rooms.find((r) => r.id === furniture.roomId)
           if (room) {
             this.selectRoom(room)
 
@@ -176,7 +181,7 @@ export class BuildingPageComponent implements OnInit {
               this.selectFurniture(furniture)
             }, 100)
           }
-        }
+        },
       })
     } else {
       // La pièce est déjà sélectionnée, juste sélectionner le meuble

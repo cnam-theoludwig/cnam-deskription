@@ -1,11 +1,5 @@
 import type { OnInit, OnDestroy } from "@angular/core"
-import {
-  Component,
-  ViewChild,
-  ElementRef,
-  signal,
-  output,
-} from "@angular/core"
+import { Component, ViewChild, ElementRef, signal, output } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library"
 
@@ -17,7 +11,8 @@ import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library"
   styleUrls: ["./qr-scanner.component.css"],
 })
 export class QrScannerComponent implements OnInit, OnDestroy {
-  @ViewChild("video", { static: false }) public videoElement!: ElementRef<HTMLVideoElement>
+  @ViewChild("video", { static: false })
+  public videoElement!: ElementRef<HTMLVideoElement>
 
   public codeReader = new BrowserMultiFormatReader()
   public scanning = signal(false)
@@ -86,15 +81,21 @@ export class QrScannerComponent implements OnInit, OnDestroy {
             this.scanSuccess.emit(result.getText())
             this.stopScanning()
           }
-          if (error !== null && error !== undefined && !(error instanceof NotFoundException)) {
+          if (
+            error !== null &&
+            error !== undefined &&
+            !(error instanceof NotFoundException)
+          ) {
             console.error("Scan error:", error)
           }
-        }
+        },
       )
     } catch (error) {
       console.error("Error starting scanner:", error)
       this.error.set(
-        error instanceof Error ? error.message : "Erreur lors du démarrage du scanner"
+        error instanceof Error
+          ? error.message
+          : "Erreur lors du démarrage du scanner",
       )
       this.scanning.set(false)
       this.scanError.emit(this.error() ?? "Unknown error")

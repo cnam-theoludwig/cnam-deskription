@@ -29,7 +29,13 @@ import { firstValueFrom } from "rxjs"
 
 @Component({
   selector: "app-furniture-add-form",
-  imports: [ReactiveFormsModule, RequiredComponent, ButtonModule, DatePipe, QrGeneratorComponent],
+  imports: [
+    ReactiveFormsModule,
+    RequiredComponent,
+    ButtonModule,
+    DatePipe,
+    QrGeneratorComponent,
+  ],
   templateUrl: "./furniture-add-form.component.html",
   styleUrl: "./furniture-add-form.component.css",
 })

@@ -19,7 +19,11 @@ export class QrGeneratorComponent {
 
   public constructor() {
     effect(() => {
-      if (this.furnitureId !== null && this.furnitureId !== undefined && this.furnitureId !== "") {
+      if (
+        this.furnitureId !== null &&
+        this.furnitureId !== undefined &&
+        this.furnitureId !== ""
+      ) {
         void this.generateQRCode()
       }
     })
@@ -39,7 +43,9 @@ export class QrGeneratorComponent {
     } catch (error) {
       console.error("Error generating QR code:", error)
       this.error.set(
-        error instanceof Error ? error.message : "Erreur lors de la génération du QR code"
+        error instanceof Error
+          ? error.message
+          : "Erreur lors de la génération du QR code",
       )
     } finally {
       this.loading.set(false)
