@@ -78,4 +78,9 @@ export class SearchEngineComponent implements OnInit {
 
     this.furnitureService.search(furnitureSearchParams)
   }
+
+  public reset(): void {
+    this.furnitureSearchForm.reset()
+    this.search()
+  }
 }

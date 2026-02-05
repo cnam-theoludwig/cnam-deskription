@@ -2,7 +2,7 @@
   class="card h-full flex flex-col relative bg-gradient-panel shadow-panel border-0"
 >
   <div class="card-content flex-1 overflow-y-auto space-y-6">
-    <div class="space-y-3">
+    <div class="space-y-3 flex flex-col min-h-0 relative">
       <div class="flex items-center justify-between">
         <h3 class="font-semibold text-foreground flex items-center gap-2">
           <lucide-angular [img]="HouseIcon"></lucide-angular>
@@ -23,6 +23,10 @@
           dataKey="id"
           placeholder="Sélectionner un bâtiment"
           styleClass="w-full"
+          [style]="{
+            '--p-select-valid-border-color': '#d1d5db',
+            '--p-select-valid-shadow': 'none',
+          }"
         />
       }
 
@@ -67,7 +71,11 @@
             dataKey="id"
             placeholder="Sélectionner un étage"
             class="w-full"
-            [style]="{ width: '100%' }"
+            [style]="{
+              width: '100%',
+              '--p-select-valid-border-color': '#d1d5db',
+              '--p-select-valid-shadow': 'none',
+            }"
           >
             <ng-template let-storey pTemplate="item">
               <div
@@ -146,7 +154,11 @@
             dataKey="id"
             placeholder="Sélectionner une pièce"
             class="w-full"
-            [style]="{ width: '100%' }"
+            [style]="{
+              width: '100%',
+              '--p-select-valid-border-color': '#d1d5db',
+              '--p-select-valid-shadow': 'none',
+            }"
           >
             <ng-template let-room pTemplate="item">
               <div class="flex align-items-center gap-2">
@@ -216,7 +228,11 @@
             dataKey="id"
             placeholder="Sélectionner un meuble"
             class="w-full"
-            [style]="{ width: '100%' }"
+            [style]="{
+              width: '100%',
+              '--p-select-valid-border-color': '#d1d5db',
+              '--p-select-valid-shadow': 'none',
+            }"
           ></p-select>
 
           <div class="mb-2 flex items-center gap-2">

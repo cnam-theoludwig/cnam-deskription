@@ -2,9 +2,7 @@
   <form class="gap-3" [formGroup]="furnitureSearchForm" (submit)="search()">
     <div class="w-full">
       <p-iconfield iconPosition="left" styleClass="w-full">
-        <p-inputicon>
-          <i class="fa fa-search"></i>
-        </p-inputicon>
+        <p-inputicon> <i class="pi pi-search"></i> </p-inputicon>
         <input
           type="text"
           pInputText
@@ -74,11 +72,19 @@
       />
     </div>
 
-    <div class="w-full">
+    <div class="w-full flex items-center gap-3">
       <p-button
         label="Rechercher"
-        styleClass="p-button-primary"
+        styleClass="p-button-success"
         type="submit"
+      ></p-button>
+
+      <p-button
+        label="Réinitialiser"
+        icon="pi pi-filter-slash"
+        styleClass="p-button-secondary p-button-outlined"
+        type="button"
+        (onClick)="reset()"
       ></p-button>
     </div>
   </form>
