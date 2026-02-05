@@ -4,6 +4,7 @@ import { QrScannerComponent } from "../qr-scanner/qr-scanner.component"
 import { FurnitureService } from "../../../services/furniture.service"
 import { getRPCClient } from "@repo/api-client"
 import type { FurnitureWithRelations } from "@repo/models/Furniture"
+import { environment } from "../../../environments/environment"
 
 @Component({
   selector: "app-qr-scan-modal",
@@ -212,7 +213,7 @@ export class QrScanModalComponent {
       // Valider le format du QR code
       this.validateQrCode(qrData)
 
-      const client = getRPCClient()
+      const client = getRPCClient(environment.apiBaseURL)
       const result = await client.qrcodes.scanFurniture({ qrData })
 
       // Émettre l'événement pour navigation automatique

@@ -1,5 +1,6 @@
 import { Component, Input, signal, effect } from "@angular/core"
 import { CommonModule } from "@angular/common"
+import { environment } from "../../../environments/environment"
 import { getRPCClient } from "@repo/api-client"
 
 @Component({
@@ -34,7 +35,7 @@ export class QrGeneratorComponent {
     this.error.set(null)
 
     try {
-      const client = getRPCClient()
+      const client = getRPCClient(environment.apiBaseURL)
       const result = await client.qrcodes.generateForFurniture({
         furnitureId: this.furnitureId,
       })
