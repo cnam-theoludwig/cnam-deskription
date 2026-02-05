@@ -116,4 +116,27 @@ export class StoreyService {
     })
     return observable
   }
+  private readonly _storeyToEdit = signal<Storey | null>(null)
+
+  public get storeyToEdit() {
+    return this._storeyToEdit()
+  }
+
+  public openModal(storeyId?: string) {
+    if (storeyId) {
+      const storey = this._storeys().find((s) => s.id === storeyId)
+      this._storeyToEdit.set(storey || null)
+    } else {
+      this._storeyToEdit.set(null)
+    }
+
+    const modal = document.getElementById("addStoreyModal") as HTMLDialogElement
+    if (modal) modal.showModal()
+  }
+
+  public closeModal() {
+    this._storeyToEdit.set(null)
+    const modal = document.getElementById("addStoreyModal") as HTMLDialogElement
+    if (modal) modal.close()
+  }
 }

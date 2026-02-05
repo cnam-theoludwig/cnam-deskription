@@ -61,7 +61,6 @@ export class BuildingViewer3dComponent
 
   @Input() public storeyFloorPlans?: Map<string, string>
 
-  // --- ThreeJS Core ---
   @Input() public hideNotSelectedStoreys: boolean = false
 
   @Output() public storeySelected = new EventEmitter<Storey>()
@@ -74,7 +73,6 @@ export class BuildingViewer3dComponent
   protected animationId?: number
   protected font?: Font
 
-  // --- Configuration ---
   private readonly FLOOR_SPACING = 7
   private readonly FLOOR_WIDTH = 20
   private readonly FLOOR_LENGTH = 15
@@ -85,7 +83,6 @@ export class BuildingViewer3dComponent
   private readonly WIDTH = 20
   private readonly LENGTH = 15
 
-  // --- État de l'interface ---
   protected selectedFloorIndex = 0
   protected cameraTarget = new THREE.Vector3()
   protected cameraPosTarget = new THREE.Vector3()
@@ -97,7 +94,7 @@ export class BuildingViewer3dComponent
     | "DRAGGING_FURNITURE" = "IDLE"
   protected activeRoom: Room | null = null
   protected activeHandle: string | null = null
-  protected ghostMesh: THREE.Object3D | null = null
+  protected ghostMesh: THREE.Mesh | null = null
   protected originalMeshHidden: THREE.Object3D | null = null
   protected ghostData: { x: number; z: number; w: number; d: number } | null =
     null
@@ -134,16 +131,19 @@ export class BuildingViewer3dComponent
     )
     this.loader.setDRACOLoader(dracoLoader)
   }
-  // --- Lifecycles ---
   protected isOrbiting = false
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes["selectedBuilding"]?.currentValue) this.fetchAndRender()
-    if (
-      changes["selectedStorey"]?.currentValue &&
-      this.storeyService.storeys.length
-    ) {
+    if (changes["selectedStorey"]?.currentValue && this.storeys?.length) {
+      const s = changes["selectedStorey"].currentValue as Storey
+      this.selectedFloorIndex = this.storeys.findIndex((st) => st.id === s.id)
       this.highlightSelectedFloor()
+      this.activeRoom = null
+      this.activeHandle = null
+      this.interactionState = "IDLE"
+      this.removeGhost()
+      this.updateVisibility()
     }
 
     if (changes["hideNotSelectedStoreys"] != null && this.scene != null) {
@@ -162,6 +162,11 @@ export class BuildingViewer3dComponent
       (changes["rooms"] && !changes["rooms"].isFirstChange()) ||
       (changes["furnitures"] && !changes["furnitures"].isFirstChange())
     ) {
+      if (this.selectedStorey && this.storeys) {
+        this.selectedFloorIndex = this.storeys.findIndex(
+          (s) => s.id === this.selectedStorey.id,
+        )
+      }
       if (this.interactionState === "IDLE") {
         this.renderScene()
       }
@@ -217,7 +222,6 @@ export class BuildingViewer3dComponent
   }
 
   protected onCanvasClick = (event: MouseEvent): void => {
-    // Ignore clicks while orbiting
     if (this.isOrbiting) {
       return
     }
@@ -247,25 +251,19 @@ export class BuildingViewer3dComponent
         if (!Number.isNaN(idx) && idx !== this.selectedFloorIndex) {
           this.selectedFloorIndex = idx
           this.highlightSelectedFloor()
-          // Emit the clicked storey
           const storey = this.storeyService.storeys[idx]
           if (storey !== undefined) {
             this.storeySelected.emit(storey)
           }
           break
         } else {
-          break // break if clicked on the same floor
+          break
         }
       }
     }
   }
 
   protected highlightSelectedFloor(): void {
-    // this.isAnimatingToFloor = true
-    //     const ty = this.selectedFloorIndex * this.FLOOR_SPACING
-    //     this.cameraTarget.set(0, ty, 0)
-    //     this.cameraPosTarget.set(25, ty + 15, 25)
-
     this.scene.traverse((obj) => {
       if (
         obj instanceof THREE.Mesh &&
@@ -458,9 +456,6 @@ export class BuildingViewer3dComponent
   }
 
   protected renderFloor(floor: Storey, index: number): void {
-    // const floorWidth = 20
-    // const floorLength = 15
-    // const floorThickness = 0.3 // Épaisseur de la dalle
     const y = index * this.FLOOR_SPACING
     const group = new THREE.Group()
     group.position.set(0, y, 0)
@@ -500,7 +495,6 @@ export class BuildingViewer3dComponent
         .forEach((r) => this.renderRoom(group, r))
     }
 
-    // Floor Plan (if available)
     if (this.storeyFloorPlans && this.storeyFloorPlans.has(floor.id)) {
       const imageUrl = this.storeyFloorPlans.get(floor.id)
       if (imageUrl == null) {
@@ -596,9 +590,7 @@ export class BuildingViewer3dComponent
       const box = new THREE.Box3().setFromObject(model)
       const size = new THREE.Vector3()
       box.getSize(size)
-
-      const scale = 2.0 / Math.max(size.x, size.y, size.z)
-
+      const scale = 1.5 / Math.max(size.x, size.y, size.z)
       model.scale.set(scale, scale, scale)
       this.modelCache.set(furniture.model!, model.clone())
       this.setupFurnitureMesh(model, roomGroup, furniture)
@@ -676,6 +668,9 @@ export class BuildingViewer3dComponent
     })
   }
 
+  protected ghostGroup: THREE.Group | null = null
+  protected originalGroupHidden: THREE.Group | null = null
+
   private createGhost(
     room: Room,
     originalRoomMesh: THREE.Mesh,
@@ -683,81 +678,76 @@ export class BuildingViewer3dComponent
   ): void {
     this.removeGhost()
 
-    const roomGroup = originalRoomMesh.parent
-    if (!roomGroup) return
+    // Hide the entire room group (room + furniture)
+    const roomGroup = originalRoomMesh.parent as THREE.Group
+    if (roomGroup) {
+      this.originalGroupHidden = roomGroup
+      this.originalGroupHidden.visible = false
+    }
 
-    // On cache le groupe original (Pièce + Meubles)
-    this.originalMeshHidden = roomGroup
-    this.originalMeshHidden.visible = false
+    this.ghostGroup = new THREE.Group()
 
-    const w = room.width * this.SCALE,
-      d = room.depth * this.SCALE
-
-    const ghostGroup = new THREE.Group()
-
-    // 1. Création du sol fantôme (Bleu transparent)
-    const bodyGhost = new THREE.Mesh(
+    // Create ghost room body
+    const w = room.width * this.SCALE
+    const d = room.depth * this.SCALE
+    this.ghostMesh = new THREE.Mesh(
       this.sharedBoxGeo,
       this.getMat(room.color ?? "#3b82f6", 0.6),
     )
-    bodyGhost.scale.set(w, this.ROOM_THICKNESS, d)
-    bodyGhost.position.set(0, 0, 0)
-    bodyGhost.userData = { isGhostBody: true }
-    ghostGroup.add(bodyGhost)
+    this.ghostMesh.scale.set(w, this.ROOM_THICKNESS, d)
+    // Local position 0 because ghostGroup handles the translation
+    this.ghostMesh.position.set(0, 0.25, 0)
+    this.ghostGroup.add(this.ghostMesh)
 
-    // 2. Clonage des meubles pour le fantôme
-    roomGroup.children.forEach((child) => {
-      // On ne clone que les objets marqués comme MEUBLES
-      if (child.userData?.["type"] === "FURNITURE") {
-        // IMPORTANT : .clone(true) pour cloner récursivement toute la géométrie GLTF
-        const furnGhost = child.clone(true)
-
-        // On parcourt le clone pour rendre tous ses matériaux transparents
-        furnGhost.traverse((node) => {
-          if ((node as THREE.Mesh).isMesh) {
-            const mesh = node as THREE.Mesh
-            const originalMat = mesh.material
-            let ghostMat
-
-            if (Array.isArray(originalMat)) {
-              ghostMat = originalMat.map((m) => {
-                const mc = m.clone()
-                mc.transparent = true
-                mc.opacity = 0.6
-                return mc
-              })
-            } else if (originalMat) {
-              ghostMat = originalMat.clone()
-              ghostMat.transparent = true
-              ghostMat.opacity = 0.6
+    // Clone furniture
+    if (roomGroup) {
+      roomGroup.children.forEach((child) => {
+        if (child.userData["type"] === "FURNITURE") {
+          const furnClone = child.clone()
+          // Apply transparency
+          furnClone.traverse((c) => {
+            if ((c as THREE.Mesh).isMesh) {
+              const mesh = c as THREE.Mesh
+              const m = mesh.material
+              if (Array.isArray(m)) {
+                mesh.material = m.map((mat) => {
+                  const clo = mat.clone()
+                  clo.transparent = true
+                  clo.opacity = 0.6
+                  return clo
+                })
+              } else if (m) {
+                const clo = m.clone()
+                clo.transparent = true
+                clo.opacity = 0.6
+                mesh.material = clo
+              }
             }
-            mesh.material =
-              ghostMat ||
-              new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true })
-          }
-        })
+          })
+          this.ghostGroup?.add(furnClone)
+        }
+      })
+    }
 
-        // On ajoute le meuble au groupe fantôme.
-        // Sa position (x, y, z) locale est conservée par le clone,
-        // donc il restera bien positionné par rapport au centre de la pièce.
-        ghostGroup.add(furnGhost)
-      }
-    })
+    // Position the group
+    this.ghostGroup.position.set(room.x * this.SCALE, 0, room.z * this.SCALE)
+    floorGroup.add(this.ghostGroup)
 
-    // Positionnement global du groupe fantôme
-    ghostGroup.position.set(room.x * this.SCALE, 0.3, room.z * this.SCALE)
-
-    this.ghostMesh = ghostGroup
-    floorGroup.add(this.ghostMesh)
     this.ghostData = { x: room.x, z: room.z, w: room.width, d: room.depth }
   }
 
   private removeGhost(): void {
-    if (this.ghostMesh) {
-      this.ghostMesh.removeFromParent()
+    if (this.ghostGroup) {
+      this.ghostGroup.removeFromParent()
+      this.ghostGroup = null
       this.ghostMesh = null
     }
     this.ghostData = null
+    if (this.originalGroupHidden) {
+      this.originalGroupHidden.visible = true
+      this.originalGroupHidden = null
+    }
+    // Fallback for safety if old mechanism was partially used
     if (this.originalMeshHidden) {
       this.originalMeshHidden.visible = true
       this.originalMeshHidden = null
@@ -765,23 +755,23 @@ export class BuildingViewer3dComponent
   }
 
   private updateGhostVisuals(): void {
-    if (!this.ghostMesh || !this.ghostData) return
+    if (!this.ghostMesh || !this.ghostData || !this.ghostGroup) return
 
-    const body = this.ghostMesh.children.find((c) => c.userData["isGhostBody"])
-    if (body) {
-      body.scale.set(
-        this.ghostData.w * this.SCALE,
-        this.ROOM_THICKNESS,
-        this.ghostData.d * this.SCALE,
-      )
-    }
-
-    // Keep the lifted Y position
-    this.ghostMesh.position.set(
+    // Update Group Position (dragging)
+    this.ghostGroup.position.set(
       this.ghostData.x * this.SCALE,
-      0.3,
+      0,
       this.ghostData.z * this.SCALE,
     )
+
+    // Update Room Mesh Scale (resizing)
+    this.ghostMesh.scale.set(
+      this.ghostData.w * this.SCALE,
+      this.ROOM_THICKNESS,
+      this.ghostData.d * this.SCALE,
+    )
+    // Ensure room mesh stays centered in y
+    this.ghostMesh.position.set(0, 0.25, 0)
   }
 
   private checkCollision(
@@ -916,8 +906,6 @@ export class BuildingViewer3dComponent
     const mouse = this.getMouseNormalized(event)
     this.raycaster.setFromCamera(mouse, this.camera)
     const pt = new THREE.Vector3()
-
-    // Intersection avec le plan du sol
     this.raycaster.ray.intersectPlane(
       new THREE.Plane(
         new THREE.Vector3(0, 1, 0),
@@ -926,7 +914,6 @@ export class BuildingViewer3dComponent
       pt,
     )
 
-    // --- GESTION DU DÉPLACEMENT D'UN MEUBLE SEUL ---
     if (
       this.interactionState === "DRAGGING_FURNITURE" &&
       this.startFurnitureData &&
@@ -941,8 +928,6 @@ export class BuildingViewer3dComponent
         nz = this.startFurnitureData.furnZ + dz
       const rhw = this.activeRoom.width / 2,
         rhd = this.activeRoom.depth / 2
-
-      // Contraintes (collision murs)
       nx = Math.max(
         -rhw - this.startFurnitureData.bounds.minX / this.SCALE,
         Math.min(rhw - this.startFurnitureData.bounds.maxX / this.SCALE, nx),
@@ -951,7 +936,6 @@ export class BuildingViewer3dComponent
         -rhd - this.startFurnitureData.bounds.minZ / this.SCALE,
         Math.min(rhd - this.startFurnitureData.bounds.maxZ / this.SCALE, nz),
       )
-
       this.ghostFurnitureData.x = nx
       this.ghostFurnitureData.z = nz
       this.ghostFurnitureMesh!.position.set(
@@ -969,7 +953,6 @@ export class BuildingViewer3dComponent
       (r) => r.storeyId === this.activeRoom?.storeyId,
     )
 
-    // --- GESTION DU DÉPLACEMENT DE LA PIÈCE ---
     if (this.interactionState === "DRAGGING") {
       let nx = this.startData.roomX + dx,
         nz = this.startData.roomZ + dz
@@ -977,20 +960,15 @@ export class BuildingViewer3dComponent
         limZ = this.LENGTH / this.SCALE / 2 - this.ghostData.d / 2
       nx = Math.round(Math.max(-limX, Math.min(limX, nx)))
       nz = Math.round(Math.max(-limZ, Math.min(limZ, nz)))
-
       if (!this.checkCollision({ ...this.ghostData, x: nx }, otherRooms))
         this.ghostData.x = nx
       if (!this.checkCollision({ ...this.ghostData, z: nz }, otherRooms))
         this.ghostData.z = nz
-
-      // --- GESTION DU REDIMENSIONNEMENT (RESIZE) ---
     } else if (this.interactionState === "RESIZING" && this.activeHandle) {
       let nw = this.startData.roomW,
         nd = this.startData.roomD,
         nx = this.startData.roomX,
         nz = this.startData.roomZ
-
-      // Calcul des nouvelles dimensions et positions
       if (this.activeHandle.includes("R")) {
         nw += dx
         nx += dx / 2
@@ -1007,41 +985,22 @@ export class BuildingViewer3dComponent
       }
       if (nw < 20) nw = 20
       if (nd < 20) nd = 20
-
       const cand = {
         x: Math.round(nx),
         z: Math.round(nz),
         w: Math.round(nw),
         d: Math.round(nd),
       }
-
-      // Calcul du décalage du centre de la pièce (ex: si on tire à droite, le centre bouge à droite)
-      const shiftX = cand.x - this.ghostData.x
-      const shiftZ = cand.z - this.ghostData.z
-
       const fsX = this.WIDTH / this.SCALE,
         fsZ = this.LENGTH / this.SCALE
-
       if (
         cand.x - cand.w / 2 >= -fsX / 2 &&
         cand.x + cand.w / 2 <= fsX / 2 &&
         cand.z - cand.d / 2 >= -fsZ / 2 &&
         cand.z + cand.d / 2 <= fsZ / 2 &&
         !this.checkCollision(cand, otherRooms)
-      ) {
-        // Correction visuelle : On déplace les meubles dans le sens inverse
-        // pour qu'ils aient l'air de rester sur place pendant que le mur bouge.
-        if (this.ghostMesh && (shiftX !== 0 || shiftZ !== 0)) {
-          this.ghostMesh.children.forEach((child) => {
-            if (child.userData?.["type"] === "FURNITURE") {
-              child.position.x -= shiftX * this.SCALE
-              child.position.z -= shiftZ * this.SCALE
-            }
-          })
-        }
-
+      )
         this.ghostData = cand
-      }
     }
     this.updateGhostVisuals()
   }
@@ -1051,7 +1010,7 @@ export class BuildingViewer3dComponent
       this.interactionState !== "IDLE" &&
       this.activeRoom &&
       this.ghostData &&
-      this.originalMeshHidden
+      (this.originalGroupHidden || this.originalMeshHidden)
     ) {
       Object.assign(this.activeRoom, {
         x: this.ghostData.x,
@@ -1060,15 +1019,13 @@ export class BuildingViewer3dComponent
         depth: this.ghostData.d,
       })
       this.applyChangesToOriginalMesh()
-      this.roomService
-        .update(this.activeRoom.id, {
-          x: this.activeRoom.x,
-          z: this.activeRoom.z,
-          width: this.activeRoom.width,
-          depth: this.activeRoom.depth,
-          color: this.activeRoom.color,
-        })
-        .subscribe()
+      this.roomService.update(this.activeRoom.id, {
+        x: this.activeRoom.x,
+        z: this.activeRoom.z,
+        width: this.activeRoom.width,
+        depth: this.activeRoom.depth,
+        color: this.activeRoom.color,
+      })
     }
     this.removeGhost()
     if (
@@ -1089,13 +1046,11 @@ export class BuildingViewer3dComponent
       this.ghostFurnitureMesh = null
       this.originalFurnitureHidden = null
       this.ghostFurnitureData = null
-      this.furnitureService
-        .update({
-          id: this.activeFurniture.id,
-          x: this.activeFurniture.x,
-          z: this.activeFurniture.z,
-        })
-        .subscribe()
+      this.furnitureService.update({
+        id: this.activeFurniture.id,
+        x: this.activeFurniture.x,
+        z: this.activeFurniture.z,
+      })
     }
     this.interactionState = "IDLE"
     this.activeRoom = null
@@ -1107,47 +1062,40 @@ export class BuildingViewer3dComponent
   }
 
   private applyChangesToOriginalMesh(): void {
-    if (!this.originalMeshHidden || !this.ghostData || !this.activeRoom) return
+    if (!this.ghostData || !this.activeRoom) return
+    const group = this.originalGroupHidden || this.originalMeshHidden?.parent
+    if (!group) return
+
     const w = this.ghostData.w * this.SCALE,
       d = this.ghostData.d * this.SCALE
-    const group = this.originalMeshHidden as THREE.Group
-    if (group) {
-      group.position.set(
-        this.ghostData.x * this.SCALE,
-        0.25,
-        this.ghostData.z * this.SCALE,
-      )
-      if (this.interactionState === "RESIZING") {
-        const hw = w / 2,
-          hd = d / 2
-        group.children.forEach((c) => {
-          if (c.userData["type"] === "RESIZE_HANDLE") {
-            const n = c.userData["handleName"]
-            c.position.set(
-              n.includes("R") ? hw : -hw,
-              0,
-              n.includes("B") ? hd : -hd,
-            )
-          }
-          if (c.userData["type"] === "ROOM_BODY" && c instanceof THREE.Mesh)
-            c.scale.set(w, this.ROOM_THICKNESS, d)
 
-          if (c.userData["type"] === "ROOM_TEXT" && c instanceof THREE.Mesh) {
-            // Re-center text over the new room dimensions
-            if (c.geometry.boundingBox) {
-              const box = c.geometry.boundingBox
-              c.position.set(
-                -0.5 * (box.max.x - box.min.x),
-                0.3,
-                -0.5 * (box.max.y - box.min.y),
-              )
-            }
-          }
-        })
-      }
+    group.position.set(
+      this.ghostData.x * this.SCALE,
+      0.25,
+      this.ghostData.z * this.SCALE,
+    )
+    if (this.interactionState === "RESIZING") {
+      const hw = w / 2,
+        hd = d / 2
+      group.children.forEach((c) => {
+        if (c.userData["type"] === "RESIZE_HANDLE") {
+          const n = c.userData["handleName"]
+          c.position.set(
+            n.includes("R") ? hw : -hw,
+            0,
+            n.includes("B") ? hd : -hd,
+          )
+        }
+        if (c.userData["type"] === "ROOM_BODY" && c instanceof THREE.Mesh)
+          c.scale.set(w, this.ROOM_THICKNESS, d)
+      })
     }
-    this.originalMeshHidden.visible = true
-    this.originalMeshHidden = null
+
+    if (this.originalMeshHidden) {
+      this.originalMeshHidden.visible = true
+      this.originalMeshHidden = null
+    }
+    // originalGroupHidden visibility is restored in removeGhost
   }
 
   protected getMouseNormalized(event: PointerEvent): THREE.Vector2 {

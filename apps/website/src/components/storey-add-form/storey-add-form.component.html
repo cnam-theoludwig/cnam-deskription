@@ -3,7 +3,9 @@
   class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50"
 >
   <div class="modal-content">
-    <h2>Ajouter un étage</h2>
+    <h2>
+      {{ storeyService.storeyToEdit ? "Modifier l'étage" : "Ajouter un étage" }}
+    </h2>
 
     <form [formGroup]="storeyForm" (submit)="onSubmit()">
       <div class="mb-3 flex items-center gap-4">
@@ -26,7 +28,7 @@
           (onClick)="closeModal()"
         ></p-button>
         <p-button
-          label="Ajouter"
+          [label]="storeyService.storeyToEdit ? 'Sauvegarder' : 'Ajouter'"
           styleClass="p-button-primary"
           type="submit"
         ></p-button>

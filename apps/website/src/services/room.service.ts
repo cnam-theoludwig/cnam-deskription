@@ -28,6 +28,24 @@ export class RoomService {
     this._rooms.set([])
   }
 
+  private readonly _roomToEdit = signal<Room | null>(null)
+
+  public get roomToEdit() {
+    return this._roomToEdit()
+  }
+
+  public openModal(roomId?: Room["id"]) {
+    this._roomToEdit.set(this.rooms.find((r) => r.id === roomId) ?? null)
+    const modal = document.getElementById("addRoomModal") as HTMLDialogElement
+    if (modal) modal.showModal()
+  }
+
+  public closeModal() {
+    const modal = document.getElementById("addRoomModal") as HTMLDialogElement
+    if (modal) modal.close()
+    this._roomToEdit.set(null)
+  }
+
   public get() {
     this._status.set("pending")
     const observable = from(this.rpcClient.rooms.get()) as Observable<Rooms>
@@ -94,7 +112,6 @@ export class RoomService {
   }
 
   public delete(id: Room["id"]) {
-    console.log("Delete room", id)
     const observable = from(this.rpcClient.rooms.delete(id)) as Observable<Room>
     observable.subscribe({
       next: (deletedRoom) => {

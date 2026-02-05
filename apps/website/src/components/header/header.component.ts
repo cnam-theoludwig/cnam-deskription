@@ -28,7 +28,6 @@ export class HeaderComponent implements OnInit {
   }
 
   public get selectedRole() {
-    // Always return the current role from service
     return this.roles?.find((role) => {
       return role.name === this.roleService.currentRole
     })

@@ -43,7 +43,6 @@
             (onChange)="
               this.buildingService.onBuildingChange(this.furnitureForm)
             "
-            [disabled]="shouldDisablePositionFields"
             placeholder="Choisissez un bâtiment"
           />
         }
@@ -64,7 +63,6 @@
             optionLabel="name"
             optionValue="id"
             (onChange)="this.storeyService.onStoreyChange(this.furnitureForm)"
-            [disabled]="shouldDisablePositionFields"
             placeholder="Choisissez un étage"
           />
         }
@@ -82,7 +80,6 @@
             [options]="roomService.rooms"
             optionLabel="name"
             optionValue="id"
-            [disabled]="shouldDisablePositionFields"
             placeholder="Choisissez une pièce"
           />
         }

@@ -164,16 +164,12 @@ export class FurnitureService {
   }
 
   public openModal(furnitureId?: FurnitureWithRelations["id"]) {
-    console.log("Open modal", furnitureId)
     this._furnitureToEdit.set(
       this.furnitures.find((f) => f.id === furnitureId) ?? null,
     )
-    console.log(this._furnitureToEdit)
     const modal = document.getElementById(
       "addFurnitureModal",
     ) as HTMLDialogElement
-
-    console.log(modal)
 
     if (!modal) return
 
@@ -200,14 +196,11 @@ export class FurnitureService {
     ) as Observable<string>
 
     const base64ToUint8Array = (base64: string) => {
-      // remove data URL prefix if present
       const commaIndex = base64.indexOf(",")
       if (commaIndex !== -1) {
         base64 = base64.slice(commaIndex + 1)
       }
-      // convert URL-safe base64 to standard
       base64 = base64.replace(/-/g, "+").replace(/_/g, "/")
-      // add padding if missing
       const pad = base64.length % 4
       if (pad !== 0 && !Number.isNaN(pad)) {
         base64 += "====".slice(pad)
@@ -230,7 +223,6 @@ export class FurnitureService {
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
           })
 
-          // For IE/Edge
           const msSaveOrOpenBlob = (window.navigator as any).msSaveOrOpenBlob
           if (typeof msSaveOrOpenBlob === "function") {
             msSaveOrOpenBlob.call(window.navigator, blob, "furnitures.xlsx")

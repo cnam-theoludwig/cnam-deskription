@@ -3,7 +3,13 @@
   class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50"
 >
   <div class="modal-content">
-    <h2>Ajouter un bâtiment</h2>
+    <h2>
+      {{
+        buildingService.buildingToEdit
+          ? "Modifier le bâtiment"
+          : "Ajouter un bâtiment"
+      }}
+    </h2>
 
     <form [formGroup]="buildingForm" (submit)="onSubmit()">
       <div class="mb-3 flex items-center gap-4">
@@ -26,7 +32,7 @@
           (onClick)="closeModal()"
         ></p-button>
         <p-button
-          label="Ajouter"
+          [label]="buildingService.buildingToEdit ? 'Sauvegarder' : 'Ajouter'"
           styleClass="p-button-primary"
           type="submit"
         ></p-button>

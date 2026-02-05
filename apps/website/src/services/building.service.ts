@@ -88,4 +88,48 @@ export class BuildingService {
     })
     return observable
   }
+
+  public update(id: Building["id"], input: Partial<Omit<Building, "id">>) {
+    const observable = from(
+      this.rpcClient.buildings.update({ id, ...input }),
+    ) as Observable<Building>
+    observable.subscribe({
+      next: (updatedBuilding) => {
+        this._buildings.update((old) => {
+          return old.map((building) => {
+            return building.id === id ? updatedBuilding : building
+          })
+        })
+      },
+    })
+    return observable
+  }
+
+  private readonly _buildingToEdit = signal<Building | null>(null)
+
+  public get buildingToEdit() {
+    return this._buildingToEdit()
+  }
+
+  public openModal(buildingId?: string) {
+    if (buildingId) {
+      const building = this._buildings().find((b) => b.id === buildingId)
+      this._buildingToEdit.set(building || null)
+    } else {
+      this._buildingToEdit.set(null)
+    }
+
+    const modal = document.getElementById(
+      "addBuildingModal",
+    ) as HTMLDialogElement
+    if (modal) modal.showModal()
+  }
+
+  public closeModal() {
+    this._buildingToEdit.set(null)
+    const modal = document.getElementById(
+      "addBuildingModal",
+    ) as HTMLDialogElement
+    if (modal) modal.close()
+  }
 }

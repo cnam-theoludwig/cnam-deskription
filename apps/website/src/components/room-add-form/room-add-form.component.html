@@ -3,7 +3,7 @@
   class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50"
 >
   <div class="modal-content">
-    <h2>Ajouter une pièce</h2>
+    <h2>{{ roomService.roomToEdit ? "Modifier" : "Ajouter" }} une pièce</h2>
 
     <form [formGroup]="roomForm" (submit)="onSubmit()">
       <div class="mb-3 flex items-center gap-4">
@@ -25,6 +25,7 @@
         <p-colorpicker
           inputId="color"
           formControlName="color"
+          styleClass="flex-1"
           [style]="{ width: '100%' }"
         />
       </div>
@@ -37,7 +38,7 @@
           (onClick)="closeModal()"
         ></p-button>
         <p-button
-          label="Ajouter"
+          [label]="roomService.roomToEdit ? 'Sauvegarder' : 'Ajouter'"
           styleClass="p-button-primary"
           type="submit"
         ></p-button>

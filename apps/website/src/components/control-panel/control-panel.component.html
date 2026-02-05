@@ -20,6 +20,7 @@
           (ngModelChange)="selectBuilding.emit($event)"
           [options]="buildings"
           optionLabel="name"
+          dataKey="id"
           placeholder="Sélectionner un bâtiment"
           styleClass="w-full"
         />
@@ -30,7 +31,7 @@
         direction="left"
         [radius]="80"
         type="linear"
-        buttonClassName="p-button-sm p-button-outlined"
+        buttonClassName="p-button-sm p-button-text p-button-secondary"
         [style]="{ position: 'absolute', top: '0.2rem', right: '0rem' }"
         showIcon="pi pi-ellipsis-v"
         hideIcon="pi pi-times"
@@ -63,6 +64,7 @@
             [(ngModel)]="selectedStorey"
             (ngModelChange)="selectStorey.emit($event)"
             optionLabel="name"
+            dataKey="id"
             placeholder="Sélectionner un étage"
             class="w-full"
             [style]="{ width: '100%' }"
@@ -102,7 +104,7 @@
         direction="left"
         [radius]="80"
         type="linear"
-        buttonClassName="p-button-sm p-button-outlined"
+        buttonClassName="p-button-sm p-button-text p-button-secondary"
         [style]="{
           position: 'absolute',
           top: '0.2rem',
@@ -141,6 +143,7 @@
             [(ngModel)]="selectedRoom"
             (ngModelChange)="selectRoom.emit($event)"
             optionLabel="name"
+            dataKey="id"
             placeholder="Sélectionner une pièce"
             class="w-full"
             [style]="{ width: '100%' }"
@@ -164,41 +167,6 @@
               </div>
             </ng-template>
           </p-select>
-
-          <div class="flex gap-2 items-center flex-wrap" *ngIf="selectedRoom">
-            <div class="flex-1 flex gap-2 items-center">
-              <div
-                class="w-6 h-6 rounded-full border border-gray-300 relative cursor-pointer overflow-hidden shadow-sm"
-                [style.backgroundColor]="editRoomColor"
-                title="Changer la couleur"
-              >
-                <p-colorpicker
-                  [(ngModel)]="editRoomColor"
-                  [style]="{ width: '100%', height: '100%', opacity: 0 }"
-                />
-              </div>
-
-              <input
-                pInputText
-                [(ngModel)]="editRoomName"
-                (keydown.enter)="saveRoomEdit()"
-                class="flex-1 min-w-0"
-                placeholder="Nom de la pièce"
-              />
-            </div>
-
-            <div class="flex gap-1">
-              <p-button
-                icon="pi pi-check"
-                severity="success"
-                [outlined]="true"
-                [rounded]="true"
-                size="small"
-                (click)="saveRoomEdit()"
-                title="Sauvegarder les modifications"
-              ></p-button>
-            </div>
-          </div>
         </div>
       }
       <p-speedDial
@@ -206,7 +174,7 @@
         direction="left"
         [radius]="80"
         type="linear"
-        buttonClassName="p-button-sm p-button-outlined"
+        buttonClassName="p-button-sm p-button-text p-button-secondary"
         [style]="{
           position: 'absolute',
           top: '0.2rem',
@@ -245,6 +213,7 @@
             [(ngModel)]="selectedFurniture"
             (ngModelChange)="selectFurniture.emit($event)"
             optionLabel="name"
+            dataKey="id"
             placeholder="Sélectionner un meuble"
             class="w-full"
             [style]="{ width: '100%' }"
@@ -269,7 +238,7 @@
         direction="left"
         [radius]="80"
         type="linear"
-        buttonClassName="p-button-sm p-button-outlined"
+        buttonClassName="p-button-sm p-button-text p-button-secondary"
         [style]="{
           position: 'absolute',
           top: '0.2rem',
@@ -284,4 +253,9 @@
   </div>
 </div>
 
-<app-furniture-add-form [furniture]="furnitureService.furnitureToEdit" />
+<app-furniture-add-form
+  [furniture]="furnitureService.furnitureToEdit"
+  [defaultBuildingId]="selectedBuilding?.id"
+  [defaultStoreyId]="selectedStorey?.id"
+  [defaultRoomId]="selectedRoom?.id"
+/>

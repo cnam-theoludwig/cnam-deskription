@@ -55,7 +55,6 @@ export class BuildingPageComponent implements OnInit {
   }
 
   protected selectBuilding(building: Building) {
-    console.log("selectBuilding", building.id)
     if (building !== undefined) {
       this.selectedBuilding = building
       this.storeyService.clear()
@@ -77,7 +76,6 @@ export class BuildingPageComponent implements OnInit {
   }
 
   protected selectStorey(storey: Storey) {
-    console.log("selectStorey", storey.id)
     if (storey !== undefined) {
       this.selectedStorey = storey
       this.roomService.getByStoreyId(storey.id).subscribe({
@@ -91,7 +89,6 @@ export class BuildingPageComponent implements OnInit {
   }
 
   protected selectRoom(room: Room) {
-    console.log("selectRoom", room.id)
     if (room !== undefined) {
       this.selectedRoom = room
       this.fetchFurnitures()
@@ -120,14 +117,12 @@ export class BuildingPageComponent implements OnInit {
   }
 
   protected selectFurniture(furniture: FurnitureWithRelations) {
-    console.log("selectFurniture", furniture.id)
     if (furniture !== undefined) {
       this.selectedFurniture = furniture
     }
   }
 
   protected addBuilding() {
-    console.log("Add building")
     const modal = document.getElementById(
       "addBuildingModal",
     ) as HTMLDialogElement
@@ -150,7 +145,6 @@ export class BuildingPageComponent implements OnInit {
   }
 
   protected addStorey() {
-    console.log("Add storey")
     const modal = document.getElementById("addStoreyModal") as HTMLDialogElement
     modal.addEventListener(
       "close",
@@ -169,7 +163,6 @@ export class BuildingPageComponent implements OnInit {
   }
 
   protected addRoom() {
-    console.log("Add room")
     const modal = document.getElementById("addRoomModal") as HTMLDialogElement
     modal.addEventListener(
       "close",
@@ -187,7 +180,6 @@ export class BuildingPageComponent implements OnInit {
   }
 
   protected addFurniture() {
-    console.log("Add furniture")
     this.furnitureService.openModal()
 
     const modal = document.getElementById(
@@ -287,13 +279,12 @@ export class BuildingPageComponent implements OnInit {
     storeyId: string
     imageUrl: string
   }): void {
-    console.log("Floor plan uploaded for storey:", event.storeyId)
     this.floorPlans.set(event.storeyId, event.imageUrl)
 
     this.storeyService
       .update(event.storeyId, { floorPlanImage: event.imageUrl })
       .subscribe({
-        next: () => console.log("Floor plan saved to database"),
+        next: () => {},
         error: (err) => console.error("Failed to save floor plan:", err),
       })
   }

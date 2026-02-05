@@ -19,6 +19,10 @@ export const RoomCreateZodObject = z.object({
   name: RoomZod.name,
   storeyId: RoomZod.storeyId,
   color: RoomZod.color,
+  x: z.number().optional(),
+  z: z.number().optional(),
+  width: z.number().optional(),
+  depth: z.number().optional(),
 })
 export type RoomCreate = z.infer<typeof RoomCreateZodObject>
 

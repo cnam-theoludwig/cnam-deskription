@@ -1,4 +1,4 @@
-import { Component, inject } from "@angular/core"
+import { Component, inject, effect } from "@angular/core"
 import type { OnInit } from "@angular/core"
 import {
   FormBuilder,
@@ -31,6 +31,21 @@ export class BuildingAddFormComponent implements OnInit {
 
   protected buildingForm!: FormGroup
 
+  constructor() {
+    effect(() => {
+      const building = this.buildingService.buildingToEdit
+      if (building) {
+        this.buildingForm.patchValue({
+          name: building.name,
+        })
+      } else {
+        this.buildingForm?.reset({
+          name: "",
+        })
+      }
+    })
+  }
+
   public ngOnInit() {
     this.buildingForm = this.fb.group({
       name: ["", Validators.required],
@@ -44,26 +59,30 @@ export class BuildingAddFormComponent implements OnInit {
     }
 
     try {
-      const building: BuildingCreate = {
-        name: this.buildingForm.get("name")?.value,
-      }
+      const buildingName = this.buildingForm.get("name")?.value
+      const buildingToEdit = this.buildingService.buildingToEdit
 
-      await firstValueFrom(this.buildingService.create(building))
+      if (buildingToEdit) {
+        await firstValueFrom(
+          this.buildingService.update(buildingToEdit.id, {
+            name: buildingName,
+          }),
+        )
+      } else {
+        const building: BuildingCreate = {
+          name: buildingName,
+        }
+        await firstValueFrom(this.buildingService.create(building))
+      }
 
       this.closeModal()
     } catch (error) {
-      console.error("Erreur lors de la création :", error)
+      console.error("Erreur lors de la sauvegarde :", error)
       alert("Une erreur est survenue.")
     }
   }
 
   protected closeModal() {
-    this.buildingForm = this.fb.group({
-      name: ["", Validators.required],
-    })
-    const modal = document.getElementById(
-      "addBuildingModal",
-    ) as HTMLDialogElement
-    modal.close()
+    this.buildingService.closeModal()
   }
 }
