@@ -1,6 +1,8 @@
-<div class="flex h-screen bg-gradient-scene">
-  <div class="flex-1 p-6">
-    <div class="h-full bg-gradient-panel shadow-panel border-0">
+<div class="flex h-screen w-screen overflow-hidden bg-gradient-scene">
+  <div class="flex-1 h-full overflow-hidden p-6 relative">
+    <div
+      class="h-full w-full bg-gradient-panel shadow-panel border-0 rounded-xl overflow-hidden"
+    >
       <app-building-viewer-3d
         [selectedBuilding]="selectedBuilding!"
         [selectedStorey]="selectedStorey!"

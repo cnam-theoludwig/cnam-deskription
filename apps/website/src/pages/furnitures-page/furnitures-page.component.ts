@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common"
 import { Component, inject } from "@angular/core"
-import type { Furniture, FurnitureWithRelations } from "@repo/models/Furniture"
+import type { FurnitureWithRelations } from "@repo/models/Furniture"
 import { ButtonModule } from "primeng/button"
 import { FurnitureAddFormComponent } from "../../components/furnitures/furniture-add-form/furniture-add-form.component"
 import { HeaderComponent } from "../../components/header/header.component"
@@ -38,31 +38,16 @@ export class FurnituresPageComponent {
   protected readonly typeService = inject(TypeService)
   protected readonly roleService = inject(RoleService)
 
-  protected furnitureToEdit: FurnitureWithRelations | null = null
-
   public constructor() {
     this.furnitureService.get()
   }
 
-  public openModal(furnitureId?: Furniture["id"]) {
-    console.log("openModal", furnitureId)
-    this.furnitureToEdit =
-      this.furnitureService.furnitures.find((f) => {
-        return f.id === furnitureId
-      }) ?? null
-
-    const modal = document.getElementById(
-      "addFurnitureModal",
-    ) as HTMLDialogElement
-    modal.showModal()
+  public openModal(furnitureId?: FurnitureWithRelations["id"]) {
+    this.furnitureService.openModal(furnitureId)
   }
 
   public closeModal() {
-    this.furnitureToEdit = null
-    const modal = document.getElementById(
-      "addFurnitureModal",
-    ) as HTMLDialogElement
-    modal.close()
+    this.furnitureService.closeModal()
   }
 
   public exportToExcel() {
@@ -75,5 +60,24 @@ export class FurnituresPageComponent {
 
   public fakeNotify() {
     alert("Notification de déplacement à implémenter plus tard.")
+  }
+
+  public getSeverityClasses(state: string): string {
+    const base =
+      "px-2 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm"
+    switch (state?.toLowerCase()) {
+      case "neuf":
+      case "très bon état":
+        return `${base} bg-green-100 text-green-700`
+      case "bon état":
+        return `${base} bg-blue-100 text-blue-700`
+      case "usagé":
+        return `${base} bg-yellow-100 text-yellow-700`
+      case "abîmé":
+      case "hors service":
+        return `${base} bg-red-100 text-red-700`
+      default:
+        return `${base} bg-gray-100 text-gray-700`
+    }
   }
 }

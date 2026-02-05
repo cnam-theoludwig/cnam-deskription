@@ -8,7 +8,7 @@ export class RoleService {
 
   private getStoredRole(): string {
     const stored = localStorage.getItem("selectedRole")
-    return stored ?? "Utilisateur" // Default role
+    return stored ?? "Utilisateur"
   }
 
   private storeRole(role: string) {

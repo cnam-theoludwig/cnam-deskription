@@ -13,6 +13,7 @@ import type { Status } from "@repo/utils/types"
 import { FormControl, Validators } from "@angular/forms"
 import type { FormBuilder, FormGroup } from "@angular/forms"
 import type { Room } from "@repo/models/Room"
+import type { Storey } from "@repo/models/Storey"
 
 export type Furnitures = FurnitureWithRelations[]
 
@@ -24,21 +25,44 @@ export class FurnitureService {
 
   private readonly _furnitures = signal<Furnitures>([])
   private readonly _status = signal<Status>("pending")
-
-  public readonly furnitureToEdit = signal<FurnitureWithRelations | null>(null)
+  private readonly _furnitureToEdit = signal<FurnitureWithRelations | null>(
+    null,
+  )
 
   public get furnitures() {
     return this._furnitures()
+  }
+
+  public get furnitureToEdit() {
+    return this._furnitureToEdit()
   }
 
   public get status() {
     return this._status()
   }
 
+  public clear() {
+    this._furnitures.set([])
+  }
+
   public get() {
     this._status.set("pending")
     const observable = from(
       this.rpcClient.furnitures.get(),
+    ) as Observable<Furnitures>
+    observable.subscribe({
+      next: (furnitures) => {
+        this._status.set("idle")
+        this._furnitures.set(furnitures)
+      },
+    })
+    return observable
+  }
+
+  public getByStoreyId(storeyId: Storey["id"]) {
+    this._status.set("pending")
+    const observable = from(
+      this.rpcClient.furnitures.search({ storeyId }),
     ) as Observable<Furnitures>
     observable.subscribe({
       next: (furnitures) => {
@@ -102,10 +126,10 @@ export class FurnitureService {
       next: (updatedFurniture) => {
         this._status.set("idle")
         this._furnitures.update((old) => {
-          return old.map((furniture) => {
-            return furniture.id === updatedFurniture.id
-              ? { ...furniture, ...updatedFurniture }
-              : furniture
+          return old.map((f) => {
+            return f.id === updatedFurniture.id
+              ? { ...f, ...updatedFurniture, ...furniture }
+              : f
           })
         })
       },
@@ -137,8 +161,10 @@ export class FurnitureService {
     })
   }
 
-  public openModal(furniture?: FurnitureWithRelations) {
-    this.furnitureToEdit.set(furniture ?? null)
+  public openModal(furnitureId?: FurnitureWithRelations["id"]) {
+    this._furnitureToEdit.set(
+      this.furnitures.find((f) => f.id === furnitureId) ?? null,
+    )
     const modal = document.getElementById(
       "addFurnitureModal",
     ) as HTMLDialogElement
@@ -148,7 +174,7 @@ export class FurnitureService {
     modal.addEventListener(
       "close",
       () => {
-        this.furnitureToEdit.set(null)
+        this._furnitureToEdit.set(null)
       },
       { once: true },
     )
@@ -168,14 +194,11 @@ export class FurnitureService {
     )
 
     const base64ToUint8Array = (base64: string) => {
-      // remove data URL prefix if present
       const commaIndex = base64.indexOf(",")
       if (commaIndex !== -1) {
         base64 = base64.slice(commaIndex + 1)
       }
-      // convert URL-safe base64 to standard
       base64 = base64.replace(/-/g, "+").replace(/_/g, "/")
-      // add padding if missing
       const pad = base64.length % 4
       if (pad !== 0 && !Number.isNaN(pad)) {
         base64 += "====".slice(pad)
@@ -198,7 +221,6 @@ export class FurnitureService {
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
           })
 
-          // For IE/Edge
           const msSaveOrOpenBlob = (window.navigator as any).msSaveOrOpenBlob
           if (typeof msSaveOrOpenBlob === "function") {
             msSaveOrOpenBlob.call(window.navigator, blob, "furnitures.xlsx")

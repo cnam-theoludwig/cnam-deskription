@@ -44,6 +44,7 @@ export class BuildingPageComponent implements OnInit {
   protected selectedFurniture?: FurnitureWithRelations
 
   protected hideNotSelectedStoreysFlag: boolean = false
+  protected showAllStoreyFurnituresFlag: boolean = false
   protected floorPlans: Map<string, string> = new Map()
 
   public ngOnInit() {
@@ -59,64 +60,68 @@ export class BuildingPageComponent implements OnInit {
   }
 
   protected selectBuilding(building: Building) {
-    // Sécurité supplémentaire : si building est undefined (via l'UI), on arrête
-    if (!building) return
+    if (building !== undefined) {
+      this.selectedBuilding = building
+      this.storeyService.clear()
+      this.roomService.clear()
+      this.furnitureService.clear()
+      this.selectedStorey = undefined!
+      this.selectedRoom = undefined!
+      this.selectedFurniture = undefined!
 
-    console.log("selectBuilding", building.id)
-    this.selectedBuilding = building
-    this.storeyService.getByBuildingId(building.id).subscribe({
-      next: (storeys) => {
-        this.loadFloorPlans(storeys)
-        const firstStorey = storeys[0]
-        if (firstStorey) {
-          this.selectStorey(firstStorey)
-        } else {
-          // Reset des enfants si pas d'étage
-          this.selectedStorey = undefined
-          this.selectedRoom = undefined
-          this.selectedFurniture = undefined
-        }
-      },
-    })
+      this.storeyService.getByBuildingId(building.id).subscribe({
+        next: (storeys) => {
+          this.loadFloorPlans(storeys)
+          if (storeys[0] !== undefined) {
+            this.selectStorey(storeys[0])
+          }
+        },
+      })
+    }
   }
 
   protected selectStorey(storey: Storey) {
-    if (!storey) return // Sécurité
-
-    console.log("selectStorey", storey.id)
-    this.selectedStorey = storey
-    this.roomService.getByStoreyId(storey.id).subscribe({
-      next: (rooms) => {
-        const firstRoom = rooms[0]
-        if (firstRoom) {
-          this.selectRoom(firstRoom)
-        } else {
-          this.selectedRoom = undefined
-          this.selectedFurniture = undefined
-        }
-      },
-    })
+    if (storey !== undefined) {
+      this.selectedStorey = storey
+      this.roomService.getByStoreyId(storey.id).subscribe({
+        next: (rooms) => {
+          if (rooms[0] !== undefined) {
+            this.selectRoom(rooms[0])
+          }
+        },
+      })
+    }
   }
 
   protected selectRoom(room: Room) {
-    if (!room) return // Sécurité
+    if (room !== undefined) {
+      this.selectedRoom = room
+      this.fetchFurnitures()
+    }
+  }
 
-    console.log("selectRoom", room.id)
-    this.selectedRoom = room
-    this.furnitureService.getByRoomId(room.id).subscribe({
-      next: (furnitures) => {
-        const firstFurniture = furnitures[0]
-        if (firstFurniture) {
-          this.selectFurniture(firstFurniture)
-        } else {
-          this.selectedFurniture = undefined
-        }
-      },
-    })
+  private fetchFurnitures() {
+    if (this.showAllStoreyFurnituresFlag && this.selectedStorey) {
+      this.furnitureService.getByStoreyId(this.selectedStorey.id).subscribe({
+        next: (furnitures) => {
+          const first = furnitures[0]
+          if (first && !this.selectedFurniture) {
+            this.selectFurniture(first)
+          }
+        },
+      })
+    } else if (this.selectedRoom) {
+      this.furnitureService.getByRoomId(this.selectedRoom.id).subscribe({
+        next: (furnitures) => {
+          if (furnitures[0] !== undefined) {
+            this.selectFurniture(furnitures[0])
+          }
+        },
+      })
+    }
   }
 
   protected selectFurniture(furniture: FurnitureWithRelations) {
-    console.log("selectFurniture", furniture.id)
     if (furniture !== undefined) {
       if (furniture) {
         this.selectedFurniture = furniture
@@ -242,16 +247,42 @@ export class BuildingPageComponent implements OnInit {
     modal.showModal()
   }
 
-  // --- Suppression ---
+  protected addFurniture() {
+    this.furnitureService.openModal()
+
+    const modal = document.getElementById(
+      "addFurnitureModal",
+    ) as HTMLDialogElement
+    modal.addEventListener(
+      "close",
+      () => {
+        if (this.furnitureService.furnitures.length > 0) {
+          const last =
+            this.furnitureService.furnitures[
+              this.furnitureService.furnitures.length - 1
+            ]
+          if (last !== undefined) {
+            this.selectFurniture(last)
+          }
+        }
+      },
+      { once: true },
+    )
+  }
 
   protected removeBuilding(building: Building) {
-    this.buildingService.remove(building.id).subscribe({
+    this.buildingService.delete(building.id).subscribe({
       next: () => {
-        const first = this.buildingService.buildings[0]
-        if (first) {
-          this.selectedBuilding = first
+        if (this.buildingService.buildings[0] !== undefined) {
+          this.selectBuilding(this.buildingService.buildings[0])
         } else {
-          this.selectedBuilding = undefined
+          this.selectedBuilding = undefined!
+          this.selectedStorey = undefined!
+          this.selectedRoom = undefined!
+          this.selectedFurniture = undefined!
+          this.storeyService.clear()
+          this.roomService.clear()
+          this.furnitureService.clear()
         }
       },
     })
@@ -284,8 +315,11 @@ export class BuildingPageComponent implements OnInit {
   }
 
   protected removeFurniture(furniture: FurnitureWithRelations) {
-    // Implémentation future
-    console.log("Remove furniture", furniture)
+    this.furnitureService.delete(furniture.id).subscribe({
+      next: () => {
+        this.selectedFurniture = undefined!
+      },
+    })
   }
 
   // --- Autres ---
@@ -312,6 +346,11 @@ export class BuildingPageComponent implements OnInit {
     return this.hideNotSelectedStoreysFlag && this.selectedStorey != null
   }
 
+  public toggleShowAllStoreyFurnitures(show: boolean) {
+    this.showAllStoreyFurnituresFlag = show
+    this.fetchFurnitures()
+  }
+
   protected onFloorPlanUploaded(event: {
     storeyId: string
     imageUrl: string
@@ -320,8 +359,8 @@ export class BuildingPageComponent implements OnInit {
     this.storeyService
       .update(event.storeyId, { floorPlanImage: event.imageUrl })
       .subscribe({
-        next: () => console.log("Plan sauvegardé"),
-        error: (err) => console.error("Erreur plan", err),
+        next: () => {},
+        error: (err) => console.error("Failed to save floor plan:", err),
       })
   }
 

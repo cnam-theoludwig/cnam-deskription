@@ -3,35 +3,35 @@
   class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50"
 >
   <div class="modal-content">
-    <h2>Ajouter un étage</h2>
+    <h2>
+      {{ storeyService.storeyToEdit ? "Modifier l'étage" : "Ajouter un étage" }}
+    </h2>
 
     <form [formGroup]="storeyForm" (submit)="onSubmit()">
       <div class="mb-3 flex items-center gap-4">
         <label for="name" class="form-label w-20">Nom <app-required /></label>
         <input
           id="name"
-          class="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-800 bg-white"
+          pInputText
+          class="flex-1"
           formControlName="name"
           type="text"
           placeholder="Entrez le nom de l'étage"
-          required
         />
       </div>
 
       <div class="modal-actions flex justify-end gap-3 mt-6">
-        <button
-          class="bg-gray-300 text-gray-800 rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-gray-200"
+        <p-button
+          label="Annuler"
+          styleClass="p-button-secondary"
           type="button"
-          (click)="closeModal()"
-        >
-          Annuler
-        </button>
-        <button
-          class="bg-blue-600 text-white rounded px-4 py-2 transition duration-150 ease-in-out hover:bg-blue-400"
+          (onClick)="closeModal()"
+        ></p-button>
+        <p-button
+          [label]="storeyService.storeyToEdit ? 'Sauvegarder' : 'Ajouter'"
+          styleClass="p-button-primary"
           type="submit"
-        >
-          Ajouter
-        </button>
+        ></p-button>
       </div>
     </form>
   </div>

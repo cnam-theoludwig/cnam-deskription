@@ -1,5 +1,6 @@
 import {
   BuildingCreateZodObject,
+  BuildingUpdateZodObject,
   BuildingZod,
   BuildingZodObject,
 } from "@repo/models/Building"
@@ -29,6 +30,23 @@ export const buildings = {
         .values(input)
         .returningAll()
         .executeTakeFirstOrThrow()
+      return building
+    }),
+
+  update: publicProcedure
+    .route({ method: "PUT", path: "/buildings", tags: ["Building"] })
+    .input(BuildingUpdateZodObject)
+    .output(BuildingZodObject)
+    .handler(async ({ input }) => {
+      const { id, ...dataToUpdate } = input
+
+      const building = await database
+        .updateTable("Building")
+        .set(dataToUpdate)
+        .where("id", "=", id)
+        .returningAll()
+        .executeTakeFirstOrThrow()
+
       return building
     }),
 

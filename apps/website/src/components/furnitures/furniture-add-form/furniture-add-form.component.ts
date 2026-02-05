@@ -1,10 +1,11 @@
 import {
-  Component,
   inject,
-  effect,
   Input,
   Output,
   EventEmitter,
+  Component,
+  type OnChanges,
+  type SimpleChanges,
 } from "@angular/core"
 import { RoleService } from "../../../services/role.service"
 import { ReactiveFormsModule, FormBuilder, FormGroup } from "@angular/forms"
@@ -26,6 +27,8 @@ import type {
 } from "@repo/models/Furniture"
 import type { LocationCreate } from "@repo/models/Location"
 import { firstValueFrom } from "rxjs"
+import { SelectModule } from "primeng/select"
+import { InputTextModule } from "primeng/inputtext"
 
 @Component({
   selector: "app-furniture-add-form",
@@ -34,12 +37,14 @@ import { firstValueFrom } from "rxjs"
     RequiredComponent,
     ButtonModule,
     DatePipe,
+    SelectModule,
+    InputTextModule,
     QrGeneratorComponent,
   ],
   templateUrl: "./furniture-add-form.component.html",
   styleUrl: "./furniture-add-form.component.css",
 })
-export class FurnitureAddFormComponent {
+export class FurnitureAddFormComponent implements OnChanges {
   private readonly fb = inject(FormBuilder)
   protected readonly furnitureService = inject(FurnitureService)
   private readonly locationService = inject(LocationService)
@@ -51,8 +56,14 @@ export class FurnitureAddFormComponent {
   protected readonly historyLogService = inject(HistoryLogService)
   protected readonly roleService = inject(RoleService)
 
+  @Input() public defaultBuildingId?: string
+  @Input() public defaultStoreyId?: string
+  @Input() public defaultRoomId?: string
+
   @Input()
-  public furniture: FurnitureWithRelations | null = null
+  public set furniture(val: FurnitureWithRelations | null) {
+    void this.handleFurnitureEditChange(val)
+  }
 
   @Output()
   public handleClose = new EventEmitter<void>()
@@ -65,34 +76,81 @@ export class FurnitureAddFormComponent {
     this.buildingService.get()
 
     this.furnitureForm = this.furnitureService.createForm(this.fb)
+  }
 
-    effect(async () => {
-      const furnitureToEdit = this.furnitureService.furnitureToEdit()
-
+  public async ngOnChanges(changes: SimpleChanges) {
+    if (
+      (changes["defaultBuildingId"] ||
+        changes["defaultStoreyId"] ||
+        changes["defaultRoomId"]) &&
+      !this.furnitureService.furnitureToEdit
+    ) {
       this.furnitureForm.reset()
+      await this.applyDefaults()
+    }
+  }
+
+  private async handleFurnitureEditChange(
+    furnitureToEdit: FurnitureWithRelations | null,
+  ) {
+    this.furnitureForm.reset()
+    this.furnitureForm.get("storeyId")?.disable()
+    this.furnitureForm.get("roomId")?.disable()
+
+    if (furnitureToEdit) {
+      this.furnitureForm.patchValue({
+        name: furnitureToEdit.name,
+        typeId: furnitureToEdit.typeId,
+        stateId: furnitureToEdit.stateId,
+        buildingId: furnitureToEdit.buildingId,
+        model: furnitureToEdit.model,
+      })
+
+      if (furnitureToEdit.buildingId) {
+        await this.buildingService.onBuildingChange(this.furnitureForm)
+        this.furnitureForm.patchValue({ storeyId: furnitureToEdit.storeyId })
+      }
+
+      if (furnitureToEdit.storeyId) {
+        await this.storeyService.onStoreyChange(this.furnitureForm)
+        this.furnitureForm.patchValue({ roomId: furnitureToEdit.roomId })
+      }
+    } else {
+      await this.applyDefaults()
+    }
+    this.updatePositionFieldsState()
+  }
+
+  private updatePositionFieldsState() {
+    this.furnitureForm.get("buildingId")?.enable()
+
+    // Refresh cascading state
+    const buildingId = this.furnitureForm.get("buildingId")?.value
+    if (!buildingId) {
       this.furnitureForm.get("storeyId")?.disable()
       this.furnitureForm.get("roomId")?.disable()
+    }
 
-      if (furnitureToEdit) {
-        this.furnitureForm.patchValue({
-          name: furnitureToEdit.name,
-          typeId: furnitureToEdit.typeId,
-          stateId: furnitureToEdit.stateId,
-          buildingId: furnitureToEdit.buildingId,
-          model: furnitureToEdit.model,
-        })
+    const storeyId = this.furnitureForm.get("storeyId")?.value
+    if (!storeyId) {
+      this.furnitureForm.get("roomId")?.disable()
+    }
+  }
 
-        if (furnitureToEdit.buildingId) {
-          await this.buildingService.onBuildingChange(this.furnitureForm)
-          this.furnitureForm.patchValue({ storeyId: furnitureToEdit.storeyId })
-        }
+  private async applyDefaults() {
+    if (this.defaultBuildingId) {
+      this.furnitureForm.patchValue({ buildingId: this.defaultBuildingId })
+      await this.buildingService.onBuildingChange(this.furnitureForm)
 
-        if (furnitureToEdit.storeyId) {
-          await this.storeyService.onStoreyChange(this.furnitureForm)
-          this.furnitureForm.patchValue({ roomId: furnitureToEdit.roomId })
+      if (this.defaultStoreyId) {
+        this.furnitureForm.patchValue({ storeyId: this.defaultStoreyId })
+        await this.storeyService.onStoreyChange(this.furnitureForm)
+
+        if (this.defaultRoomId) {
+          this.furnitureForm.patchValue({ roomId: this.defaultRoomId })
         }
       }
-    })
+    }
   }
 
   public async onSubmit() {
@@ -126,7 +184,7 @@ export class FurnitureAddFormComponent {
         model: this.furnitureForm.get("model")?.value,
       }
 
-      const currentFurniture = this.furnitureService.furnitureToEdit()
+      const currentFurniture = this.furnitureService.furnitureToEdit
 
       if (currentFurniture) {
         await firstValueFrom(
@@ -144,7 +202,7 @@ export class FurnitureAddFormComponent {
   }
 
   public async onDelete() {
-    const furnitureToEdit = this.furnitureService.furnitureToEdit()
+    const furnitureToEdit = this.furnitureService.furnitureToEdit
     if (!furnitureToEdit) {
       return
     }

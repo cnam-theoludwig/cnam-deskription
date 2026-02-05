@@ -222,7 +222,7 @@ export class QrScanModalComponent {
 
       // Ouvrir la modale du meuble avec les données scannées
       setTimeout(() => {
-        this.furnitureService.openModal(result)
+        this.furnitureService.openModal(result.id)
       }, 100)
     } catch (error) {
       console.error("Error scanning QR code:", error)

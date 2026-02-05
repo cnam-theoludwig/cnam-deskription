@@ -1,90 +1,85 @@
 <div class="w-3/5 flex flex-col items-center justify-center mx-auto space-y-5">
   <form class="gap-3" [formGroup]="furnitureSearchForm" (submit)="search()">
     <div class="w-full">
-      <span class="text-gray-500">
-        <a href="#" class="no-underline text-inherit">
+      <p-iconfield iconPosition="left" styleClass="w-full">
+        <p-inputicon>
           <i class="fa fa-search"></i>
-        </a>
-      </span>
-      <input
-        type="text"
-        formControlName="name"
-        class="w-full rounded border border-gray-300 p-2"
-        placeholder="Entrez le nom du meuble que vous souhaitez chercher..."
-      />
+        </p-inputicon>
+        <input
+          type="text"
+          pInputText
+          formControlName="name"
+          class="w-full"
+          placeholder="Entrez le nom du meuble que vous souhaitez chercher..."
+        />
+      </p-iconfield>
     </div>
 
     <div class="w-full flex gap-3">
       <div class="w-full">
-        <select
+        <p-select
           formControlName="buildingId"
-          class="w-full rounded border border-gray-300 p-2"
-          (change)="buildingService.onBuildingChange(furnitureSearchForm)"
-        >
-          <option value="" disabled selected>Choisissez un bâtiment</option>
-          @for (building of buildingService.buildings; track building.id) {
-            <option [value]="building.id">{{ building.name }}</option>
-          }
-        </select>
+          styleClass="w-full"
+          [options]="buildingService.buildings"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Choisissez un bâtiment"
+          (onChange)="buildingService.onBuildingChange(furnitureSearchForm)"
+        />
       </div>
 
       <div class="w-full">
-        <select
+        <p-select
           formControlName="storeyId"
-          class="w-full rounded border border-gray-300 p-2"
-          (change)="storeyService.onStoreyChange(furnitureSearchForm)"
-        >
-          <option value="" disabled selected>Choisissez un étage</option>
-          @for (storey of storeyService.storeys; track storey.id) {
-            <option [value]="storey.id">{{ storey.name }}</option>
-          }
-        </select>
+          styleClass="w-full"
+          [options]="storeyService.storeys"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Choisissez un étage"
+          (onChange)="storeyService.onStoreyChange(furnitureSearchForm)"
+        />
       </div>
 
       <div class="w-full">
-        <select
+        <p-select
           formControlName="roomId"
-          class="w-full rounded border border-gray-300 p-2"
-        >
-          <option value="" disabled selected>Choisissez une pièce</option>
-          @for (room of roomService.rooms; track room.id) {
-            <option [value]="room.id">{{ room.name }}</option>
-          }
-        </select>
+          styleClass="w-full"
+          [options]="roomService.rooms"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Choisissez une pièce"
+        />
       </div>
     </div>
 
     <div class="w-full">
-      <select
+      <p-select
         formControlName="stateId"
-        class="w-full rounded border border-gray-300 p-2"
-      >
-        <option value="" disabled selected>Choisissez un état</option>
-        @for (state of stateService.states; track state.id) {
-          <option [value]="state.id">{{ state.name }}</option>
-        }
-      </select>
+        styleClass="w-full"
+        [options]="stateService.states"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Choisissez un état"
+      />
     </div>
 
     <div class="w-full">
-      <select
+      <p-select
         formControlName="typeId"
-        class="w-full rounded border border-gray-300 p-2"
-      >
-        <option value="" disabled selected>Choisissez un type de meuble</option>
-        @for (type of typeService.types; track type.id) {
-          <option [value]="type.id">{{ type.name }}</option>
-        }
-      </select>
+        styleClass="w-full"
+        [options]="typeService.types"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Choisissez un type de meuble"
+      />
     </div>
 
     <div class="w-full">
-      <button
+      <p-button
+        label="Rechercher"
+        styleClass="p-button-primary"
         type="submit"
-        class="w-full bg-gray-300 text-gray-800 rounded px-4 py-2"
-      >
-        Rechercher
-      </button>
+      ></p-button>
     </div>
   </form>
 </div>

@@ -1,4 +1,4 @@
-import { Component, inject, Input } from "@angular/core"
+import { Component, inject, Input, effect } from "@angular/core"
 import type { OnInit } from "@angular/core"
 import {
   FormBuilder,
@@ -11,10 +11,17 @@ import type { Building } from "@repo/models/Building"
 import { firstValueFrom } from "rxjs"
 import type { StoreyCreate } from "@repo/models/Storey"
 import { StoreyService } from "../../services/storey.service"
+import { ButtonModule } from "primeng/button"
+import { InputTextModule } from "primeng/inputtext"
 
 @Component({
   selector: "app-storey-add-form",
-  imports: [ReactiveFormsModule, RequiredComponent],
+  imports: [
+    ReactiveFormsModule,
+    RequiredComponent,
+    ButtonModule,
+    InputTextModule,
+  ],
   templateUrl: "./storey-add-form.component.html",
   styleUrl: "./storey-add-form.component.css",
 })
@@ -26,6 +33,21 @@ export class StoreyAddFormComponent implements OnInit {
   public buildingId!: Building["id"]
 
   protected storeyForm!: FormGroup
+
+  constructor() {
+    effect(() => {
+      const storey = this.storeyService.storeyToEdit
+      if (storey) {
+        this.storeyForm.patchValue({
+          name: storey.name,
+        })
+      } else {
+        this.storeyForm?.reset({
+          name: "",
+        })
+      }
+    })
+  }
 
   public ngOnInit() {
     this.storeyForm = this.fb.group({
@@ -40,25 +62,29 @@ export class StoreyAddFormComponent implements OnInit {
     }
 
     try {
-      const storey: StoreyCreate = {
-        name: this.storeyForm.get("name")?.value,
-        buildingId: this.buildingId,
-      }
+      const storeyName = this.storeyForm.get("name")?.value
+      const storeyToEdit = this.storeyService.storeyToEdit
 
-      await firstValueFrom(this.storeyService.create(storey))
+      if (storeyToEdit) {
+        await firstValueFrom(
+          this.storeyService.update(storeyToEdit.id, { name: storeyName }),
+        )
+      } else {
+        const storey: StoreyCreate = {
+          name: storeyName,
+          buildingId: this.buildingId,
+        }
+        await firstValueFrom(this.storeyService.create(storey))
+      }
 
       this.closeModal()
     } catch (error) {
-      console.error("Erreur lors de la création :", error)
+      console.error("Erreur lors de la sauvegarde :", error)
       alert("Une erreur est survenue.")
     }
   }
 
   protected closeModal() {
-    this.storeyForm = this.fb.group({
-      name: ["", Validators.required],
-    })
-    const modal = document.getElementById("addStoreyModal") as HTMLDialogElement
-    modal.close()
+    this.storeyService.closeModal()
   }
 }

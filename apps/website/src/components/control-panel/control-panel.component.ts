@@ -20,14 +20,24 @@ import {
   Armchair,
   QrCode,
 } from "lucide-angular"
+import type { MenuItem } from "primeng/api"
+import { SelectModule } from "primeng/select"
+import { CheckboxModule } from "primeng/checkbox"
+import { ButtonModule } from "primeng/button"
+import { SpeedDialModule } from "primeng/speeddial"
+import { ColorPickerModule } from "primeng/colorpicker"
+import { InputTextModule } from "primeng/inputtext"
 
-import type { OnChanges, SimpleChanges } from "@angular/core"
+import type { OnChanges, OnInit, SimpleChanges } from "@angular/core"
 import type { Building } from "@repo/models/Building"
 import type { Storey } from "@repo/models/Storey"
 import type { Room } from "@repo/models/Room"
 import type { FurnitureWithRelations } from "@repo/models/Furniture"
 import { FurnitureAddFormComponent } from "../furnitures/furniture-add-form/furniture-add-form.component"
 import { FurnitureService } from "../../services/furniture.service"
+import { RoomService } from "../../services/room.service"
+import { BuildingService } from "../../services/building.service"
+import { StoreyService } from "../../services/storey.service"
 import { QrScanService } from "../../services/qr-scan.service"
 
 @Component({
@@ -40,9 +50,15 @@ import { QrScanService } from "../../services/qr-scan.service"
     CommonModule,
     LucideAngularModule,
     FurnitureAddFormComponent,
+    SelectModule,
+    CheckboxModule,
+    ButtonModule,
+    SpeedDialModule,
+    ColorPickerModule,
+    InputTextModule,
   ],
 })
-export class ControlPanelComponent implements OnChanges {
+export class ControlPanelComponent implements OnChanges, OnInit {
   protected readonly HouseIcon = House
   protected readonly LayersIcon = Layers
   protected readonly DoorOpenIcon = DoorOpen
@@ -53,6 +69,9 @@ export class ControlPanelComponent implements OnChanges {
   protected readonly UploadIcon = Upload
 
   protected readonly furnitureService = inject(FurnitureService)
+  protected readonly roomService = inject(RoomService)
+  public readonly buildingService = inject(BuildingService)
+  public readonly storeyService = inject(StoreyService)
   protected readonly qrScanService = inject(QrScanService)
 
   @Input() public buildings!: Building[]
@@ -75,6 +94,9 @@ export class ControlPanelComponent implements OnChanges {
 
   @Input() public hideNotSelectedStoreys = false
   @Output() public toggleHideNotSelectedStoreys = new EventEmitter<boolean>()
+
+  @Input() public showAllStoreyFurnitures = false
+  @Output() public toggleShowAllStoreyFurnitures = new EventEmitter<boolean>()
   @Output() public selectRoom = new EventEmitter<Room>()
   @Output() public addRoom = new EventEmitter<void>()
   @Output() public removeRoom = new EventEmitter<Room>()
@@ -87,16 +109,31 @@ export class ControlPanelComponent implements OnChanges {
   @ViewChild("fileInput") public fileInput!: ElementRef<HTMLInputElement>
 
   @Output() public selectFurniture = new EventEmitter<FurnitureWithRelations>()
+  @Output() public removeFurniture = new EventEmitter<FurnitureWithRelations>()
 
   protected editRoomName: string = ""
   protected editRoomColor: string = ""
 
   protected editFurnitureName: string = ""
 
-  // --- État Local ---
+  protected roomFurnitures: FurnitureWithRelations[] = []
+  protected showFurnitureInput = false
+  protected newFurnitureName = ""
+  protected selectedModelType = "chair"
+
   protected currentStoreyForUpload: Storey | null = null
 
+  protected buildingItems: MenuItem[] = []
+  protected storeyItems: MenuItem[] = []
+  protected roomItems: MenuItem[] = []
+  protected furnitureItems: MenuItem[] = []
+
+  public ngOnInit() {
+    this.updateMenus()
+  }
+
   public ngOnChanges(changes: SimpleChanges) {
+    this.updateMenus()
     if (changes["selectedRoom"]) {
       const currentRoom = changes["selectedRoom"].currentValue
       if (currentRoom) {
@@ -151,8 +188,123 @@ export class ControlPanelComponent implements OnChanges {
       }
 
       reader.readAsDataURL(file)
-      input.value = "" // Reset input
+      input.value = ""
     }
+  }
+
+  private renameBuilding() {
+    if (!this.selectedBuilding) return
+    this.buildingService.openModal(this.selectedBuilding.id)
+  }
+
+  private renameStorey() {
+    if (!this.selectedStorey) return
+    this.storeyService.openModal(this.selectedStorey.id)
+  }
+
+  private updateMenus() {
+    this.buildingItems = [
+      {
+        icon: "pi pi-plus",
+        tooltipOptions: { tooltipLabel: "Ajouter un bâtiment" },
+        command: () => this.addBuilding.emit(),
+      },
+      {
+        icon: "pi pi-pencil",
+        visible: !!this.selectedBuilding,
+        tooltipOptions: { tooltipLabel: "Modifier le bâtiment" },
+        command: () => this.renameBuilding(),
+      },
+      {
+        icon: "pi pi-trash",
+        visible: !!this.selectedBuilding,
+        tooltipOptions: { tooltipLabel: "Supprimer le bâtiment" },
+        command: () =>
+          this.selectedBuilding &&
+          this.removeBuilding.emit(this.selectedBuilding),
+      },
+    ]
+
+    this.storeyItems = [
+      {
+        icon: "pi pi-plus",
+        tooltipOptions: { tooltipLabel: "Ajouter un étage" },
+        command: () => this.addStorey.emit(),
+      },
+      {
+        icon: "pi pi-pencil",
+        visible: !!this.selectedStorey,
+        tooltipOptions: { tooltipLabel: "Modifier l'étage" },
+        command: () => this.renameStorey(),
+      },
+      {
+        icon: "pi pi-upload",
+        visible: !!this.selectedStorey,
+        tooltipOptions: { tooltipLabel: "Plan 2D" },
+        command: () =>
+          this.selectedStorey &&
+          this.triggerFloorPlanUpload(this.selectedStorey),
+      },
+      {
+        icon: "pi pi-trash",
+        visible: !!this.selectedStorey,
+        tooltipOptions: { tooltipLabel: "Supprimer l'étage" },
+        command: () =>
+          this.selectedStorey && this.removeStorey.emit(this.selectedStorey),
+      },
+    ]
+
+    this.roomItems = [
+      {
+        icon: "pi pi-plus",
+        tooltipOptions: { tooltipLabel: "Ajouter une pièce" },
+        command: () => this.addRoom.emit(),
+      },
+      {
+        icon: "pi pi-pencil",
+        visible: !!this.selectedRoom,
+        tooltipOptions: { tooltipLabel: "Modifier la pièce" },
+        command: () =>
+          this.selectedRoom && this.roomService.openModal(this.selectedRoom.id),
+      },
+      {
+        icon: "pi pi-trash",
+        visible: !!this.selectedRoom,
+        tooltipOptions: { tooltipLabel: "Supprimer la pièce" },
+        command: () =>
+          this.selectedRoom && this.removeRoom.emit(this.selectedRoom),
+      },
+    ]
+
+    this.furnitureItems = [
+      {
+        icon: "pi pi-plus",
+        tooltipOptions: { tooltipLabel: "Ajouter un meuble" },
+        command: () => {
+          this.furnitureService.openModal()
+          const modal = document.getElementById(
+            "addFurnitureModal",
+          ) as HTMLDialogElement
+          if (modal) modal.showModal()
+        },
+      },
+      {
+        icon: "pi pi-pencil",
+        visible: !!this.selectedFurniture,
+        tooltipOptions: { tooltipLabel: "Modifier le meuble" },
+        command: () =>
+          this.selectedFurniture &&
+          this.furnitureService.openModal(this.selectedFurniture.id),
+      },
+      {
+        icon: "pi pi-trash",
+        visible: !!this.selectedFurniture,
+        tooltipOptions: { tooltipLabel: "Supprimer le meuble" },
+        command: () =>
+          this.selectedFurniture &&
+          this.removeFurniture.emit(this.selectedFurniture),
+      },
+    ]
   }
 
   protected onHideStoreysChange(event: Event): void {

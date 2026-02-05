@@ -17,3 +17,9 @@ export const BuildingDeleteZodObject = z.object({
   id: BuildingZod.id,
 })
 export type BuildingDelete = z.infer<typeof BuildingDeleteZodObject>
+
+export const BuildingUpdateZodObject = z.object({
+  id: BuildingZod.id,
+  name: BuildingZod.name.optional(),
+})
+export type BuildingUpdate = z.infer<typeof BuildingUpdateZodObject>
