@@ -12,7 +12,6 @@ import { ReactiveFormsModule, FormBuilder, FormGroup } from "@angular/forms"
 import { RequiredComponent } from "../../required/required.component"
 import { ButtonModule } from "primeng/button"
 import { DatePipe } from "@angular/common"
-import { HistoryLogService } from "../../../services/historylog.service"
 import { FurnitureService } from "../../../services/furniture.service"
 import { LocationService } from "../../../services/location.service"
 import { BuildingService } from "../../../services/building.service"
@@ -53,7 +52,6 @@ export class FurnitureAddFormComponent implements OnChanges {
   protected readonly roomService = inject(RoomService)
   protected readonly stateService = inject(StateService)
   protected readonly typeService = inject(TypeService)
-  protected readonly historyLogService = inject(HistoryLogService)
   protected readonly roleService = inject(RoleService)
 
   @Input() public defaultBuildingId?: string
@@ -188,7 +186,7 @@ export class FurnitureAddFormComponent implements OnChanges {
 
       if (currentFurniture) {
         await firstValueFrom(
-          this.historyLogService.update(currentFurniture.id, data),
+          this.furnitureService.updateForm(currentFurniture.id, data),
         )
       } else {
         await firstValueFrom(this.furnitureService.create(data))

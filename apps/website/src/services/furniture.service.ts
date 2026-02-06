@@ -127,9 +127,31 @@ export class FurnitureService {
         this._status.set("idle")
         this._furnitures.update((old) => {
           return old.map((f) => {
-            return f.id === updatedFurniture.id
-              ? { ...f, ...updatedFurniture, ...furniture }
-              : f
+            if (f.id === updatedFurniture.id) {
+              return { ...f, ...updatedFurniture }
+            }
+            return f
+          })
+        })
+      },
+    })
+    return observable
+  }
+
+  public updateForm(id: Furniture["id"], furniture: FurnitureCreate) {
+    this._status.set("pending")
+    const observable = from(
+      this.rpcClient.furnitures.updateForm({ id, furniture }),
+    )
+    observable.subscribe({
+      next: (updatedFurniture) => {
+        this._status.set("idle")
+        this._furnitures.update((old) => {
+          return old.map((f) => {
+            if (f.id === updatedFurniture.id) {
+              return { ...f, ...updatedFurniture }
+            }
+            return f
           })
         })
       },

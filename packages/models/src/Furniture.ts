@@ -17,6 +17,7 @@ export const FurnitureZod = {
   x: z.coerce.number(),
   z: z.coerce.number(),
   model: z.string().nullish(),
+  historyLogs: z.array(HistoryLogZodObject),
 }
 export const FurnitureZodObject = z.object(FurnitureZod)
 export type Furniture = z.infer<typeof FurnitureZodObject>
